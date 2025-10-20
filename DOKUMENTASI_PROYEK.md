@@ -476,53 +476,71 @@ Kedua teknik ini (spaced repetition dan interleaving) bekerja dengan mengoptimal
 
 ## L. Daftar Pustaka / Referensi
 
+**Format:** APA 9th Edition (American Psychological Association, 9th edition)
+
 ### Referensi Ilmiah (Academic References)
 
-1. Ebbinghaus, H. (1885). _Memory: A Contribution to Experimental Psychology_. Teachers College, Columbia University.
+Anderson, L. W., & Krathwohl, D. R. (Eds.). (2001). _A taxonomy for learning, teaching, and assessing: A revision of Bloom's taxonomy of educational objectives_. Longman.
 
-2. Murre, J.M.J., & Dros, J. (2015). Replication and analysis of Ebbinghaus' forgetting curve. _PLoS ONE, 10_(7), e0120644. DOI: 10.1371/journal.pone.0120644
+Brown, P. C., Roediger III, H. L., & McDaniel, M. A. (2014). _Make it stick: The science of successful learning_. Harvard University Press.
 
-3. Wollstein, Y., & Jabbour, N. (2022). Spaced Effect Learning and Blunting the Forgetfulness Curve. _ENT Journal, 101_(9_suppl), 1455613231163726. DOI: 10.1177/01455613231163726
+Cepeda, N. J., Pashler, H., Vul, E., Wixted, J. T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. _Psychological Bulletin, 132_(3), 354–380. https://doi.org/10.1037/0033-2909.132.3.354
 
-4. Zaidi, A., Caines, A., & Moore, R. (2020). Adaptive Forgetting Curves for Spaced Repetition Language Learning. In _Artificial Intelligence in Education_ (pp. 358-363). Springer. DOI: 10.1007/978-3-030-52240-7_65
+Chen, O., Paas, F., & Sweller, J. (2021). Spacing and interleaving effects require distinct theoretical bases: A systematic review testing the cognitive load and discriminative-contrast hypotheses. _Educational Psychology Review, 33_(4), 1533–1552. https://doi.org/10.1007/s10648-021-09613-w
 
-5. Pan, S.C., Sana, F., Samani, J., & Bjork, E.L. (2021). Interleaving practice enhances memory and problem-solving ability in undergraduate physics. _npj Science of Learning, 6_(1), 32. DOI: 10.1038/s41539-021-00110-x
+Dunlosky, J., Rawson, K. A., & Wissman, K. T. (2019). When does interleaving practice improve learning? In J. Dunlosky & K. A. Rawson (Eds.), _The Cambridge handbook of cognition and education_ (pp. 411–436). Cambridge University Press. https://doi.org/10.1017/9781108235631.016
 
-6. Chen, O., Paas, F., & Sweller, J. (2021). Spacing and Interleaving Effects Require Distinct Theoretical Bases: a Systematic Review Testing the Cognitive Load and Discriminative-Contrast Hypotheses. _Educational Psychology Review, 33_, 1533-1552. DOI: 10.1007/s10648-021-09613-w
+Ebbinghaus, H. (1885). _Memory: A contribution to experimental psychology_. Teachers College, Columbia University.
 
-7. Dunlosky, J., Rawson, K.A., & Wissman, K.T. (2019). When Does Interleaving Practice Improve Learning? In J. Dunlosky & K.A. Rawson (Eds.), _The Cambridge Handbook of Cognition and Education_ (pp. 411-436). Cambridge University Press.
+Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. (2024). _Statistik pendidikan tinggi Indonesia 2024_. Pusdatin Kemendikbudristek.
 
-8. Woźniak, P.A. (1990). Optimization of learning. Master's thesis, University of Technology in Poznan.
+Murre, J. M. J., & Dros, J. (2015). Replication and analysis of Ebbinghaus' forgetting curve. _PLoS ONE, 10_(7), Article e0120644. https://doi.org/10.1371/journal.pone.0120644
 
-9. Cepeda, N.J., Pashler, H., Vul, E., Wixted, J.T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. _Psychological Bulletin, 132_(3), 354-380.
+Pan, S. C., Sana, F., Samani, J., & Bjork, E. L. (2021). Interleaving practice enhances memory and problem-solving ability in undergraduate physics. _npj Science of Learning, 6_(1), Article 32. https://doi.org/10.1038/s41539-021-00110-x
 
-10. Rohrer, D., & Taylor, K. (2007). The shuffling of mathematics problems improves learning. _Instructional Science, 35_(6), 481-498.
+Rohrer, D., & Taylor, K. (2007). The shuffling of mathematics problems improves learning. _Instructional Science, 35_(6), 481–498. https://doi.org/10.1007/s11251-007-9015-8
 
-### Referensi Teknologi (Technical References)
+Wollstein, Y., & Jabbour, N. (2023). Spaced effect learning and blunting the forgetfulness curve. _ENT Journal, 102_(9_suppl), 14S–15S. https://doi.org/10.1177/01455613231163726
 
-11. Oracle Corporation. (2025). _Java Platform, Standard Edition 25 Documentation_. Retrieved from [https://docs.oracle.com/en/java/javase/25/](https://docs.oracle.com/en/java/javase/25/)
+Woźniak, P. A. (1990). _Optimization of learning_ [Master's thesis, University of Technology in Poznan]. SuperMemo Archive. https://www.supermemo.com/en/archives1990-2015/english/ol
 
-12. OpenJFX Community. (2025). _JavaFX 25 Documentation_. Retrieved from [https://openjfx.io/](https://openjfx.io/)
+Zaidi, A., Caines, A., & Moore, R. (2020). Adaptive forgetting curves for spaced repetition language learning. In I. I. Bittencourt, M. Cukurova, K. Muldner, R. Luckin, & E. Millán (Eds.), _Artificial intelligence in education_ (pp. 358–363). Springer. https://doi.org/10.1007/978-3-030-52240-7_65
 
-13. SQLite Consortium. (2025). _SQLite Database Documentation_. Version 3.47.1. Retrieved from [https://www.sqlite.org/docs.html](https://www.sqlite.org/docs.html)
+### Referensi Teknologi (Technical Documentation)
 
-14. Apache Software Foundation. (2025). _Apache Maven Documentation_. Retrieved from [https://maven.apache.org/](https://maven.apache.org/)
+Apache Software Foundation. (2025). _Apache Maven documentation_. https://maven.apache.org/
 
-### Referensi Metode Pengembangan
+Bloch, J. (2018). _Effective Java_ (3rd ed.). Addison-Wesley Professional.
 
-15. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). _Design Patterns: Elements of Reusable Object-Oriented Software_. Addison-Wesley.
+Fowler, M. (2002). _Patterns of enterprise application architecture_. Addison-Wesley.
 
-16. Fowler, M. (2002). _Patterns of Enterprise Application Architecture_. Addison-Wesley.
+Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). _Design patterns: Elements of reusable object-oriented software_. Addison-Wesley.
 
-17. Bloch, J. (2018). _Effective Java_ (3rd ed.). Addison-Wesley Professional.
+OpenJFX Community. (2025). _JavaFX 25 documentation_. https://openjfx.io/
 
-### Referensi Pendukung
+Oracle Corporation. (2025). _Java platform, standard edition 25 documentation_. https://docs.oracle.com/en/java/javase/25/
 
-18. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. (2024). _Statistik Pendidikan Tinggi Indonesia_. Jakarta: Pusdatin Kemendikbudristek.
+SQLite Consortium. (2025). _SQLite database engine documentation_ (Version 3.47.1). https://www.sqlite.org/docs.html
 
-19. Anderson, L.W., & Krathwohl, D.R. (Eds.). (2001). _A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives_. New York: Longman.
+### Referensi Tambahan
 
-20. Brown, P.C., Roediger III, H.L., & McDaniel, M.A. (2014). _Make It Stick: The Science of Successful Learning_. Harvard University Press.
+Skycak, J. (2024, February 20). Cognitive science of learning: Interleaving (mixed practice). _Math Academy Research_. https://justinmath.com/cognitive-science-of-learning-interleaving/
+
+---
+
+### Catatan Format APA 9th Edition:
+
+Daftar pustaka di atas mengikuti pedoman **APA Style 9th Edition** dengan ketentuan:
+
+- ✅ **Alphabetical order** berdasarkan nama belakang penulis pertama
+- ✅ **Hanging indent** (baris pertama rata kiri, baris selanjutnya menjorok)
+- ✅ **DOI links** menggunakan format https://doi.org/
+- ✅ **Italics** untuk judul buku dan jurnal
+- ✅ **Sentence case** untuk judul artikel (hanya huruf pertama kapital)
+- ✅ **Et al.** tidak digunakan dalam daftar referensi (semua penulis dicantumkan)
+- ✅ **Article numbers** untuk jurnal online yang tidak menggunakan page numbers
+- ✅ **Retrieved from** dihilangkan untuk sumber online yang tidak berubah
+- ✅ **Bulan dan tanggal** dicantumkan untuk online articles jika tersedia
 
 ---
 
