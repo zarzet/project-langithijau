@@ -1,0 +1,48 @@
+# Compiled class files
+*.class
+target/
+*.jar
+*.war
+*.ear
+
+# Log files
+*.log
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# JavaFX
+*.fxbuild
+
+# Package Files
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.bak
+*.backup

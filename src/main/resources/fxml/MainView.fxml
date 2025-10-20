@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studyplanner.controller.MainController">
+    
+    <!-- Header -->
+    <top>
+        <VBox styleClass="header">
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
+                <Label text="📚 Adaptive Study Planner" styleClass="app-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="manageCourseBtn" text="🎓 Kelola Mata Kuliah" styleClass="btn-primary"/>
+                <Button fx:id="viewScheduleBtn" text="📅 Lihat Jadwal" styleClass="btn-secondary"/>
+                <Button fx:id="generateScheduleBtn" text="⚡ Generate Schedule" styleClass="btn-success"/>
+                <Button fx:id="refreshBtn" text="🔄" styleClass="btn-icon"/>
+            </HBox>
+            <Separator/>
+        </VBox>
+    </top>
+    
+    <!-- Main Content -->
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f5f5f5;">
+            <VBox spacing="20" style="-fx-padding: 30;">
+                
+                <!-- Welcome Section -->
+                <VBox spacing="10" styleClass="card">
+                    <Label fx:id="welcomeLabel" text="Selamat Datang! 👋" styleClass="section-title"/>
+                    <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label"/>
+                </VBox>
+                
+                <!-- Statistics Cards -->
+                <HBox spacing="20">
+                    <!-- Overall Progress Card -->
+                    <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label text="Progress Keseluruhan" styleClass="stat-title"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Total Topik" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+                                <Label fx:id="totalTopicsLabel" text="0" styleClass="stat-number"/>
+                            </VBox>
+                            <Separator orientation="VERTICAL"/>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Dikuasai" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+                                <Label fx:id="masteredTopicsLabel" text="0" styleClass="stat-number"/>
+                            </VBox>
+                        </HBox>
+                        <ProgressBar fx:id="overallProgressBar" progress="0" maxWidth="Infinity"/>
+                        <Label fx:id="overallProgressLabel" text="0%" styleClass="progress-label"/>
+                    </VBox>
+                    
+                    <!-- Today Progress Card -->
+                    <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                        <Label text="Progress Hari Ini" styleClass="stat-title"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Total Tugas" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+                                <Label fx:id="todayTasksLabel" text="0" styleClass="stat-number"/>
+                            </VBox>
+                            <Separator orientation="VERTICAL"/>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Selesai" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
+                                <Label fx:id="completedTasksLabel" text="0" styleClass="stat-number"/>
+                            </VBox>
+                        </HBox>
+                        <ProgressBar fx:id="todayProgressBar" progress="0" maxWidth="Infinity"/>
+                        <Label fx:id="todayProgressLabel" text="0%" styleClass="progress-label"/>
+                    </VBox>
+                </HBox>
+                
+                <!-- Main Content Grid -->
+                <HBox spacing="20">
+                    <!-- Today's Tasks -->
+                    <VBox spacing="15" styleClass="card" HBox.hgrow="ALWAYS">
+                        <Label text="📝 Tugas Hari Ini" styleClass="section-title"/>
+                        <Separator/>
+                        <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
+                            <VBox fx:id="todayTasksContainer" spacing="10" style="-fx-padding: 5;"/>
+                        </ScrollPane>
+                    </VBox>
+                    
+                    <!-- Upcoming Exams -->
+                    <VBox spacing="15" styleClass="card" prefWidth="350">
+                        <Label text="📅 Ujian Mendatang" styleClass="section-title"/>
+                        <Separator/>
+                        <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
+                            <VBox fx:id="upcomingExamsContainer" spacing="10" style="-fx-padding: 5;"/>
+                        </ScrollPane>
+                    </VBox>
+                </HBox>
+                
+            </VBox>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>
+

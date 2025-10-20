@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studyplanner.controller.ScheduleViewController"
+            prefWidth="900" prefHeight="700">
+    
+    <top>
+        <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: #f8f9fa;">
+            <Label text="📅 Jadwal Belajar" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Label text="Pilih Tanggal:" style="-fx-font-size: 14px;"/>
+                <DatePicker fx:id="datePicker"/>
+            </HBox>
+            
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="selectedDateLabel" text="Senin, 20 Oktober 2025" 
+                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="sessionCountLabel" text="0 sesi belajar" 
+                       style="-fx-text-fill: #666;"/>
+            </HBox>
+        </VBox>
+    </top>
+    
+    <center>
+        <ScrollPane fitToWidth="true" style="-fx-background-color: #f5f5f5;">
+            <VBox fx:id="scheduleContainer" spacing="15" style="-fx-padding: 30;"/>
+        </ScrollPane>
+    </center>
+    
+</BorderPane>
+
