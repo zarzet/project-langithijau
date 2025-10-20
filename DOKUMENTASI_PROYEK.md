@@ -120,19 +120,56 @@ Tujuan utama dari pengembangan aplikasi **"Adaptive Study Planner"** adalah seba
 
 ### 6. Gambaran Umum Fitur Utama
 
+#### **A. Fitur untuk Mahasiswa** 👨‍🎓
+
+**Manajemen Data:**
 - **Manajemen Mata Kuliah** (Create, Read, Update, Delete)
-- **Manajemen Topik Pembelajaran** dengan prioritas dan tingkat kesulitan
-- **Input Jadwal Ujian** (UTS, UAS, Kuis, Tugas)
-- **Auto-Generated Study Schedule** untuk 7 hari ke depan
-- **Daily Task Dashboard** dengan checklist interaktif
+- **Manajemen Topik Pembelajaran** dengan prioritas (1-5) dan tingkat kesulitan (1-5)
+- **Input Jadwal Ujian** (UTS, UAS, Kuis, Tugas) dengan tanggal dan lokasi
+
+**Pembelajaran Adaptif:**
+- **Auto-Generated Study Schedule** untuk 7 hari ke depan dengan algoritma cerdas
+- **Adaptive Spaced Repetition** menggunakan algoritma SM-2 (SuperMemo 2)
+- **Intelligent Interleaving** untuk mix topik dari berbagai mata kuliah
 - **Performance Rating System** (1-5 stars) setelah setiap sesi belajar
-- **Adaptive Spaced Repetition** menggunakan algoritma SM-2
-- **Intelligent Interleaving** untuk optimasi pembelajaran
-- **Progress Tracking** (Overall & Daily)
-- **Upcoming Exams Reminder**
+- **Dynamic Interval Adjustment** berdasarkan rating performa
+
+**Tracking & Monitoring:**
+- **Daily Task Dashboard** dengan checklist interaktif
+- **Progress Tracking** (Overall & Daily) dengan progress bars visual
+- **Upcoming Exams Reminder** dengan countdown dan color coding
 - **Review History** untuk setiap topik
-- **Mastery Status** tracking
-- **Calendar View** untuk melihat jadwal belajar
+- **Mastery Status** tracking (auto-detect saat topik sudah dikuasai)
+- **Calendar View** untuk melihat jadwal belajar per tanggal
+- **Study Statistics** (total sessions, completion rate, streak tracking)
+
+#### **B. Fitur untuk Dosen Pembimbing** 👨‍🏫
+
+**Monitoring Mahasiswa:**
+- **Daftar Mahasiswa Bimbingan** dengan status pembelajaran real-time
+- **Dashboard Progress Mahasiswa** (individual) dengan statistik lengkap
+- **Study Pattern Analysis** (waktu belajar, konsistensi, fokus per mata kuliah)
+- **Performance Trends** dengan charts dan visualisasi
+- **Alert System** untuk mahasiswa yang butuh perhatian khusus
+
+**Pembimbingan & Reporting:**
+- **Rekomendasi Topik** - dosen dapat suggest topik tambahan ke mahasiswa
+- **Export Laporan Progress** dalam format PDF/Excel
+- **Statistik Aggregat** dari semua mahasiswa bimbingan
+- **Notes & Feedback** untuk setiap mahasiswa
+
+#### **C. Fitur untuk Administrator** 👨‍💼
+
+**Manajemen Pengguna:**
+- **User Account Management** (Create, Edit, Deactivate users)
+- **Role Assignment** (Mahasiswa, Dosen, Administrator)
+- **Assign Dosen ke Mahasiswa** untuk pembimbingan akademik
+- **User Status Management** (Active, Inactive, Suspended)
+
+**Sistem & Monitoring:**
+- **System Analytics Dashboard** (user statistics, usage metrics, performance)
+- **Activity Logs** untuk audit trail
+- **System Settings Configuration** (algorithm parameters, limits, notifications)
 
 ---
 
