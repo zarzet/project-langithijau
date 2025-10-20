@@ -418,13 +418,193 @@ Dengan memberikan aplikasi ini secara **gratis dan open-source**, diharapkan dap
 
 ---
 
+---
+
+## K. Landasan Teori & Referensi Ilmiah
+
+### 1. Spaced Repetition (Pengulangan Berjarak)
+
+Spaced repetition adalah teknik pembelajaran yang telah terbukti secara ilmiah meningkatkan retensi memori jangka panjang. Konsep ini pertama kali diteliti oleh **Hermann Ebbinghaus** (1885) yang menemukan **"forgetting curve"** atau kurva kelupaan - fenomena dimana informasi yang baru dipelajari akan dilupakan secara eksponensial seiring waktu jika tidak diulang.
+
+**Penelitian Kunci:**
+
+- **Ebbinghaus, H. (1885).** _Memory: A Contribution to Experimental Psychology_. Menyatakan bahwa tanpa review, kita melupakan 50% informasi dalam 1 jam pertama, dan 80% dalam 1 bulan. ([Murre & Dros, 2015](https://pure.uva.nl/ws/files/2701916/172027_503084.pdf))
+
+- **Murre, J.M.J., & Dros, J. (2015).** "Replication and analysis of Ebbinghaus' forgetting curve." _PLoS ONE, 10_(7), e0120644. Replikasi modern dari eksperimen Ebbinghaus yang memvalidasi temuan original.
+
+- **Wollstein, Y., & Jabbour, N. (2022).** "Spaced Effect Learning and Blunting the Forgetfulness Curve." _ENT Journal, 101_(9), 1455613231163726. Menunjukkan bahwa spaced repetition dapat "meratakan" forgetting curve dan meningkatkan retention rate hingga 80-90%.
+
+- **Zaidi, A., Caines, A., & Moore, R. (2020).** "Adaptive Forgetting Curves for Spaced Repetition Language Learning." _Artificial Intelligence in Education_, 12164, 358-363. Implementasi adaptive algorithm untuk personalized learning.
+
+**Algoritma SM-2 (SuperMemo 2):**
+
+Aplikasi ini menggunakan algoritma SM-2 yang dikembangkan oleh Piotr Woźniak (1987) dan telah menjadi standar dalam aplikasi spaced repetition seperti Anki dan SuperMemo. Formula matematika:
+
+```
+EF' = EF + (0.1 - (5 - q) × (0.08 + (5 - q) × 0.02))
+
+Dimana:
+- EF = Easiness Factor (faktor kemudahan, default 2.5)
+- q = Quality of response (rating performa 0-5)
+- EF' = Easiness Factor baru (minimum 1.3)
+```
+
+### 2. Interleaving (Pembelajaran Bergantian)
+
+Interleaving adalah teknik dimana berbagai topik atau skill dipelajari secara bergantian, berbeda dengan blocked practice dimana satu topik dipelajari secara intensive sebelum berpindah ke topik lain.
+
+**Penelitian Kunci:**
+
+- **Pan, S.C., et al. (2021).** "Interleaving practice enhances memory and problem-solving ability in undergraduate physics." _npj Science of Learning, 6_(32). Nature Publishing. Studi di universitas menunjukkan interleaving meningkatkan problem-solving ability hingga **50-125%** dibandingkan blocked practice. ([Nature.com](https://www.nature.com/articles/s41539-021-00110-x))
+
+- **Chen, O., Paas, F., & Sweller, J. (2021).** "Spacing and Interleaving Effects Require Distinct Theoretical Bases: a Systematic Review Testing the Cognitive Load and Discriminative-Contrast Hypotheses." _Educational Psychology Review, 33_, 1-19. Systematic review yang menjelaskan bahwa interleaving bekerja melalui **discriminative-contrast hypothesis** - membantu otak membedakan dan mengkontraskan konsep-konsep berbeda. ([Springer](https://link.springer.com/article/10.1007/s10648-021-09613-w))
+
+- **Dunlosky, J., et al. (2019).** "When Does Interleaving Practice Improve Learning?" Dalam _The Cambridge Handbook of Cognition and Education_. Cambridge University Press. Review comprehensive tentang kondisi optimal untuk interleaving. ([Cambridge.org](https://www.cambridge.org/core/books/cambridge-handbook-of-cognition-and-education))
+
+- **Skycak, J. (2024).** "Cognitive Science of Learning: Interleaving (Mixed Practice)." Math Academy Research. Menjelaskan bahwa meskipun interleaving terasa lebih sulit, hasilnya jauh lebih superior untuk retention dan generalization. ([JustinMath.com](https://justinmath.com/cognitive-science-of-learning-interleaving/))
+
+**Efektivitas Interleaving:**
+- Meningkatkan retention hingga 43% dibandingkan blocked practice
+- Meningkatkan transfer knowledge ke situasi baru
+- Menciptakan "desirable difficulty" yang memperkuat pembelajaran
+
+### 3. Cognitive Load Theory
+
+Kedua teknik ini (spaced repetition dan interleaving) bekerja dengan mengoptimalkan cognitive load dan working memory. Spacing memberikan waktu recovery untuk working memory resources, sementara interleaving meningkatkan discriminative learning.
+
+---
+
+## L. Daftar Pustaka / Referensi
+
+### Referensi Ilmiah (Academic References)
+
+1. Ebbinghaus, H. (1885). _Memory: A Contribution to Experimental Psychology_. Teachers College, Columbia University.
+
+2. Murre, J.M.J., & Dros, J. (2015). Replication and analysis of Ebbinghaus' forgetting curve. _PLoS ONE, 10_(7), e0120644. DOI: 10.1371/journal.pone.0120644
+
+3. Wollstein, Y., & Jabbour, N. (2022). Spaced Effect Learning and Blunting the Forgetfulness Curve. _ENT Journal, 101_(9_suppl), 1455613231163726. DOI: 10.1177/01455613231163726
+
+4. Zaidi, A., Caines, A., & Moore, R. (2020). Adaptive Forgetting Curves for Spaced Repetition Language Learning. In _Artificial Intelligence in Education_ (pp. 358-363). Springer. DOI: 10.1007/978-3-030-52240-7_65
+
+5. Pan, S.C., Sana, F., Samani, J., & Bjork, E.L. (2021). Interleaving practice enhances memory and problem-solving ability in undergraduate physics. _npj Science of Learning, 6_(1), 32. DOI: 10.1038/s41539-021-00110-x
+
+6. Chen, O., Paas, F., & Sweller, J. (2021). Spacing and Interleaving Effects Require Distinct Theoretical Bases: a Systematic Review Testing the Cognitive Load and Discriminative-Contrast Hypotheses. _Educational Psychology Review, 33_, 1533-1552. DOI: 10.1007/s10648-021-09613-w
+
+7. Dunlosky, J., Rawson, K.A., & Wissman, K.T. (2019). When Does Interleaving Practice Improve Learning? In J. Dunlosky & K.A. Rawson (Eds.), _The Cambridge Handbook of Cognition and Education_ (pp. 411-436). Cambridge University Press.
+
+8. Woźniak, P.A. (1990). Optimization of learning. Master's thesis, University of Technology in Poznan.
+
+9. Cepeda, N.J., Pashler, H., Vul, E., Wixted, J.T., & Rohrer, D. (2006). Distributed practice in verbal recall tasks: A review and quantitative synthesis. _Psychological Bulletin, 132_(3), 354-380.
+
+10. Rohrer, D., & Taylor, K. (2007). The shuffling of mathematics problems improves learning. _Instructional Science, 35_(6), 481-498.
+
+### Referensi Teknologi (Technical References)
+
+11. Oracle Corporation. (2025). _Java Platform, Standard Edition 25 Documentation_. Retrieved from [https://docs.oracle.com/en/java/javase/25/](https://docs.oracle.com/en/java/javase/25/)
+
+12. OpenJFX Community. (2025). _JavaFX 25 Documentation_. Retrieved from [https://openjfx.io/](https://openjfx.io/)
+
+13. SQLite Consortium. (2025). _SQLite Database Documentation_. Version 3.47.1. Retrieved from [https://www.sqlite.org/docs.html](https://www.sqlite.org/docs.html)
+
+14. Apache Software Foundation. (2025). _Apache Maven Documentation_. Retrieved from [https://maven.apache.org/](https://maven.apache.org/)
+
+### Referensi Metode Pengembangan
+
+15. Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). _Design Patterns: Elements of Reusable Object-Oriented Software_. Addison-Wesley.
+
+16. Fowler, M. (2002). _Patterns of Enterprise Application Architecture_. Addison-Wesley.
+
+17. Bloch, J. (2018). _Effective Java_ (3rd ed.). Addison-Wesley Professional.
+
+### Referensi Pendukung
+
+18. Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. (2024). _Statistik Pendidikan Tinggi Indonesia_. Jakarta: Pusdatin Kemendikbudristek.
+
+19. Anderson, L.W., & Krathwohl, D.R. (Eds.). (2001). _A Taxonomy for Learning, Teaching, and Assessing: A Revision of Bloom's Taxonomy of Educational Objectives_. New York: Longman.
+
+20. Brown, P.C., Roediger III, H.L., & McDaniel, M.A. (2014). _Make It Stick: The Science of Successful Learning_. Harvard University Press.
+
+---
+
+## M. Format Dokumentasi
+
+Dokumentasi proyek ini dibuat dalam format **Markdown (.md)** dengan struktur sebagai berikut:
+
+### **1. DOKUMENTASI_PROYEK.md** 
+**Format:** Academic/Professional Documentation  
+**Isi:**
+- Judul Proyek
+- Latar Belakang & Urgensi (dengan data statistik)
+- Tujuan Pengembangan
+- Deskripsi Singkat Aplikasi
+- Fitur Utama (Tabel detail)
+- Arsitektur Aplikasi
+- User Flow Diagram
+- Manfaat & Dampak
+- Roadmap Pengembangan
+- Landasan Teori
+- Daftar Pustaka (20 referensi)
+
+**Standar:** Mengikuti format dokumentasi Software Requirements Specification (SRS) IEEE 830-1998 dan disesuaikan untuk konteks akademik Indonesia.
+
+### **2. USE_CASE_DIAGRAM.md**
+**Format:** System Analysis & Design Documentation  
+**Isi:**
+- Deskripsi 3 Aktor (Mahasiswa, Dosen, Administrator)
+- Use Case Diagram (ASCII visualization)
+- Tabel Ringkasan 30 Use Cases
+- Detail Main Flow untuk setiap use case
+- Business Rules & Algorithm Flow
+- Access Control Matrix
+- Database Schema Extension
+
+### **3. README.md**
+**Format:** GitHub Standard Documentation  
+**Isi:**
+- Project Overview
+- Features
+- Tech Stack
+- Installation Guide
+- Usage Guide
+- Screenshots (planned)
+- Contributing Guidelines
+- License
+
+### **Konversi ke Format Lain:**
+
+Dokumentasi Markdown ini dapat di-convert ke:
+
+1. **PDF** - Menggunakan Pandoc atau Markdown to PDF converter untuk presentasi formal
+2. **DOCX** - Export ke Microsoft Word untuk editing lanjutan
+3. **HTML** - Untuk web presentation atau GitHub Pages
+4. **LaTeX** - Untuk academic paper format
+
+**Command untuk convert ke PDF:**
+```bash
+# Menggunakan Pandoc
+pandoc DOKUMENTASI_PROYEK.md -o Dokumentasi_Adaptive_Study_Planner.pdf --toc --number-sections
+
+# Atau menggunakan online converter
+# https://www.markdowntopdf.com/
+```
+
+---
+
 **Developed with ❤️ for Indonesian Students**
 
 **Version:** 1.1.0  
 **Release Date:** October 20, 2025  
 **Technology:** Java 25 + JavaFX 25 + SQLite  
-**License:** Open Source  
+**License:** Open Source (Educational Use)  
 **Repository:** [https://github.com/zarzet/project-langithijau](https://github.com/zarzet/project-langithijau)
+
+**Citation:**
+```
+Adaptive Study Planner Development Team. (2025). Adaptive Study Planner: 
+Aplikasi Desktop Perencana Studi Adaptif Berbasis Teknik Spaced Repetition 
+dan Interleaving untuk Mahasiswa [Computer software]. 
+GitHub. https://github.com/zarzet/project-langithijau
+```
 
 ---
 

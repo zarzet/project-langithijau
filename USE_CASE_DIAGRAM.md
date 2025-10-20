@@ -32,9 +32,6 @@
 **Responsibilities:**
 - Melihat progress pembelajaran mahasiswa bimbingan (read-only)
 - Melihat statistik dan analytics mahasiswa
-- Memberikan rekomendasi topik atau materi tambahan
-- Memberikan feedback terhadap study pattern mahasiswa
-- Export laporan progress untuk evaluasi akademik
 
 ---
 
@@ -49,11 +46,6 @@
 
 **Responsibilities:**
 - Manage user accounts (mahasiswa dan dosen)
-- Backup dan restore data
-- Manage system settings dan configuration
-- View system-wide analytics dan statistics
-- Generate reports untuk institusi
-- Troubleshooting dan technical support
 
 ---
 
@@ -111,7 +103,7 @@
 │                              ▲                                          │
 │                              │ (View Only)                              │
 │  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │              MONITORING & PEMBIMBINGAN                           │  │
+│  │              MONITORING & PEMBIMBING                           │  │
 │  │              (Dosen Only)                                        │  │
 │  │                                                                  │  │
 │  │  • UC-19: Lihat Daftar Mahasiswa Bimbingan                      │  │
@@ -128,11 +120,9 @@
 │  │                                                                  │  │
 │  │  • UC-25: Manage User Accounts                                  │  │
 │  │  • UC-26: Assign Dosen ke Mahasiswa                             │  │
-│  │  • UC-27: Backup & Restore Data                                 │  │
-│  │  • UC-28: View System Analytics                                 │  │
-│  │  • UC-29: Manage System Settings                                │  │
-│  │  • UC-30: Generate System Reports                               │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│  │                                                                    │  │   
+│  │                                                                    │  │
+│  │                                                                    │  │
 │                              ▲                                          │
 └──────────────────────────────┼──────────────────────────────────────────┘
                                │
@@ -184,10 +174,6 @@
 | **UC-24** | Lihat Statistik Aggregat | Dosen | LOW |
 | **UC-25** | Manage User Accounts | Administrator | HIGH |
 | **UC-26** | Assign Dosen ke Mahasiswa | Administrator | HIGH |
-| **UC-27** | Backup & Restore Data | Administrator | **CRITICAL** |
-| **UC-28** | View System Analytics | Administrator | MEDIUM |
-| **UC-29** | Manage System Settings | Administrator | MEDIUM |
-| **UC-30** | Generate System Reports | Administrator | LOW |
 
 ---
 
@@ -512,7 +498,7 @@ Desain ini memberikan **scalability** untuk berkembang dari personal tool menjad
 
 ---
 
-**Document Version:** 1.0  
+**Document Version:** 1.1
 **Last Updated:** October 20, 2025  
 **Status:** Production Ready ✅
 
