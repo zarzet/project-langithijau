@@ -7,82 +7,94 @@
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.controller.CourseManagementController"
             prefWidth="1000" prefHeight="700">
-    
-    <top>
-        <VBox style="-fx-padding: 20; -fx-background-color: #f8f9fa;">
-            <Label text="🎓 Manajemen Mata Kuliah &amp; Topik" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
-        </VBox>
-    </top>
-    
+
     <center>
-        <SplitPane dividerPositions="0.3" style="-fx-padding: 20;">
-            
+        <SplitPane dividerPositions="0.3" styleClass="split-pane-custom">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
             <!-- Left Panel: Courses -->
-            <VBox spacing="10">
-                <Label text="Daftar Mata Kuliah" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                
-                <TableView fx:id="courseTable" VBox.vgrow="ALWAYS">
+            <VBox spacing="15">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+
+                <Label text="Daftar Mata Kuliah" styleClass="section-title"/>
+
+                <TableView fx:id="courseTable" VBox.vgrow="ALWAYS" styleClass="table-view">
                     <columns>
-                        <TableColumn fx:id="courseCodeColumn" text="Kode" prefWidth="80"/>
-                        <TableColumn fx:id="courseNameColumn" text="Nama Mata Kuliah" prefWidth="180"/>
+                        <TableColumn fx:id="courseCodeColumn" text="Kode" minWidth="60" prefWidth="80"/>
+                        <TableColumn fx:id="courseNameColumn" text="Nama Mata Kuliah" minWidth="120"/>
                     </columns>
                 </TableView>
-                
-                <HBox spacing="10">
-                    <Button fx:id="addCourseBtn" text="➕ Tambah" styleClass="btn-success"/>
-                    <Button fx:id="editCourseBtn" text="✏️ Edit" styleClass="btn-primary"/>
-                    <Button fx:id="deleteCourseBtn" text="🗑️ Hapus" styleClass="btn-danger"/>
+
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets top="5" right="0" bottom="0" left="0"/>
+                    </padding>
+                    <Button fx:id="addCourseBtn" text="Tambah" styleClass="btn-success"/>
+                    <Button fx:id="editCourseBtn" text="Edit" styleClass="btn-primary"/>
+                    <Button fx:id="deleteCourseBtn" text="Hapus" styleClass="btn-danger"/>
                 </HBox>
             </VBox>
-            
+
             <!-- Right Panel: Topics and Exams -->
-            <VBox spacing="15">
-                
+            <VBox spacing="25">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+
                 <!-- Topics Section -->
-                <VBox spacing="10">
-                    <Label text="Topik Materi" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    
-                    <TableView fx:id="topicTable" prefHeight="250">
+                <VBox spacing="15">
+                    <Label text="Topik Materi" styleClass="section-title"/>
+
+                    <TableView fx:id="topicTable" prefHeight="250" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="topicNameColumn" text="Nama Topik" prefWidth="200"/>
-                            <TableColumn fx:id="topicPriorityColumn" text="Prioritas" prefWidth="80"/>
-                            <TableColumn fx:id="topicDifficultyColumn" text="Kesulitan" prefWidth="80"/>
-                            <TableColumn fx:id="topicReviewCountColumn" text="Review" prefWidth="70"/>
+                            <TableColumn fx:id="topicNameColumn" text="Nama Topik" minWidth="150"/>
+                            <TableColumn fx:id="topicPriorityColumn" text="Prioritas" minWidth="70" prefWidth="90"/>
+                            <TableColumn fx:id="topicDifficultyColumn" text="Kesulitan" minWidth="70" prefWidth="90"/>
+                            <TableColumn fx:id="topicReviewCountColumn" text="Review" minWidth="60" prefWidth="80"/>
                         </columns>
                     </TableView>
-                    
-                    <HBox spacing="10">
-                        <Button fx:id="addTopicBtn" text="➕ Tambah" styleClass="btn-success"/>
-                        <Button fx:id="editTopicBtn" text="✏️ Edit" styleClass="btn-primary"/>
-                        <Button fx:id="deleteTopicBtn" text="🗑️ Hapus" styleClass="btn-danger"/>
+
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="5" right="0" bottom="0" left="0"/>
+                        </padding>
+                        <Button fx:id="addTopicBtn" text="Tambah" styleClass="btn-success"/>
+                        <Button fx:id="editTopicBtn" text="Edit" styleClass="btn-primary"/>
+                        <Button fx:id="deleteTopicBtn" text="Hapus" styleClass="btn-danger"/>
                     </HBox>
                 </VBox>
-                
-                <Separator/>
-                
+
+                <Separator styleClass="separator"/>
+
                 <!-- Exams Section -->
-                <VBox spacing="10">
-                    <Label text="Jadwal Ujian" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
-                    
-                    <TableView fx:id="examTable" prefHeight="200">
+                <VBox spacing="15">
+                    <Label text="Jadwal Ujian" styleClass="section-title"/>
+
+                    <TableView fx:id="examTable" prefHeight="200" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="examTitleColumn" text="Judul" prefWidth="150"/>
-                            <TableColumn fx:id="examTypeColumn" text="Tipe" prefWidth="100"/>
-                            <TableColumn fx:id="examDateColumn" text="Tanggal" prefWidth="120"/>
+                            <TableColumn fx:id="examTitleColumn" text="Judul" minWidth="120"/>
+                            <TableColumn fx:id="examTypeColumn" text="Tipe" minWidth="80" prefWidth="100"/>
+                            <TableColumn fx:id="examDateColumn" text="Tanggal" minWidth="100" prefWidth="120"/>
                         </columns>
                     </TableView>
-                    
-                    <HBox spacing="10">
-                        <Button fx:id="addExamBtn" text="➕ Tambah" styleClass="btn-success"/>
-                        <Button fx:id="editExamBtn" text="✏️ Edit" styleClass="btn-primary"/>
-                        <Button fx:id="deleteExamBtn" text="🗑️ Hapus" styleClass="btn-danger"/>
+
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <padding>
+                            <Insets top="5" right="0" bottom="0" left="0"/>
+                        </padding>
+                        <Button fx:id="addExamBtn" text="Tambah" styleClass="btn-success"/>
+                        <Button fx:id="editExamBtn" text="Edit" styleClass="btn-primary"/>
+                        <Button fx:id="deleteExamBtn" text="Hapus" styleClass="btn-danger"/>
                     </HBox>
                 </VBox>
-                
+
             </VBox>
-            
+
         </SplitPane>
     </center>
-    
-</BorderPane>
 
+</BorderPane>

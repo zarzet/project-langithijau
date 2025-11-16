@@ -6,33 +6,55 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.controller.MainController">
-    
+
     <!-- Header -->
     <top>
         <VBox styleClass="header">
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
-                <Label text="📚 Adaptive Study Planner" styleClass="app-title"/>
+                <Label text="Adaptive Study Planner" styleClass="app-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="manageCourseBtn" text="🎓 Kelola Mata Kuliah" styleClass="btn-primary"/>
-                <Button fx:id="viewScheduleBtn" text="📅 Lihat Jadwal" styleClass="btn-secondary"/>
-                <Button fx:id="generateScheduleBtn" text="⚡ Generate Schedule" styleClass="btn-success"/>
-                <Button fx:id="refreshBtn" text="🔄" styleClass="btn-icon"/>
+                <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
+                <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
+                <Button fx:id="generateScheduleBtn" text="Generate Schedule" styleClass="btn-success"/>
+                <Button fx:id="themeToggleBtn" text="◐" styleClass="theme-toggle"/>
             </HBox>
             <Separator/>
         </VBox>
     </top>
-    
+
     <!-- Main Content -->
     <center>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: #f5f5f5;">
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
             <VBox spacing="20" style="-fx-padding: 30;">
-                
+
                 <!-- Welcome Section -->
                 <VBox spacing="10" styleClass="card">
-                    <Label fx:id="welcomeLabel" text="Selamat Datang! 👋" styleClass="section-title"/>
+                    <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title"/>
                     <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label"/>
                 </VBox>
-                
+
+                <!-- Widgets Grid -->
+                <GridPane hgap="20" vgap="20">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="25"/>
+                    </columnConstraints>
+
+                    <!-- Study Streak Widget -->
+                    <VBox fx:id="streakContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+                    <!-- Clock Widget -->
+                    <VBox fx:id="clockContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                    <!-- Study Time Today Widget -->
+                    <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+
+                    <!-- Next Review Widget -->
+                    <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                </GridPane>
+
                 <!-- Statistics Cards -->
                 <HBox spacing="20">
                     <!-- Overall Progress Card -->
@@ -52,7 +74,7 @@
                         <ProgressBar fx:id="overallProgressBar" progress="0" maxWidth="Infinity"/>
                         <Label fx:id="overallProgressLabel" text="0%" styleClass="progress-label"/>
                     </VBox>
-                    
+
                     <!-- Today Progress Card -->
                     <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label text="Progress Hari Ini" styleClass="stat-title"/>
@@ -71,31 +93,30 @@
                         <Label fx:id="todayProgressLabel" text="0%" styleClass="progress-label"/>
                     </VBox>
                 </HBox>
-                
+
                 <!-- Main Content Grid -->
                 <HBox spacing="20">
                     <!-- Today's Tasks -->
                     <VBox spacing="15" styleClass="card" HBox.hgrow="ALWAYS">
-                        <Label text="📝 Tugas Hari Ini" styleClass="section-title"/>
+                        <Label text="Tugas Hari Ini" styleClass="section-title"/>
                         <Separator/>
                         <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
                             <VBox fx:id="todayTasksContainer" spacing="10" style="-fx-padding: 5;"/>
                         </ScrollPane>
                     </VBox>
-                    
+
                     <!-- Upcoming Exams -->
                     <VBox spacing="15" styleClass="card" prefWidth="350">
-                        <Label text="📅 Ujian Mendatang" styleClass="section-title"/>
+                        <Label text="Ujian Mendatang" styleClass="section-title"/>
                         <Separator/>
                         <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
                             <VBox fx:id="upcomingExamsContainer" spacing="10" style="-fx-padding: 5;"/>
                         </ScrollPane>
                     </VBox>
                 </HBox>
-                
+
             </VBox>
         </ScrollPane>
     </center>
-    
-</BorderPane>
 
+</BorderPane>
