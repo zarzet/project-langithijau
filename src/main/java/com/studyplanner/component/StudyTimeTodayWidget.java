@@ -6,6 +6,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
@@ -21,39 +22,55 @@ public class StudyTimeTodayWidget extends VBox {
     private final Label comparisonLabel;
     private final DatabaseManager dbManager;
     private Timeline updateTimeline;
+    private final Button startPauseButton;
+    private Timeline timerTimeline;
+    private boolean timerRunning;
+    private long currentSessionSeconds;
+    private int baseTodayMinutes;
+    private int baseYesterdayMinutes;
 
     public StudyTimeTodayWidget() {
         dbManager = new DatabaseManager();
         getStyleClass().add("study-time-widget");
         setAlignment(Pos.CENTER);
         setSpacing(10);
-        setPrefSize(200, 200);
-        setMinSize(200, 200);
-        setMaxSize(200, 200);
+        setPrefSize(180, 180);
+        setMinSize(180, 180);
+        setMaxSize(180, 180);
 
-        Label titleLabel = new Label("Study Time Today");
+        Label titleLabel = new Label("Waktu Belajar Hari Ini");
         titleLabel.getStyleClass().add("widget-title");
 
-        timeLabel = new Label("0 min");
+        timeLabel = new Label("0 menit");
         timeLabel.getStyleClass().add("study-time-number");
 
         progressBar = new ProgressBar(0);
-        progressBar.setPrefWidth(160);
+        progressBar.setPrefWidth(120);
         progressBar.getStyleClass().add("progress-bar");
 
-        targetLabel = new Label("Target: " + DAILY_TARGET_MINUTES + " min");
+        targetLabel = new Label("Target: " + DAILY_TARGET_MINUTES + " menit");
         targetLabel.getStyleClass().add("study-time-target");
 
         comparisonLabel = new Label("");
         comparisonLabel.getStyleClass().add("study-time-comparison");
+
+        startPauseButton = new Button("Mulai");
+        startPauseButton.getStyleClass().add("btn-secondary");
+        startPauseButton.setOnAction(_ -> toggleTimer());
 
         getChildren().addAll(
             titleLabel,
             timeLabel,
             progressBar,
             targetLabel,
-            comparisonLabel
+            comparisonLabel,
+            startPauseButton
         );
+
+        timerRunning = false;
+        currentSessionSeconds = 0;
+        baseTodayMinutes = 0;
+        baseYesterdayMinutes = 0;
 
         updateTime();
         startAutoUpdate();
@@ -61,52 +78,61 @@ public class StudyTimeTodayWidget extends VBox {
 
     private void updateTime() {
         try {
-            int todayMinutes = dbManager.getTodayStudyTime();
-            int yesterdayMinutes = dbManager.getYesterdayStudyTime();
+            baseTodayMinutes = dbManager.getTodayStudyTime();
+            baseYesterdayMinutes = dbManager.getYesterdayStudyTime();
 
-            timeLabel.setText(formatTime(todayMinutes));
-
-            double progress = Math.min(
-                (double) todayMinutes / DAILY_TARGET_MINUTES,
-                1.0
-            );
-            progressBar.setProgress(progress);
-
-            updateComparison(todayMinutes, yesterdayMinutes);
+            updateDisplay();
         } catch (SQLException e) {
-            timeLabel.setText("0 min");
+            baseTodayMinutes = 0;
+            baseYesterdayMinutes = 0;
+            currentSessionSeconds = 0;
+            timeLabel.setText("0 menit");
             progressBar.setProgress(0);
             comparisonLabel.setText("");
         }
     }
 
+    private void updateDisplay() {
+        int totalMinutes = getCurrentTodayMinutes();
+
+        timeLabel.setText(formatTime(totalMinutes));
+
+        double progress = Math.min(
+            (double) totalMinutes / DAILY_TARGET_MINUTES,
+            1.0
+        );
+        progressBar.setProgress(progress);
+
+        updateComparison(totalMinutes, baseYesterdayMinutes);
+    }
+
     private String formatTime(int minutes) {
         if (minutes < 60) {
-            return minutes + " min";
+            return minutes + " menit";
         } else {
             int hours = minutes / 60;
             int mins = minutes % 60;
-            return hours + "h " + mins + "m";
+            return hours + " jam " + mins + " menit";
         }
     }
 
     private void updateComparison(int today, int yesterday) {
         if (yesterday == 0) {
             if (today > 0) {
-                comparisonLabel.setText("Great start!");
+                comparisonLabel.setText("Awal yang bagus!");
             } else {
-                comparisonLabel.setText("Let's begin!");
+                comparisonLabel.setText("Ayo mulai!");
             }
         } else {
             int diff = today - yesterday;
             if (diff > 0) {
-                comparisonLabel.setText("+" + diff + " min vs yesterday");
+                comparisonLabel.setText("+" + diff + " menit vs kemarin");
                 comparisonLabel.setStyle("-fx-text-fill: #3b82f6;");
             } else if (diff < 0) {
-                comparisonLabel.setText(diff + " min vs yesterday");
+                comparisonLabel.setText(diff + " menit vs kemarin");
                 comparisonLabel.setStyle("-fx-text-fill: #64748b;");
             } else {
-                comparisonLabel.setText("Same as yesterday");
+                comparisonLabel.setText("Sama dengan kemarin");
                 comparisonLabel.setStyle("-fx-text-fill: #64748b;");
             }
         }
@@ -128,5 +154,47 @@ public class StudyTimeTodayWidget extends VBox {
         if (updateTimeline != null) {
             updateTimeline.stop();
         }
+        if (timerTimeline != null) {
+            timerTimeline.stop();
+        }
+    }
+
+    public int getCurrentTodayMinutes() {
+        return baseTodayMinutes + (int) (currentSessionSeconds / 60);
+    }
+
+    private void toggleTimer() {
+        if (timerRunning) {
+            pauseTimer();
+        } else {
+            startTimer();
+        }
+    }
+
+    private void startTimer() {
+        if (timerTimeline == null) {
+            timerTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), _ -> {
+                    currentSessionSeconds++;
+                    updateDisplay();
+                })
+            );
+            timerTimeline.setCycleCount(Animation.INDEFINITE);
+        }
+
+        timerTimeline.play();
+        timerRunning = true;
+        startPauseButton.setText("Jeda");
+        comparisonLabel.setText("Timer berjalan...");
+        comparisonLabel.setStyle("-fx-text-fill: #3b82f6;");
+    }
+
+    private void pauseTimer() {
+        if (timerTimeline != null) {
+            timerTimeline.stop();
+        }
+        timerRunning = false;
+        startPauseButton.setText("Mulai");
+        updateDisplay();
     }
 }

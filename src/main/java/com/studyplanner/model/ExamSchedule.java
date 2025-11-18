@@ -3,13 +3,10 @@ package com.studyplanner.model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-/**
- * Model untuk Jadwal Ujian/Kuis
- */
 public class ExamSchedule {
     private int id;
     private int courseId;
-    private String examType; // "MIDTERM", "FINAL", "QUIZ", "ASSIGNMENT"
+    private String examType;
     private String title;
     private LocalDate examDate;
     private LocalTime examTime;
@@ -30,7 +27,6 @@ public class ExamSchedule {
         this.examDate = examDate;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

@@ -3,28 +3,24 @@ package com.studyplanner.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * Model untuk Sesi Belajar
- */
 public class StudySession {
     private int id;
     private int topicId;
     private int courseId;
     private LocalDate scheduledDate;
-    private String sessionType; // "INITIAL_STUDY", "REVIEW", "PRACTICE"
+    private String sessionType;
     private boolean completed;
     private LocalDateTime completedAt;
-    private int performanceRating; // 0-5, diisi setelah sesi selesai
+    private int performanceRating;
     private String notes;
-    private int durationMinutes; // Estimasi atau durasi aktual
+    private int durationMinutes;
     
-    // Untuk keperluan display
     private String topicName;
     private String courseName;
 
     public StudySession() {
         this.completed = false;
-        this.durationMinutes = 30; // Default 30 menit
+        this.durationMinutes = 30;
     }
 
     public StudySession(int id, int topicId, int courseId, LocalDate scheduledDate, String sessionType) {
@@ -36,7 +32,6 @@ public class StudySession {
         this.sessionType = sessionType;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

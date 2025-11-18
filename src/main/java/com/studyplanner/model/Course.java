@@ -3,9 +3,6 @@ package com.studyplanner.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Model untuk Mata Kuliah
- */
 public class Course {
     private int id;
     private String name;
@@ -25,7 +22,6 @@ public class Course {
         this.topics = new ArrayList<>();
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

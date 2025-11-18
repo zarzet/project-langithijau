@@ -8,9 +8,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Database Manager untuk mengelola koneksi dan operasi SQLite
- */
 public class DatabaseManager {
 
     private static final String DB_URL = "jdbc:sqlite:study_planner.db";
@@ -20,9 +17,6 @@ public class DatabaseManager {
         initializeDatabase();
     }
 
-    /**
-     * Inisialisasi database dan buat tabel jika belum ada
-     */
     private void initializeDatabase() {
         try {
             connection = DriverManager.getConnection(DB_URL);
@@ -36,9 +30,6 @@ public class DatabaseManager {
         }
     }
 
-    /**
-     * Membuat tabel-tabel yang diperlukan
-     */
     private void createTables() throws SQLException {
         String createCoursesTable = """
                 CREATE TABLE IF NOT EXISTS courses (
@@ -568,6 +559,39 @@ public class DatabaseManager {
 
     public List<StudySession> getTodaySessions() throws SQLException {
         return getSessionsByDate(LocalDate.now());
+    }
+
+    public List<StudySession> getUpcomingSessions(int limit)
+        throws SQLException {
+        List<StudySession> sessions = new ArrayList<>();
+        String sql = """
+                SELECT s.*, t.name as topic_name, c.name as course_name, c.code as course_code
+                FROM study_sessions s
+                JOIN topics t ON s.topic_id = t.id
+                JOIN courses c ON s.course_id = c.id
+                WHERE s.scheduled_date > DATE('now')
+                AND s.completed = 0
+                ORDER BY s.scheduled_date ASC, s.session_type
+                LIMIT ?
+            """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                StudySession session = extractSessionFromResultSet(rs);
+                session.setTopicName(rs.getString("topic_name"));
+                session.setCourseName(
+                    rs.getString("course_code") +
+                        " - " +
+                        rs.getString("course_name")
+                );
+                sessions.add(session);
+            }
+        }
+
+        return sessions;
     }
 
     private StudySession extractSessionFromResultSet(ResultSet rs)

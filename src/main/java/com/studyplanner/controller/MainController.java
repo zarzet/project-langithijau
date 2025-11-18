@@ -1,11 +1,13 @@
 package com.studyplanner.controller;
 
 import com.studyplanner.algorithm.ScheduleGenerator;
+import com.studyplanner.component.AchievementTrackerWidget;
 import com.studyplanner.component.AnalogClock;
 import com.studyplanner.component.CustomWindowDecorator;
 import com.studyplanner.component.NextReviewWidget;
 import com.studyplanner.component.StudyStreakWidget;
 import com.studyplanner.component.StudyTimeTodayWidget;
+import com.studyplanner.component.UpcomingTasksWidget;
 import com.studyplanner.database.DatabaseManager;
 import com.studyplanner.model.*;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -29,9 +32,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-/**
- * Controller untuk Main Dashboard
- */
 public class MainController implements Initializable {
 
     @FXML
@@ -94,6 +94,12 @@ public class MainController implements Initializable {
     @FXML
     private VBox clockContainer;
 
+    @FXML
+    private VBox achievementContainer;
+
+    @FXML
+    private VBox upcomingTasksWidgetContainer;
+
     private DatabaseManager dbManager;
     private boolean isDarkMode = false;
     private ScheduleGenerator scheduleGenerator;
@@ -101,7 +107,11 @@ public class MainController implements Initializable {
     private StudyTimeTodayWidget studyTimeWidget;
     private NextReviewWidget nextReviewWidget;
     private AnalogClock analogClock;
+    private AchievementTrackerWidget achievementWidget;
+    private UpcomingTasksWidget upcomingTasksWidget;
     private Timeline autoRefreshTimeline;
+    private AchievementSnapshot latestAchievementData;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", java.util.Locale.of("id", "ID"));
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -114,51 +124,64 @@ public class MainController implements Initializable {
     }
 
     private void setupUI() {
-        // Set tanggal hari ini
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
             "EEEE, dd MMMM yyyy"
         );
         dateLabel.setText(LocalDate.now().format(formatter));
 
-        // Setup study streak widget
         if (streakContainer != null) {
             streakWidget = new StudyStreakWidget();
             streakContainer.getChildren().clear();
             streakContainer.getChildren().add(streakWidget);
         }
 
-        // Setup study time today widget
         if (studyTimeContainer != null) {
             studyTimeWidget = new StudyTimeTodayWidget();
             studyTimeContainer.getChildren().clear();
             studyTimeContainer.getChildren().add(studyTimeWidget);
         }
 
-        // Setup next review widget
         if (nextReviewContainer != null) {
             nextReviewWidget = new NextReviewWidget();
             nextReviewContainer.getChildren().clear();
             nextReviewContainer.getChildren().add(nextReviewWidget);
         }
 
-        // Setup analog clock
         if (clockContainer != null) {
-            analogClock = new AnalogClock(160);
+            analogClock = new AnalogClock(140);
 
-            // Wrap clock in styled container
             VBox clockBox = new VBox();
             clockBox.setAlignment(javafx.geometry.Pos.CENTER);
             clockBox.getStyleClass().add("clock-container");
-            clockBox.setPrefSize(200, 200);
-            clockBox.setMinSize(200, 200);
-            clockBox.setMaxSize(200, 200);
+            clockBox.setPrefSize(180, 180);
+            clockBox.setMinSize(180, 180);
+            clockBox.setMaxSize(180, 180);
             clockBox.getChildren().add(analogClock);
 
             clockContainer.getChildren().clear();
             clockContainer.getChildren().add(clockBox);
         }
 
-        // Setup button actions
+        if (achievementContainer != null) {
+            achievementWidget = new AchievementTrackerWidget();
+            applyCompactWidgetSizing(achievementWidget);
+            achievementWidget.setOnMouseClicked(_ ->
+                showAchievementDetailDialog()
+            );
+            achievementContainer.getChildren().setAll(achievementWidget);
+        }
+
+        if (upcomingTasksWidgetContainer != null) {
+            upcomingTasksWidget = new UpcomingTasksWidget();
+            applyCompactWidgetSizing(upcomingTasksWidget);
+            upcomingTasksWidget.setOnMouseClicked(_ ->
+                showUpcomingTasksDetailDialog()
+            );
+            upcomingTasksWidgetContainer
+                .getChildren()
+                .setAll(upcomingTasksWidget);
+        }
+
         manageCourseBtn.setOnAction(_ -> openCourseManagement());
         viewScheduleBtn.setOnAction(_ -> openScheduleView());
         generateScheduleBtn.setOnAction(_ -> generateNewSchedule());
@@ -169,8 +192,15 @@ public class MainController implements Initializable {
         }
     }
 
+    private void applyCompactWidgetSizing(Region region) {
+        if (region != null) {
+            region.setPrefSize(180, 180);
+            region.setMinSize(180, 180);
+            region.setMaxSize(180, 180);
+        }
+    }
+
     private void setupAutoRefresh() {
-        // Auto-refresh every 30 seconds
         autoRefreshTimeline = new Timeline(
             new KeyFrame(Duration.seconds(30), _ -> loadDashboardData())
         );
@@ -208,7 +238,6 @@ public class MainController implements Initializable {
 
     private void loadDashboardData() {
         try {
-            // Load progress statistics
             ScheduleGenerator.StudyProgress progress =
                 scheduleGenerator.getStudyProgress();
 
@@ -221,7 +250,6 @@ public class MainController implements Initializable {
                 String.valueOf(progress.getTodayCompleted())
             );
 
-            // Update progress bars
             overallProgressBar.setProgress(
                 progress.getOverallProgress() / 100.0
             );
@@ -234,13 +262,11 @@ public class MainController implements Initializable {
                 String.format("%.0f%%", progress.getTodayProgress())
             );
 
-            // Load today's tasks
             loadTodayTasks();
-
-            // Load upcoming exams
             loadUpcomingExams();
 
-            // Refresh widgets
+            refreshAchievementWidget(progress);
+            refreshUpcomingTasksWidget();
             if (streakWidget != null) {
                 streakWidget.refresh();
             }
@@ -253,6 +279,154 @@ public class MainController implements Initializable {
         } catch (SQLException e) {
             showError("Error loading dashboard data: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void refreshAchievementWidget(
+        ScheduleGenerator.StudyProgress progress
+    ) throws SQLException {
+        latestAchievementData = null;
+
+        if (achievementWidget == null) {
+            return;
+        }
+
+        List<StudySession> todaySessions = dbManager.getTodaySessions();
+        int reviewTotal = (int) todaySessions
+            .stream()
+            .filter(s -> "REVIEW".equalsIgnoreCase(s.getSessionType()))
+            .count();
+        int reviewCompleted = (int) todaySessions
+            .stream()
+            .filter(
+                s ->
+                    s.isCompleted() &&
+                    "REVIEW".equalsIgnoreCase(s.getSessionType())
+            )
+            .count();
+
+        int focusMinutes;
+        if (studyTimeWidget != null) {
+            focusMinutes = studyTimeWidget.getCurrentTodayMinutes();
+        } else {
+            focusMinutes = dbManager.getTodayStudyTime();
+        }
+        int streakDays = dbManager.getStudyStreak();
+
+        achievementWidget.updateData(
+            progress.getTodayCompleted(),
+            progress.getTodayTotal(),
+            reviewCompleted,
+            reviewTotal,
+            focusMinutes,
+            streakDays
+        );
+
+        latestAchievementData = new AchievementSnapshot(
+            progress.getTodayCompleted(),
+            progress.getTodayTotal(),
+            reviewCompleted,
+            reviewTotal,
+            focusMinutes,
+            streakDays
+        );
+    }
+
+    private void refreshUpcomingTasksWidget() throws SQLException {
+        if (upcomingTasksWidget == null) {
+            return;
+        }
+
+        List<StudySession> upcomingSessions = dbManager.getUpcomingSessions(4);
+        upcomingTasksWidget.setSessions(upcomingSessions);
+    }
+
+    private void showAchievementDetailDialog() {
+        if (achievementWidget == null) {
+            return;
+        }
+        if (latestAchievementData == null) {
+            showInfo(
+                "Data achievement belum tersedia, coba lagi setelah data dimuat."
+            );
+            return;
+        }
+
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Detail Achievement Tracker");
+        dialog
+            .getDialogPane()
+            .getButtonTypes()
+            .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
+        dialog
+            .getDialogPane()
+            .getStylesheets()
+            .add(getClass().getResource("/css/style.css").toExternalForm());
+
+        AchievementTrackerWidget detailWidget = new AchievementTrackerWidget();
+        detailWidget.getStyleClass().removeAll("widget-interactive");
+        detailWidget.setPrefWidth(420);
+        detailWidget.setMaxWidth(Double.MAX_VALUE);
+        detailWidget.updateData(
+            latestAchievementData.tasksCompleted,
+            latestAchievementData.tasksTotal,
+            latestAchievementData.reviewCompleted,
+            latestAchievementData.reviewTotal,
+            latestAchievementData.focusMinutes,
+            latestAchievementData.streakDays
+        );
+
+        VBox content = new VBox(12);
+        content.setPadding(new Insets(20));
+        Label title = new Label("Ringkasan Pencapaian Hari Ini");
+        title.getStyleClass().add("section-title");
+        content.getChildren().addAll(title, detailWidget);
+
+        dialog.getDialogPane().setContent(content);
+        dialog.showAndWait();
+    }
+
+    private void showUpcomingTasksDetailDialog() {
+        if (upcomingTasksWidget == null) {
+            return;
+        }
+
+        try {
+            List<StudySession> sessions = dbManager.getUpcomingSessions(12);
+
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setTitle("Detail Upcoming Tasks");
+            dialog
+                .getDialogPane()
+                .getButtonTypes()
+                .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
+            dialog
+                .getDialogPane()
+                .getStylesheets()
+                .add(getClass().getResource("/css/style.css").toExternalForm());
+
+            UpcomingTasksWidget detailWidget = new UpcomingTasksWidget();
+            detailWidget.getStyleClass().removeAll("widget-interactive");
+            detailWidget.setSpacing(12);
+            detailWidget.setPrefWidth(420);
+            detailWidget.setMaxWidth(Double.MAX_VALUE);
+            detailWidget.setSessions(sessions);
+
+            ScrollPane scrollPane = new ScrollPane(detailWidget);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setPrefViewportHeight(360);
+            scrollPane.setStyle("-fx-background-color: transparent;");
+
+            VBox content = new VBox(12);
+            content.setPadding(new Insets(20));
+            Label title = new Label("Prioritas 7 Hari Ke Depan");
+            title.getStyleClass().add("section-title");
+            content.getChildren().addAll(title, scrollPane);
+
+            dialog.getDialogPane().setContent(content);
+            dialog.showAndWait();
+        } catch (SQLException e) {
+            showError("Gagal memuat detail upcoming tasks: " + e.getMessage());
         }
     }
 
@@ -277,7 +451,6 @@ public class MainController implements Initializable {
         VBox card = new VBox(8);
         card.getStyleClass().add("task-card");
 
-        // Header dengan checkbox
         HBox header = new HBox(10);
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
@@ -297,11 +470,9 @@ public class MainController implements Initializable {
 
         header.getChildren().addAll(checkBox, titleLabel);
 
-        // Course info
         Label courseLabel = new Label(session.getCourseName());
         courseLabel.getStyleClass().add("task-course");
 
-        // Session type badge
         Label typeLabel = new Label(
             getSessionTypeLabel(session.getSessionType())
         );
@@ -310,7 +481,6 @@ public class MainController implements Initializable {
             .getStyleClass()
             .add("badge-" + session.getSessionType().toLowerCase());
 
-        // Duration
         Label durationLabel = new Label(
             session.getDurationMinutes() + " menit"
         );
@@ -338,8 +508,6 @@ public class MainController implements Initializable {
             session.setCompleted(completed);
             if (completed) {
                 session.setCompletedAt(java.time.LocalDateTime.now());
-
-                // Show performance rating dialog
                 showPerformanceRatingDialog(session);
             } else {
                 session.setCompletedAt(null);
@@ -496,7 +664,6 @@ public class MainController implements Initializable {
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
 
-            // Apply custom window decoration
             CustomWindowDecorator.decorate(
                 stage,
                 "Manajemen Mata Kuliah & Topik",
@@ -508,7 +675,6 @@ public class MainController implements Initializable {
 
             stage.showAndWait();
 
-            // Refresh after closing
             loadDashboardData();
         } catch (IOException e) {
             showError("Error opening course management: " + e.getMessage());
@@ -533,7 +699,6 @@ public class MainController implements Initializable {
             }
             stage.setScene(scene);
 
-            // Apply custom window decoration before setting modality
             CustomWindowDecorator.decorate(stage, "Jadwal Belajar", isDarkMode);
 
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -546,7 +711,6 @@ public class MainController implements Initializable {
 
     private void generateNewSchedule() {
         try {
-            // Generate untuk 7 hari ke depan
             scheduleGenerator.generateAndSaveSchedule(7);
             showInfo(
                 "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!"
@@ -576,5 +740,31 @@ public class MainController implements Initializable {
 
     public DatabaseManager getDbManager() {
         return dbManager;
+    }
+
+    private static class AchievementSnapshot {
+
+        final int tasksCompleted;
+        final int tasksTotal;
+        final int reviewCompleted;
+        final int reviewTotal;
+        final int focusMinutes;
+        final int streakDays;
+
+        AchievementSnapshot(
+            int tasksCompleted,
+            int tasksTotal,
+            int reviewCompleted,
+            int reviewTotal,
+            int focusMinutes,
+            int streakDays
+        ) {
+            this.tasksCompleted = tasksCompleted;
+            this.tasksTotal = tasksTotal;
+            this.reviewCompleted = reviewCompleted;
+            this.reviewTotal = reviewTotal;
+            this.focusMinutes = focusMinutes;
+            this.streakDays = streakDays;
+        }
     }
 }

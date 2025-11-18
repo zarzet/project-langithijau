@@ -17,9 +17,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-/**
- * Controller untuk Course Management
- */
 public class CourseManagementController implements Initializable {
 
     @FXML
@@ -108,7 +105,6 @@ public class CourseManagementController implements Initializable {
     }
 
     private void setupTables() {
-        // Course Table
         courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         courseCodeColumn.setCellValueFactory(
             new PropertyValueFactory<>("code")
@@ -117,7 +113,6 @@ public class CourseManagementController implements Initializable {
             new PropertyValueFactory<>("name")
         );
 
-        // Topic Table
         topicTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         courseTable
@@ -141,7 +136,6 @@ public class CourseManagementController implements Initializable {
             new PropertyValueFactory<>("reviewCount")
         );
 
-        // Exam Table
         examTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         examTitleColumn.setCellValueFactory(
             new PropertyValueFactory<>("title")
@@ -197,8 +191,6 @@ public class CourseManagementController implements Initializable {
             showError("Error loading exams: " + e.getMessage());
         }
     }
-
-    // ========== COURSE OPERATIONS ==========
 
     private void addCourse() {
         Dialog<Course> dialog = new Dialog<>();
@@ -342,8 +334,6 @@ public class CourseManagementController implements Initializable {
             }
         }
     }
-
-    // ========== TOPIC OPERATIONS ==========
 
     private void addTopic() {
         Course selectedCourse = courseTable
@@ -508,8 +498,6 @@ public class CourseManagementController implements Initializable {
             }
         }
     }
-
-    // ========== EXAM OPERATIONS ==========
 
     private void addExam() {
         Course selectedCourse = courseTable

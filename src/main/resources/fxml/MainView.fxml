@@ -34,12 +34,14 @@
                 </VBox>
 
                 <!-- Widgets Grid -->
-                <GridPane hgap="20" vgap="20">
+                <GridPane hgap="12" vgap="20">
                     <columnConstraints>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
-                        <ColumnConstraints percentWidth="25"/>
+                        <ColumnConstraints percentWidth="16.67"/>
+                        <ColumnConstraints percentWidth="16.67"/>
+                        <ColumnConstraints percentWidth="16.67"/>
+                        <ColumnConstraints percentWidth="16.67"/>
+                        <ColumnConstraints percentWidth="16.67"/>
+                        <ColumnConstraints percentWidth="16.67"/>
                     </columnConstraints>
 
                     <!-- Study Streak Widget -->
@@ -53,6 +55,12 @@
 
                     <!-- Next Review Widget -->
                     <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                    <!-- Achievement Tracker Widget -->
+                    <VBox fx:id="achievementContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+
+                    <!-- Upcoming Tasks Widget -->
+                    <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
                 </GridPane>
 
                 <!-- Statistics Cards -->
@@ -95,7 +103,7 @@
                 </HBox>
 
                 <!-- Main Content Grid -->
-                <HBox spacing="20">
+                <HBox spacing="12">
                     <!-- Today's Tasks -->
                     <VBox spacing="15" styleClass="card" HBox.hgrow="ALWAYS">
                         <Label text="Tugas Hari Ini" styleClass="section-title"/>

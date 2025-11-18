@@ -27,31 +27,31 @@ public class NextReviewWidget extends VBox {
         getStyleClass().add("next-review-widget");
         setAlignment(Pos.CENTER);
         setSpacing(8);
-        setPrefSize(200, 200);
-        setMinSize(200, 200);
-        setMaxSize(200, 200);
+        setPrefSize(180, 180);
+        setMinSize(180, 180);
+        setMaxSize(180, 180);
 
-        Label titleLabel = new Label("Next Review");
+        Label titleLabel = new Label("Review Berikutnya");
         titleLabel.getStyleClass().add("widget-title");
 
-        topicLabel = new Label("No reviews");
+        topicLabel = new Label("Tidak ada review");
         topicLabel.getStyleClass().add("next-review-topic");
         topicLabel.setWrapText(true);
-        topicLabel.setMaxWidth(180);
+        topicLabel.setMaxWidth(170);
         topicLabel.setAlignment(Pos.CENTER);
 
         courseLabel = new Label("");
         courseLabel.getStyleClass().add("next-review-course");
         courseLabel.setWrapText(true);
-        courseLabel.setMaxWidth(180);
+        courseLabel.setMaxWidth(170);
 
         dueLabel = new Label("");
         dueLabel.getStyleClass().add("next-review-due");
 
-        statusLabel = new Label("All caught up!");
+        statusLabel = new Label("Semua selesai!");
         statusLabel.getStyleClass().add("next-review-status");
         statusLabel.setWrapText(true);
-        statusLabel.setMaxWidth(180);
+        statusLabel.setMaxWidth(140);
         statusLabel.setAlignment(Pos.CENTER);
 
         getChildren().addAll(
@@ -71,10 +71,10 @@ public class NextReviewWidget extends VBox {
             var topics = dbManager.getNextReviewTopics(1);
 
             if (topics.isEmpty()) {
-                topicLabel.setText("No reviews");
+                topicLabel.setText("Tidak ada review");
                 courseLabel.setText("");
                 dueLabel.setText("");
-                statusLabel.setText("All caught up!");
+                statusLabel.setText("Semua selesai!");
                 statusLabel.setVisible(true);
             } else {
                 Topic topic = topics.get(0);
@@ -93,30 +93,30 @@ public class NextReviewWidget extends VBox {
 
                 if (daysUntil < 0) {
                     dueLabel.setText(
-                        "Overdue by " + Math.abs(daysUntil) + " days"
+                        "Terlambat " + Math.abs(daysUntil) + " hari"
                     );
                     dueLabel.setStyle(
                         "-fx-text-fill: #ef4444; -fx-font-weight: 600;"
                     );
                 } else if (daysUntil == 0) {
-                    dueLabel.setText("Due today");
+                    dueLabel.setText("Jatuh tempo hari ini");
                     dueLabel.setStyle(
                         "-fx-text-fill: #3b82f6; -fx-font-weight: 600;"
                     );
                 } else if (daysUntil == 1) {
-                    dueLabel.setText("Due tomorrow");
+                    dueLabel.setText("Jatuh tempo besok");
                     dueLabel.setStyle("-fx-text-fill: #3b82f6;");
                 } else {
-                    dueLabel.setText("Due in " + daysUntil + " days");
+                    dueLabel.setText("Jatuh tempo " + daysUntil + " hari lagi");
                     dueLabel.setStyle("-fx-text-fill: #3b82f6;");
                 }
 
-                statusLabel.setText("Priority: " + topic.getPriority() + "/5");
+                statusLabel.setText("Prioritas: " + topic.getPriority() + "/5");
                 statusLabel.setStyle("-fx-text-fill: #64748b;");
                 statusLabel.setVisible(true);
             }
         } catch (SQLException e) {
-            topicLabel.setText("Error loading");
+            topicLabel.setText("Gagal memuat");
             courseLabel.setText("");
             dueLabel.setText("");
             statusLabel.setText("");

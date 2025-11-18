@@ -2,28 +2,25 @@ package com.studyplanner.model;
 
 import java.time.LocalDate;
 
-/**
- * Model untuk Topik dalam Mata Kuliah
- */
 public class Topic {
     private int id;
     private int courseId;
     private String name;
     private String description;
-    private int priority; // 1-5, dimana 5 adalah prioritas tertinggi
-    private int difficultyLevel; // 1-5, dimana 5 adalah paling sulit
+    private int priority;
+    private int difficultyLevel;
     private LocalDate firstStudyDate;
     private LocalDate lastReviewDate;
     private int reviewCount;
-    private double easinessFactor; // Untuk algoritma SM-2 Spaced Repetition
-    private int interval; // Interval hari untuk review berikutnya
-    private boolean mastered; // Apakah topik sudah dikuasai
+    private double easinessFactor;
+    private int interval;
+    private boolean mastered;
 
     public Topic() {
         this.priority = 3;
         this.difficultyLevel = 3;
         this.reviewCount = 0;
-        this.easinessFactor = 2.5; // Default untuk SM-2
+        this.easinessFactor = 2.5;
         this.interval = 1;
         this.mastered = false;
     }
@@ -36,7 +33,6 @@ public class Topic {
         this.description = description;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

@@ -23,17 +23,17 @@ public class StudyStreakWidget extends VBox {
         getStyleClass().add("streak-widget");
         setAlignment(Pos.CENTER);
         setSpacing(8);
-        setPrefSize(200, 200);
-        setMinSize(200, 200);
-        setMaxSize(200, 200);
+        setPrefSize(180, 180);
+        setMinSize(180, 180);
+        setMaxSize(180, 180);
 
         streakNumber = new Label("0");
         streakNumber.getStyleClass().add("streak-number");
 
-        streakLabel = new Label("Day Streak");
+        streakLabel = new Label("Hari Beruntun");
         streakLabel.getStyleClass().add("streak-label");
 
-        motivationLabel = new Label("Keep it up!");
+        motivationLabel = new Label("Pertahankan!");
         motivationLabel.getStyleClass().add("streak-motivation");
 
         getChildren().addAll(streakNumber, streakLabel, motivationLabel);
@@ -49,23 +49,23 @@ public class StudyStreakWidget extends VBox {
             updateMotivation(streak);
         } catch (SQLException e) {
             streakNumber.setText("0");
-            motivationLabel.setText("Start your journey!");
+            motivationLabel.setText("Mulai perjalananmu!");
         }
     }
 
     private void updateMotivation(int streak) {
         if (streak == 0) {
-            motivationLabel.setText("Start today!");
+            motivationLabel.setText("Mulai hari ini!");
         } else if (streak == 1) {
-            motivationLabel.setText("Great start!");
+            motivationLabel.setText("Awal yang bagus!");
         } else if (streak < 7) {
-            motivationLabel.setText("Keep going!");
+            motivationLabel.setText("Terus pertahankan!");
         } else if (streak < 30) {
-            motivationLabel.setText("Amazing streak!");
+            motivationLabel.setText("Luar biasa!");
         } else if (streak < 100) {
-            motivationLabel.setText("You're on fire!");
+            motivationLabel.setText("Kamu hebat!");
         } else {
-            motivationLabel.setText("Legendary!");
+            motivationLabel.setText("Legendaris!");
         }
     }
 
