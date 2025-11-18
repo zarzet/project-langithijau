@@ -1,6 +1,6 @@
 package com.studyplanner.component;
 
-import com.studyplanner.model.StudySession;
+import com.studyplanner.model.SesiBelajar;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -17,9 +17,8 @@ public class UpcomingTasksWidget extends VBox {
 
     private static final Locale ID_LOCALE = new Locale("id", "ID");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
-        "EEEE, dd MMM",
-        ID_LOCALE
-    );
+            "EEEE, dd MMM",
+            ID_LOCALE);
 
     private final VBox listContainer;
     private final Label emptyLabel;
@@ -57,7 +56,7 @@ public class UpcomingTasksWidget extends VBox {
         setAlignment(Pos.TOP_LEFT);
     }
 
-    public void setSessions(List<StudySession> sessions) {
+    public void setSessions(List<SesiBelajar> sessions) {
         listContainer.getChildren().clear();
 
         if (sessions == null || sessions.isEmpty()) {
@@ -65,35 +64,33 @@ public class UpcomingTasksWidget extends VBox {
             return;
         }
 
-        for (StudySession session : sessions) {
+        for (SesiBelajar session : sessions) {
             listContainer.getChildren().add(createTaskItem(session));
         }
     }
 
-    private VBox createTaskItem(StudySession session) {
+    private VBox createTaskItem(SesiBelajar session) {
         VBox card = new VBox(3);
         card.getStyleClass().add("upcoming-task");
 
-        Label titleLabel = new Label(session.getTopicName());
+        Label titleLabel = new Label(session.getNamaTopik());
         titleLabel.getStyleClass().add("upcoming-task-title");
 
-        Label courseLabel = new Label(session.getCourseName());
+        Label courseLabel = new Label(session.getNamaMataKuliah());
         courseLabel.getStyleClass().add("upcoming-task-course");
 
         HBox footer = new HBox(8);
         footer.setAlignment(Pos.CENTER_LEFT);
 
         Label typeLabel = new Label(
-            getSessionTypeLabel(session.getSessionType())
-        );
+                getSessionTypeLabel(session.getTipeSesi()));
         typeLabel
-            .getStyleClass()
-            .addAll(
-                "task-type",
-                "badge-" + session.getSessionType().toLowerCase()
-            );
+                .getStyleClass()
+                .addAll(
+                        "task-type",
+                        "badge-" + session.getTipeSesi().toLowerCase());
 
-        Label dateLabel = new Label(formatRelativeDate(session.getScheduledDate()));
+        Label dateLabel = new Label(formatRelativeDate(session.getTanggalJadwal()));
         dateLabel.getStyleClass().add("upcoming-task-date");
 
         footer.getChildren().addAll(typeLabel, dateLabel);
@@ -116,14 +113,15 @@ public class UpcomingTasksWidget extends VBox {
         }
         if (date.isBefore(today.plusDays(7))) {
             return date
-                .getDayOfWeek()
-                .getDisplayName(TextStyle.SHORT, ID_LOCALE);
+                    .getDayOfWeek()
+                    .getDisplayName(TextStyle.SHORT, ID_LOCALE);
         }
         return DATE_FORMATTER.format(date);
     }
 
     private String getSessionTypeLabel(String type) {
-        if (type == null) return "-";
+        if (type == null)
+            return "-";
 
         return switch (type) {
             case "INITIAL_STUDY" -> "Belajar Baru";

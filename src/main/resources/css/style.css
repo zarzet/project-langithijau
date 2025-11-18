@@ -282,12 +282,12 @@
     -fx-pref-height: 8;
 }
 
-.progress-bar > .track {
+.progress-bar>.track {
     -fx-background-color: #f1f5f9;
     -fx-background-radius: 8;
 }
 
-.progress-bar > .bar {
+.progress-bar>.bar {
     -fx-background-color: #0f172a;
     -fx-background-radius: 8;
     -fx-background-insets: 0;
@@ -345,11 +345,11 @@
     -fx-border-width: 0;
 }
 
-.scroll-pane > .viewport {
+.scroll-pane>.viewport {
     -fx-background-color: #fafbfc;
 }
 
-.scroll-pane > .corner {
+.scroll-pane>.corner {
     -fx-background-color: #fafbfc;
 }
 
@@ -382,7 +382,7 @@
     -fx-background: transparent;
 }
 
-.scroll-pane-transparent > .viewport {
+.scroll-pane-transparent>.viewport {
     -fx-background-color: transparent;
 }
 
@@ -425,7 +425,7 @@
     -fx-border-color: #0f172a;
 }
 
-.check-box:selected > .box > .mark {
+.check-box:selected>.box>.mark {
     -fx-background-color: white;
     -fx-shape: "M5.707 7.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L7 8.586 5.707 7.293z";
 }
@@ -511,7 +511,7 @@
     -fx-padding: 0 1 0 1;
 }
 
-.split-pane-custom > .split-pane-divider:hover {
+.split-pane-custom>.split-pane-divider:hover {
     -fx-background-color: #cbd5e1;
 }
 
@@ -566,7 +566,7 @@
 .study-time-widget {
     -fx-background-color: #ffffff;
     -fx-background-radius: 12;
-    -fx-padding: 20;
+    -fx-padding: 10;
     -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.04), 8, 0, 0, 2);
     -fx-border-color: #f1f5f9;
     -fx-border-radius: 12;
@@ -850,11 +850,11 @@
 }
 
 .dark-mode .progress-bar,
-.dark-mode .progress-bar > .track {
+.dark-mode .progress-bar>.track {
     -fx-background-color: #1e293b;
 }
 
-.dark-mode .progress-bar > .bar {
+.dark-mode .progress-bar>.bar {
     -fx-background-color: #f8fafc;
 }
 
@@ -895,14 +895,14 @@
 }
 
 .dark-mode .scroll-pane,
-.dark-mode .scroll-pane > .viewport,
-.dark-mode .scroll-pane > .corner {
+.dark-mode .scroll-pane>.viewport,
+.dark-mode .scroll-pane>.corner {
     -fx-background-color: #020617;
 }
 
 .dark-mode .scroll-pane-transparent,
-.dark-mode .scroll-pane-transparent > .viewport,
-.dark-mode .scroll-pane-transparent > .corner {
+.dark-mode .scroll-pane-transparent>.viewport,
+.dark-mode .scroll-pane-transparent>.corner {
     -fx-background-color: transparent;
 }
 
@@ -932,7 +932,7 @@
     -fx-border-color: #f8fafc;
 }
 
-.dark-mode .check-box:selected > .box > .mark {
+.dark-mode .check-box:selected>.box>.mark {
     -fx-background-color: #0f172a;
 }
 
@@ -995,7 +995,7 @@
     -fx-background-color: #1e293b;
 }
 
-.dark-mode .split-pane-custom > .split-pane-divider:hover {
+.dark-mode .split-pane-custom>.split-pane-divider:hover {
     -fx-background-color: #334155;
 }
 

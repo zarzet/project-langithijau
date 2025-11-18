@@ -1,6 +1,6 @@
 package com.studyplanner.component;
 
-import com.studyplanner.database.DatabaseManager;
+import com.studyplanner.database.ManajerBasisData;
 import java.sql.SQLException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -20,7 +20,7 @@ public class StudyTimeTodayWidget extends VBox {
     private final Label targetLabel;
     private final ProgressBar progressBar;
     private final Label comparisonLabel;
-    private final DatabaseManager dbManager;
+    private final ManajerBasisData manajerBasisData;
     private Timeline updateTimeline;
     private final Button startPauseButton;
     private Timeline timerTimeline;
@@ -30,10 +30,10 @@ public class StudyTimeTodayWidget extends VBox {
     private int baseYesterdayMinutes;
 
     public StudyTimeTodayWidget() {
-        dbManager = new DatabaseManager();
+        manajerBasisData = new ManajerBasisData();
         getStyleClass().add("study-time-widget");
         setAlignment(Pos.CENTER);
-        setSpacing(10);
+        setSpacing(2);
         setPrefSize(180, 180);
         setMinSize(180, 180);
         setMaxSize(180, 180);
@@ -59,13 +59,12 @@ public class StudyTimeTodayWidget extends VBox {
         startPauseButton.setOnAction(_ -> toggleTimer());
 
         getChildren().addAll(
-            titleLabel,
-            timeLabel,
-            progressBar,
-            targetLabel,
-            comparisonLabel,
-            startPauseButton
-        );
+                titleLabel,
+                timeLabel,
+                progressBar,
+                targetLabel,
+                comparisonLabel,
+                startPauseButton);
 
         timerRunning = false;
         currentSessionSeconds = 0;
@@ -78,8 +77,8 @@ public class StudyTimeTodayWidget extends VBox {
 
     private void updateTime() {
         try {
-            baseTodayMinutes = dbManager.getTodayStudyTime();
-            baseYesterdayMinutes = dbManager.getYesterdayStudyTime();
+            baseTodayMinutes = manajerBasisData.ambilWaktuBelajarHariIni();
+            baseYesterdayMinutes = manajerBasisData.ambilWaktuBelajarKemarin();
 
             updateDisplay();
         } catch (SQLException e) {
@@ -98,9 +97,8 @@ public class StudyTimeTodayWidget extends VBox {
         timeLabel.setText(formatTime(totalMinutes));
 
         double progress = Math.min(
-            (double) totalMinutes / DAILY_TARGET_MINUTES,
-            1.0
-        );
+                (double) totalMinutes / DAILY_TARGET_MINUTES,
+                1.0);
         progressBar.setProgress(progress);
 
         updateComparison(totalMinutes, baseYesterdayMinutes);
@@ -140,8 +138,7 @@ public class StudyTimeTodayWidget extends VBox {
 
     private void startAutoUpdate() {
         updateTimeline = new Timeline(
-            new KeyFrame(Duration.minutes(1), _ -> updateTime())
-        );
+                new KeyFrame(Duration.minutes(1), _ -> updateTime()));
         updateTimeline.setCycleCount(Animation.INDEFINITE);
         updateTimeline.play();
     }
@@ -174,11 +171,10 @@ public class StudyTimeTodayWidget extends VBox {
     private void startTimer() {
         if (timerTimeline == null) {
             timerTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), _ -> {
-                    currentSessionSeconds++;
-                    updateDisplay();
-                })
-            );
+                    new KeyFrame(Duration.seconds(1), _ -> {
+                        currentSessionSeconds++;
+                        updateDisplay();
+                    }));
             timerTimeline.setCycleCount(Animation.INDEFINITE);
         }
 

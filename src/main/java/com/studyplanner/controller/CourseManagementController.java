@@ -1,9 +1,9 @@
 package com.studyplanner.controller;
 
-import com.studyplanner.database.DatabaseManager;
-import com.studyplanner.model.Course;
-import com.studyplanner.model.ExamSchedule;
-import com.studyplanner.model.Topic;
+import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.model.MataKuliah;
+import com.studyplanner.model.JadwalUjian;
+import com.studyplanner.model.Topik;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -20,40 +20,40 @@ import javafx.scene.control.cell.PropertyValueFactory;
 public class CourseManagementController implements Initializable {
 
     @FXML
-    private TableView<Course> courseTable;
+    private TableView<MataKuliah> courseTable;
 
     @FXML
-    private TableColumn<Course, String> courseCodeColumn;
+    private TableColumn<MataKuliah, String> courseCodeColumn;
 
     @FXML
-    private TableColumn<Course, String> courseNameColumn;
+    private TableColumn<MataKuliah, String> courseNameColumn;
 
     @FXML
-    private TableView<Topic> topicTable;
+    private TableView<Topik> topicTable;
 
     @FXML
-    private TableColumn<Topic, String> topicNameColumn;
+    private TableColumn<Topik, String> topicNameColumn;
 
     @FXML
-    private TableColumn<Topic, Integer> topicPriorityColumn;
+    private TableColumn<Topik, Integer> topicPriorityColumn;
 
     @FXML
-    private TableColumn<Topic, Integer> topicDifficultyColumn;
+    private TableColumn<Topik, Integer> topicDifficultyColumn;
 
     @FXML
-    private TableColumn<Topic, Integer> topicReviewCountColumn;
+    private TableColumn<Topik, Integer> topicReviewCountColumn;
 
     @FXML
-    private TableView<ExamSchedule> examTable;
+    private TableView<JadwalUjian> examTable;
 
     @FXML
-    private TableColumn<ExamSchedule, String> examTitleColumn;
+    private TableColumn<JadwalUjian, String> examTitleColumn;
 
     @FXML
-    private TableColumn<ExamSchedule, String> examTypeColumn;
+    private TableColumn<JadwalUjian, String> examTypeColumn;
 
     @FXML
-    private TableColumn<ExamSchedule, LocalDate> examDateColumn;
+    private TableColumn<JadwalUjian, LocalDate> examDateColumn;
 
     @FXML
     private Button addCourseBtn;
@@ -82,15 +82,15 @@ public class CourseManagementController implements Initializable {
     @FXML
     private Button deleteExamBtn;
 
-    private DatabaseManager dbManager;
+    private ManajerBasisData manajerBasisData;
     private MainController mainController;
-    private ObservableList<Course> courses;
-    private ObservableList<Topic> topics;
-    private ObservableList<ExamSchedule> exams;
+    private ObservableList<MataKuliah> courses;
+    private ObservableList<Topik> topics;
+    private ObservableList<JadwalUjian> exams;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        dbManager = new DatabaseManager();
+        manajerBasisData = new ManajerBasisData();
 
         setupTables();
         setupButtons();
@@ -100,52 +100,44 @@ public class CourseManagementController implements Initializable {
     public void setMainController(MainController controller) {
         this.mainController = controller;
         if (this.mainController != null) {
-            this.dbManager = this.mainController.getDbManager();
+            this.manajerBasisData = this.mainController.getManajerBasisData();
         }
     }
 
     private void setupTables() {
         courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         courseCodeColumn.setCellValueFactory(
-            new PropertyValueFactory<>("code")
-        );
+                new PropertyValueFactory<>("kode"));
         courseNameColumn.setCellValueFactory(
-            new PropertyValueFactory<>("name")
-        );
+                new PropertyValueFactory<>("nama"));
 
         topicTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         courseTable
-            .getSelectionModel()
-            .selectedItemProperty()
-            .addListener((_, _, newSelection) -> {
-                if (newSelection != null) {
-                    loadTopics(newSelection.getId());
-                    loadExams(newSelection.getId());
-                }
-            });
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((_, _, newSelection) -> {
+                    if (newSelection != null) {
+                        loadTopics(newSelection.getId());
+                        loadExams(newSelection.getId());
+                    }
+                });
 
-        topicNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        topicNameColumn.setCellValueFactory(new PropertyValueFactory<>("nama"));
         topicPriorityColumn.setCellValueFactory(
-            new PropertyValueFactory<>("priority")
-        );
+                new PropertyValueFactory<>("prioritas"));
         topicDifficultyColumn.setCellValueFactory(
-            new PropertyValueFactory<>("difficultyLevel")
-        );
+                new PropertyValueFactory<>("tingkatKesulitan"));
         topicReviewCountColumn.setCellValueFactory(
-            new PropertyValueFactory<>("reviewCount")
-        );
+                new PropertyValueFactory<>("jumlahUlasan"));
 
         examTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         examTitleColumn.setCellValueFactory(
-            new PropertyValueFactory<>("title")
-        );
+                new PropertyValueFactory<>("judul"));
         examTypeColumn.setCellValueFactory(
-            new PropertyValueFactory<>("examType")
-        );
+                new PropertyValueFactory<>("tipeUjian"));
         examDateColumn.setCellValueFactory(
-            new PropertyValueFactory<>("examDate")
-        );
+                new PropertyValueFactory<>("tanggalUjian"));
     }
 
     private void setupButtons() {
@@ -164,7 +156,7 @@ public class CourseManagementController implements Initializable {
 
     private void loadCourses() {
         try {
-            List<Course> courseList = dbManager.getAllCourses();
+            List<MataKuliah> courseList = manajerBasisData.ambilSemuaMataKuliah();
             courses = FXCollections.observableArrayList(courseList);
             courseTable.setItems(courses);
         } catch (SQLException e) {
@@ -174,7 +166,7 @@ public class CourseManagementController implements Initializable {
 
     private void loadTopics(int courseId) {
         try {
-            List<Topic> topicList = dbManager.getTopicsByCourse(courseId);
+            List<Topik> topicList = manajerBasisData.ambilTopikBerdasarkanMataKuliah(courseId);
             topics = FXCollections.observableArrayList(topicList);
             topicTable.setItems(topics);
         } catch (SQLException e) {
@@ -184,7 +176,7 @@ public class CourseManagementController implements Initializable {
 
     private void loadExams(int courseId) {
         try {
-            List<ExamSchedule> examList = dbManager.getExamsByCourse(courseId);
+            List<JadwalUjian> examList = manajerBasisData.ambilUjianBerdasarkanMataKuliah(courseId);
             exams = FXCollections.observableArrayList(examList);
             examTable.setItems(exams);
         } catch (SQLException e) {
@@ -193,18 +185,17 @@ public class CourseManagementController implements Initializable {
     }
 
     private void addCourse() {
-        Dialog<Course> dialog = new Dialog<>();
+        Dialog<MataKuliah> dialog = new Dialog<>();
         dialog.setTitle("Tambah Mata Kuliah");
         dialog.setHeaderText("Masukkan data mata kuliah baru");
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
         TextField codeField = new TextField();
         codeField.setPromptText("Kode MK (contoh: CS101)");
@@ -228,19 +219,19 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                Course course = new Course();
-                course.setCode(codeField.getText());
-                course.setName(nameField.getText());
-                course.setDescription(descArea.getText());
+                MataKuliah course = new MataKuliah();
+                course.setKode(codeField.getText());
+                course.setNama(nameField.getText());
+                course.setDeskripsi(descArea.getText());
                 return course;
             }
             return null;
         });
 
-        Optional<Course> result = dialog.showAndWait();
+        Optional<MataKuliah> result = dialog.showAndWait();
         result.ifPresent(course -> {
             try {
-                dbManager.addCourse(course);
+                manajerBasisData.tambahMataKuliah(course);
                 loadCourses();
                 showInfo("Mata kuliah berhasil ditambahkan!");
             } catch (SQLException e) {
@@ -250,27 +241,26 @@ public class CourseManagementController implements Initializable {
     }
 
     private void editCourse() {
-        Course selected = courseTable.getSelectionModel().getSelectedItem();
+        MataKuliah selected = courseTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih mata kuliah yang akan diedit!");
             return;
         }
 
-        Dialog<Course> dialog = new Dialog<>();
+        Dialog<MataKuliah> dialog = new Dialog<>();
         dialog.setTitle("Edit Mata Kuliah");
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField codeField = new TextField(selected.getCode());
-        TextField nameField = new TextField(selected.getName());
-        TextArea descArea = new TextArea(selected.getDescription());
+        TextField codeField = new TextField(selected.getKode());
+        TextField nameField = new TextField(selected.getNama());
+        TextArea descArea = new TextArea(selected.getDeskripsi());
         descArea.setPrefRowCount(3);
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
@@ -287,18 +277,18 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setCode(codeField.getText());
-                selected.setName(nameField.getText());
-                selected.setDescription(descArea.getText());
+                selected.setKode(codeField.getText());
+                selected.setNama(nameField.getText());
+                selected.setDeskripsi(descArea.getText());
                 return selected;
             }
             return null;
         });
 
-        Optional<Course> result = dialog.showAndWait();
+        Optional<MataKuliah> result = dialog.showAndWait();
         result.ifPresent(course -> {
             try {
-                dbManager.updateCourse(course);
+                manajerBasisData.perbaruiMataKuliah(course);
                 loadCourses();
                 showInfo("Mata kuliah berhasil diupdate!");
             } catch (SQLException e) {
@@ -308,7 +298,7 @@ public class CourseManagementController implements Initializable {
     }
 
     private void deleteCourse() {
-        Course selected = courseTable.getSelectionModel().getSelectedItem();
+        MataKuliah selected = courseTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih mata kuliah yang akan dihapus!");
             return;
@@ -316,15 +306,14 @@ public class CourseManagementController implements Initializable {
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Konfirmasi Hapus");
-        confirm.setHeaderText("Hapus mata kuliah: " + selected.getName() + "?");
+        confirm.setHeaderText("Hapus mata kuliah: " + selected.getNama() + "?");
         confirm.setContentText(
-            "Semua topik dan ujian terkait juga akan dihapus. Lanjutkan?"
-        );
+                "Semua topik dan ujian terkait juga akan dihapus. Lanjutkan?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                dbManager.deleteCourse(selected.getId());
+                manajerBasisData.hapusMataKuliah(selected.getId());
                 loadCourses();
                 topicTable.getItems().clear();
                 examTable.getItems().clear();
@@ -336,26 +325,25 @@ public class CourseManagementController implements Initializable {
     }
 
     private void addTopic() {
-        Course selectedCourse = courseTable
-            .getSelectionModel()
-            .getSelectedItem();
+        MataKuliah selectedCourse = courseTable
+                .getSelectionModel()
+                .getSelectedItem();
         if (selectedCourse == null) {
             showWarning("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
-        Dialog<Topic> dialog = new Dialog<>();
+        Dialog<Topik> dialog = new Dialog<>();
         dialog.setTitle("Tambah Topik");
-        dialog.setHeaderText("Tambah topik untuk: " + selectedCourse.getName());
+        dialog.setHeaderText("Tambah topik untuk: " + selectedCourse.getNama());
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
         TextField nameField = new TextField();
         nameField.setPromptText("Nama Topik");
@@ -382,21 +370,21 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                Topic topic = new Topic();
-                topic.setCourseId(selectedCourse.getId());
-                topic.setName(nameField.getText());
-                topic.setDescription(descArea.getText());
-                topic.setPriority(prioritySpinner.getValue());
-                topic.setDifficultyLevel(difficultySpinner.getValue());
+                Topik topic = new Topik();
+                topic.setIdMataKuliah(selectedCourse.getId());
+                topic.setNama(nameField.getText());
+                topic.setDeskripsi(descArea.getText());
+                topic.setPrioritas(prioritySpinner.getValue());
+                topic.setTingkatKesulitan(difficultySpinner.getValue());
                 return topic;
             }
             return null;
         });
 
-        Optional<Topic> result = dialog.showAndWait();
+        Optional<Topik> result = dialog.showAndWait();
         result.ifPresent(topic -> {
             try {
-                dbManager.addTopic(topic);
+                manajerBasisData.tambahTopik(topic);
                 loadTopics(selectedCourse.getId());
                 showInfo("Topik berhasil ditambahkan!");
             } catch (SQLException e) {
@@ -406,37 +394,34 @@ public class CourseManagementController implements Initializable {
     }
 
     private void editTopic() {
-        Topic selected = topicTable.getSelectionModel().getSelectedItem();
+        Topik selected = topicTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih topik yang akan diedit!");
             return;
         }
 
-        Dialog<Topic> dialog = new Dialog<>();
+        Dialog<Topik> dialog = new Dialog<>();
         dialog.setTitle("Edit Topik");
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField nameField = new TextField(selected.getName());
-        TextArea descArea = new TextArea(selected.getDescription());
+        TextField nameField = new TextField(selected.getNama());
+        TextArea descArea = new TextArea(selected.getDeskripsi());
         descArea.setPrefRowCount(2);
         Spinner<Integer> prioritySpinner = new Spinner<>(
-            1,
-            5,
-            selected.getPriority()
-        );
+                1,
+                5,
+                selected.getPrioritas());
         Spinner<Integer> difficultySpinner = new Spinner<>(
-            1,
-            5,
-            selected.getDifficultyLevel()
-        );
+                1,
+                5,
+                selected.getTingkatKesulitan());
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
         grid.setHgap(10);
@@ -454,20 +439,20 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setName(nameField.getText());
-                selected.setDescription(descArea.getText());
-                selected.setPriority(prioritySpinner.getValue());
-                selected.setDifficultyLevel(difficultySpinner.getValue());
+                selected.setNama(nameField.getText());
+                selected.setDeskripsi(descArea.getText());
+                selected.setPrioritas(prioritySpinner.getValue());
+                selected.setTingkatKesulitan(difficultySpinner.getValue());
                 return selected;
             }
             return null;
         });
 
-        Optional<Topic> result = dialog.showAndWait();
+        Optional<Topik> result = dialog.showAndWait();
         result.ifPresent(topic -> {
             try {
-                dbManager.updateTopic(topic);
-                loadTopics(topic.getCourseId());
+                manajerBasisData.perbaruiTopik(topic);
+                loadTopics(topic.getIdMataKuliah());
                 showInfo("Topik berhasil diupdate!");
             } catch (SQLException e) {
                 showError("Error updating topic: " + e.getMessage());
@@ -476,7 +461,7 @@ public class CourseManagementController implements Initializable {
     }
 
     private void deleteTopic() {
-        Topic selected = topicTable.getSelectionModel().getSelectedItem();
+        Topik selected = topicTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih topik yang akan dihapus!");
             return;
@@ -484,13 +469,13 @@ public class CourseManagementController implements Initializable {
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Konfirmasi Hapus");
-        confirm.setContentText("Hapus topik: " + selected.getName() + "?");
+        confirm.setContentText("Hapus topik: " + selected.getNama() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                int courseId = selected.getCourseId();
-                dbManager.deleteTopic(selected.getId());
+                int courseId = selected.getIdMataKuliah();
+                manajerBasisData.hapusTopik(selected.getId());
                 loadTopics(courseId);
                 showInfo("Topik berhasil dihapus!");
             } catch (SQLException e) {
@@ -500,25 +485,24 @@ public class CourseManagementController implements Initializable {
     }
 
     private void addExam() {
-        Course selectedCourse = courseTable
-            .getSelectionModel()
-            .getSelectedItem();
+        MataKuliah selectedCourse = courseTable
+                .getSelectionModel()
+                .getSelectedItem();
         if (selectedCourse == null) {
             showWarning("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
-        Dialog<ExamSchedule> dialog = new Dialog<>();
+        Dialog<JadwalUjian> dialog = new Dialog<>();
         dialog.setTitle("Tambah Jadwal Ujian");
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
         TextField titleField = new TextField();
         titleField.setPromptText("Judul (contoh: UTS)");
@@ -543,20 +527,20 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                ExamSchedule exam = new ExamSchedule();
-                exam.setCourseId(selectedCourse.getId());
-                exam.setTitle(titleField.getText());
-                exam.setExamType(typeCombo.getValue());
-                exam.setExamDate(datePicker.getValue());
+                JadwalUjian exam = new JadwalUjian();
+                exam.setIdMataKuliah(selectedCourse.getId());
+                exam.setJudul(titleField.getText());
+                exam.setTipeUjian(typeCombo.getValue());
+                exam.setTanggalUjian(datePicker.getValue());
                 return exam;
             }
             return null;
         });
 
-        Optional<ExamSchedule> result = dialog.showAndWait();
+        Optional<JadwalUjian> result = dialog.showAndWait();
         result.ifPresent(exam -> {
             try {
-                dbManager.addExamSchedule(exam);
+                manajerBasisData.tambahJadwalUjian(exam);
                 loadExams(selectedCourse.getId());
                 showInfo("Jadwal ujian berhasil ditambahkan!");
             } catch (SQLException e) {
@@ -566,29 +550,28 @@ public class CourseManagementController implements Initializable {
     }
 
     private void editExam() {
-        ExamSchedule selected = examTable.getSelectionModel().getSelectedItem();
+        JadwalUjian selected = examTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih ujian yang akan diedit!");
             return;
         }
 
-        Dialog<ExamSchedule> dialog = new Dialog<>();
+        Dialog<JadwalUjian> dialog = new Dialog<>();
         dialog.setTitle("Edit Jadwal Ujian");
 
         ButtonType saveButtonType = new ButtonType(
-            "Simpan",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "Simpan",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(saveButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField titleField = new TextField(selected.getTitle());
+        TextField titleField = new TextField(selected.getJudul());
         ComboBox<String> typeCombo = new ComboBox<>();
         typeCombo.getItems().addAll("MIDTERM", "FINAL", "QUIZ", "ASSIGNMENT");
-        typeCombo.setValue(selected.getExamType());
-        DatePicker datePicker = new DatePicker(selected.getExamDate());
+        typeCombo.setValue(selected.getTipeUjian());
+        DatePicker datePicker = new DatePicker(selected.getTanggalUjian());
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
         grid.setHgap(10);
@@ -604,19 +587,19 @@ public class CourseManagementController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setTitle(titleField.getText());
-                selected.setExamType(typeCombo.getValue());
-                selected.setExamDate(datePicker.getValue());
+                selected.setJudul(titleField.getText());
+                selected.setTipeUjian(typeCombo.getValue());
+                selected.setTanggalUjian(datePicker.getValue());
                 return selected;
             }
             return null;
         });
 
-        Optional<ExamSchedule> result = dialog.showAndWait();
+        Optional<JadwalUjian> result = dialog.showAndWait();
         result.ifPresent(exam -> {
             try {
-                dbManager.updateExamSchedule(exam);
-                loadExams(exam.getCourseId());
+                manajerBasisData.perbaruiJadwalUjian(exam);
+                loadExams(exam.getIdMataKuliah());
                 showInfo("Jadwal ujian berhasil diupdate!");
             } catch (SQLException e) {
                 showError("Error updating exam: " + e.getMessage());
@@ -625,7 +608,7 @@ public class CourseManagementController implements Initializable {
     }
 
     private void deleteExam() {
-        ExamSchedule selected = examTable.getSelectionModel().getSelectedItem();
+        JadwalUjian selected = examTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih ujian yang akan dihapus!");
             return;
@@ -633,14 +616,13 @@ public class CourseManagementController implements Initializable {
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setContentText(
-            "Hapus jadwal ujian: " + selected.getTitle() + "?"
-        );
+                "Hapus jadwal ujian: " + selected.getJudul() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                int courseId = selected.getCourseId();
-                dbManager.deleteExamSchedule(selected.getId());
+                int courseId = selected.getIdMataKuliah();
+                manajerBasisData.hapusJadwalUjian(selected.getId());
                 loadExams(courseId);
                 showInfo("Jadwal ujian berhasil dihapus!");
             } catch (SQLException e) {

@@ -1,14 +1,15 @@
 package com.studyplanner.controller;
 
-import com.studyplanner.algorithm.ScheduleGenerator;
-import com.studyplanner.component.AchievementTrackerWidget;
-import com.studyplanner.component.AnalogClock;
-import com.studyplanner.component.CustomWindowDecorator;
-import com.studyplanner.component.NextReviewWidget;
-import com.studyplanner.component.StudyStreakWidget;
-import com.studyplanner.component.StudyTimeTodayWidget;
-import com.studyplanner.component.UpcomingTasksWidget;
-import com.studyplanner.database.DatabaseManager;
+import com.studyplanner.algorithm.PembuatJadwal;
+import com.studyplanner.algorithm.PengulanganBerjarak;
+import com.studyplanner.component.DekoratorJendelaKustom;
+import com.studyplanner.component.JamAnalog;
+import com.studyplanner.component.WidgetPelacakPencapaian;
+import com.studyplanner.component.WidgetRuntutanBelajar;
+import com.studyplanner.component.WidgetTugasMendatang;
+import com.studyplanner.component.WidgetUlasanBerikutnya;
+import com.studyplanner.component.WidgetWaktuBelajarHariIni;
+import com.studyplanner.database.ManajerBasisData;
 import com.studyplanner.model.*;
 import java.io.IOException;
 import java.net.URL;
@@ -100,23 +101,24 @@ public class MainController implements Initializable {
     @FXML
     private VBox upcomingTasksWidgetContainer;
 
-    private DatabaseManager dbManager;
+    private ManajerBasisData manajerBasisData;
     private boolean isDarkMode = false;
-    private ScheduleGenerator scheduleGenerator;
-    private StudyStreakWidget streakWidget;
-    private StudyTimeTodayWidget studyTimeWidget;
-    private NextReviewWidget nextReviewWidget;
-    private AnalogClock analogClock;
-    private AchievementTrackerWidget achievementWidget;
-    private UpcomingTasksWidget upcomingTasksWidget;
+    private PembuatJadwal pembuatJadwal;
+    private WidgetRuntutanBelajar streakWidget;
+    private WidgetWaktuBelajarHariIni studyTimeWidget;
+    private WidgetUlasanBerikutnya nextReviewWidget;
+    private JamAnalog analogClock;
+    private WidgetPelacakPencapaian achievementWidget;
+    private WidgetTugasMendatang upcomingTasksWidget;
     private Timeline autoRefreshTimeline;
     private AchievementSnapshot latestAchievementData;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", java.util.Locale.of("id", "ID"));
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy",
+            java.util.Locale.of("id", "ID"));
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        dbManager = new DatabaseManager();
-        scheduleGenerator = new ScheduleGenerator(dbManager);
+        manajerBasisData = new ManajerBasisData();
+        pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
         setupUI();
         loadDashboardData();
@@ -125,30 +127,29 @@ public class MainController implements Initializable {
 
     private void setupUI() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-            "EEEE, dd MMMM yyyy"
-        );
+                "EEEE, dd MMMM yyyy");
         dateLabel.setText(LocalDate.now().format(formatter));
 
         if (streakContainer != null) {
-            streakWidget = new StudyStreakWidget();
+            streakWidget = new WidgetRuntutanBelajar();
             streakContainer.getChildren().clear();
             streakContainer.getChildren().add(streakWidget);
         }
 
         if (studyTimeContainer != null) {
-            studyTimeWidget = new StudyTimeTodayWidget();
+            studyTimeWidget = new WidgetWaktuBelajarHariIni();
             studyTimeContainer.getChildren().clear();
             studyTimeContainer.getChildren().add(studyTimeWidget);
         }
 
         if (nextReviewContainer != null) {
-            nextReviewWidget = new NextReviewWidget();
+            nextReviewWidget = new WidgetUlasanBerikutnya();
             nextReviewContainer.getChildren().clear();
             nextReviewContainer.getChildren().add(nextReviewWidget);
         }
 
         if (clockContainer != null) {
-            analogClock = new AnalogClock(140);
+            analogClock = new JamAnalog(140);
 
             VBox clockBox = new VBox();
             clockBox.setAlignment(javafx.geometry.Pos.CENTER);
@@ -163,23 +164,19 @@ public class MainController implements Initializable {
         }
 
         if (achievementContainer != null) {
-            achievementWidget = new AchievementTrackerWidget();
+            achievementWidget = new WidgetPelacakPencapaian();
             applyCompactWidgetSizing(achievementWidget);
-            achievementWidget.setOnMouseClicked(_ ->
-                showAchievementDetailDialog()
-            );
+            achievementWidget.setOnMouseClicked(_ -> showAchievementDetailDialog());
             achievementContainer.getChildren().setAll(achievementWidget);
         }
 
         if (upcomingTasksWidgetContainer != null) {
-            upcomingTasksWidget = new UpcomingTasksWidget();
+            upcomingTasksWidget = new WidgetTugasMendatang();
             applyCompactWidgetSizing(upcomingTasksWidget);
-            upcomingTasksWidget.setOnMouseClicked(_ ->
-                showUpcomingTasksDetailDialog()
-            );
+            upcomingTasksWidget.setOnMouseClicked(_ -> showUpcomingTasksDetailDialog());
             upcomingTasksWidgetContainer
-                .getChildren()
-                .setAll(upcomingTasksWidget);
+                    .getChildren()
+                    .setAll(upcomingTasksWidget);
         }
 
         manageCourseBtn.setOnAction(_ -> openCourseManagement());
@@ -202,8 +199,7 @@ public class MainController implements Initializable {
 
     private void setupAutoRefresh() {
         autoRefreshTimeline = new Timeline(
-            new KeyFrame(Duration.seconds(30), _ -> loadDashboardData())
-        );
+                new KeyFrame(Duration.seconds(30), _ -> loadDashboardData()));
         autoRefreshTimeline.setCycleCount(Animation.INDEFINITE);
         autoRefreshTimeline.play();
     }
@@ -216,51 +212,45 @@ public class MainController implements Initializable {
         }
 
         if (analogClock != null) {
-            analogClock.setDarkMode(isDarkMode);
+            analogClock.aturModeGelap(isDarkMode);
         }
 
         if (manageCourseBtn.getScene() != null) {
             if (isDarkMode) {
                 manageCourseBtn
-                    .getScene()
-                    .getRoot()
-                    .getStyleClass()
-                    .add("dark-mode");
+                        .getScene()
+                        .getRoot()
+                        .getStyleClass()
+                        .add("dark-mode");
             } else {
                 manageCourseBtn
-                    .getScene()
-                    .getRoot()
-                    .getStyleClass()
-                    .remove("dark-mode");
+                        .getScene()
+                        .getRoot()
+                        .getStyleClass()
+                        .remove("dark-mode");
             }
         }
     }
 
     private void loadDashboardData() {
         try {
-            ScheduleGenerator.StudyProgress progress =
-                scheduleGenerator.getStudyProgress();
+            PembuatJadwal.KemajuanBelajar progress = pembuatJadwal.ambilKemajuanBelajar();
 
-            totalTopicsLabel.setText(String.valueOf(progress.getTotalTopics()));
+            totalTopicsLabel.setText(String.valueOf(progress.getTotalTopik()));
             masteredTopicsLabel.setText(
-                String.valueOf(progress.getMasteredTopics())
-            );
-            todayTasksLabel.setText(String.valueOf(progress.getTodayTotal()));
+                    String.valueOf(progress.getTopikDikuasai()));
+            todayTasksLabel.setText(String.valueOf(progress.getTotalHariIni()));
             completedTasksLabel.setText(
-                String.valueOf(progress.getTodayCompleted())
-            );
+                    String.valueOf(progress.getSelesaiHariIni()));
 
             overallProgressBar.setProgress(
-                progress.getOverallProgress() / 100.0
-            );
-            todayProgressBar.setProgress(progress.getTodayProgress() / 100.0);
+                    progress.getKemajuanKeseluruhan() / 100.0);
+            todayProgressBar.setProgress(progress.getKemajuanHariIni() / 100.0);
 
             overallProgressLabel.setText(
-                String.format("%.0f%%", progress.getOverallProgress())
-            );
+                    String.format("%.0f%%", progress.getKemajuanKeseluruhan()));
             todayProgressLabel.setText(
-                String.format("%.0f%%", progress.getTodayProgress())
-            );
+                    String.format("%.0f%%", progress.getKemajuanHariIni()));
 
             loadTodayTasks();
             loadUpcomingExams();
@@ -268,13 +258,13 @@ public class MainController implements Initializable {
             refreshAchievementWidget(progress);
             refreshUpcomingTasksWidget();
             if (streakWidget != null) {
-                streakWidget.refresh();
+                streakWidget.segarkan();
             }
             if (studyTimeWidget != null) {
-                studyTimeWidget.refresh();
+                studyTimeWidget.segarkan();
             }
             if (nextReviewWidget != null) {
-                nextReviewWidget.refresh();
+                nextReviewWidget.segarkan();
             }
         } catch (SQLException e) {
             showError("Error loading dashboard data: " + e.getMessage());
@@ -283,53 +273,48 @@ public class MainController implements Initializable {
     }
 
     private void refreshAchievementWidget(
-        ScheduleGenerator.StudyProgress progress
-    ) throws SQLException {
+            PembuatJadwal.KemajuanBelajar progress) throws SQLException {
         latestAchievementData = null;
 
         if (achievementWidget == null) {
             return;
         }
 
-        List<StudySession> todaySessions = dbManager.getTodaySessions();
+        List<SesiBelajar> todaySessions = manajerBasisData.ambilSesiHariIni();
         int reviewTotal = (int) todaySessions
-            .stream()
-            .filter(s -> "REVIEW".equalsIgnoreCase(s.getSessionType()))
-            .count();
+                .stream()
+                .filter(s -> "REVIEW".equalsIgnoreCase(s.getTipeSesi()))
+                .count();
         int reviewCompleted = (int) todaySessions
-            .stream()
-            .filter(
-                s ->
-                    s.isCompleted() &&
-                    "REVIEW".equalsIgnoreCase(s.getSessionType())
-            )
-            .count();
+                .stream()
+                .filter(
+                        s -> s.isSelesai() &&
+                                "REVIEW".equalsIgnoreCase(s.getTipeSesi()))
+                .count();
 
         int focusMinutes;
         if (studyTimeWidget != null) {
-            focusMinutes = studyTimeWidget.getCurrentTodayMinutes();
+            focusMinutes = studyTimeWidget.ambilMenitHariIniSaatIni();
         } else {
-            focusMinutes = dbManager.getTodayStudyTime();
+            focusMinutes = manajerBasisData.ambilWaktuBelajarHariIni();
         }
-        int streakDays = dbManager.getStudyStreak();
+        int streakDays = manajerBasisData.ambilRuntutanBelajar();
 
-        achievementWidget.updateData(
-            progress.getTodayCompleted(),
-            progress.getTodayTotal(),
-            reviewCompleted,
-            reviewTotal,
-            focusMinutes,
-            streakDays
-        );
+        achievementWidget.perbaruiData(
+                progress.getSelesaiHariIni(),
+                progress.getTotalHariIni(),
+                reviewCompleted,
+                reviewTotal,
+                focusMinutes,
+                streakDays);
 
         latestAchievementData = new AchievementSnapshot(
-            progress.getTodayCompleted(),
-            progress.getTodayTotal(),
-            reviewCompleted,
-            reviewTotal,
-            focusMinutes,
-            streakDays
-        );
+                progress.getSelesaiHariIni(),
+                progress.getTotalHariIni(),
+                reviewCompleted,
+                reviewTotal,
+                focusMinutes,
+                streakDays);
     }
 
     private void refreshUpcomingTasksWidget() throws SQLException {
@@ -337,8 +322,8 @@ public class MainController implements Initializable {
             return;
         }
 
-        List<StudySession> upcomingSessions = dbManager.getUpcomingSessions(4);
-        upcomingTasksWidget.setSessions(upcomingSessions);
+        List<SesiBelajar> upcomingSessions = manajerBasisData.ambilSesiMendatang(4);
+        upcomingTasksWidget.aturSesi(upcomingSessions);
     }
 
     private void showAchievementDetailDialog() {
@@ -347,34 +332,32 @@ public class MainController implements Initializable {
         }
         if (latestAchievementData == null) {
             showInfo(
-                "Data achievement belum tersedia, coba lagi setelah data dimuat."
-            );
+                    "Data achievement belum tersedia, coba lagi setelah data dimuat.");
             return;
         }
 
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Detail Achievement Tracker");
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
+                .getDialogPane()
+                .getButtonTypes()
+                .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
         dialog
-            .getDialogPane()
-            .getStylesheets()
-            .add(getClass().getResource("/css/style.css").toExternalForm());
+                .getDialogPane()
+                .getStylesheets()
+                .add(getClass().getResource("/css/style.css").toExternalForm());
 
-        AchievementTrackerWidget detailWidget = new AchievementTrackerWidget();
+        WidgetPelacakPencapaian detailWidget = new WidgetPelacakPencapaian();
         detailWidget.getStyleClass().removeAll("widget-interactive");
         detailWidget.setPrefWidth(420);
         detailWidget.setMaxWidth(Double.MAX_VALUE);
-        detailWidget.updateData(
-            latestAchievementData.tasksCompleted,
-            latestAchievementData.tasksTotal,
-            latestAchievementData.reviewCompleted,
-            latestAchievementData.reviewTotal,
-            latestAchievementData.focusMinutes,
-            latestAchievementData.streakDays
-        );
+        detailWidget.perbaruiData(
+                latestAchievementData.tasksCompleted,
+                latestAchievementData.tasksTotal,
+                latestAchievementData.reviewCompleted,
+                latestAchievementData.reviewTotal,
+                latestAchievementData.focusMinutes,
+                latestAchievementData.streakDays);
 
         VBox content = new VBox(12);
         content.setPadding(new Insets(20));
@@ -392,25 +375,25 @@ public class MainController implements Initializable {
         }
 
         try {
-            List<StudySession> sessions = dbManager.getUpcomingSessions(12);
+            List<SesiBelajar> sessions = manajerBasisData.ambilSesiMendatang(12);
 
             Dialog<Void> dialog = new Dialog<>();
             dialog.setTitle("Detail Upcoming Tasks");
             dialog
-                .getDialogPane()
-                .getButtonTypes()
-                .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
+                    .getDialogPane()
+                    .getButtonTypes()
+                    .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
             dialog
-                .getDialogPane()
-                .getStylesheets()
-                .add(getClass().getResource("/css/style.css").toExternalForm());
+                    .getDialogPane()
+                    .getStylesheets()
+                    .add(getClass().getResource("/css/style.css").toExternalForm());
 
-            UpcomingTasksWidget detailWidget = new UpcomingTasksWidget();
+            WidgetTugasMendatang detailWidget = new WidgetTugasMendatang();
             detailWidget.getStyleClass().removeAll("widget-interactive");
             detailWidget.setSpacing(12);
             detailWidget.setPrefWidth(420);
             detailWidget.setMaxWidth(Double.MAX_VALUE);
-            detailWidget.setSessions(sessions);
+            detailWidget.aturSesi(sessions);
 
             ScrollPane scrollPane = new ScrollPane(detailWidget);
             scrollPane.setFitToWidth(true);
@@ -432,22 +415,21 @@ public class MainController implements Initializable {
 
     private void loadTodayTasks() throws SQLException {
         todayTasksContainer.getChildren().clear();
-        List<StudySession> sessions = dbManager.getTodaySessions();
+        List<SesiBelajar> sessions = manajerBasisData.ambilSesiHariIni();
 
         if (sessions.isEmpty()) {
             Label emptyLabel = new Label(
-                "Belum ada tugas untuk hari ini. Klik 'Generate Schedule' untuk membuat jadwal otomatis."
-            );
+                    "Belum ada tugas untuk hari ini. Klik 'Buat Jadwal' untuk membuat jadwal otomatis.");
             emptyLabel.setStyle("-fx-text-fill: #888; -fx-padding: 20;");
             todayTasksContainer.getChildren().add(emptyLabel);
         } else {
-            for (StudySession session : sessions) {
+            for (SesiBelajar session : sessions) {
                 todayTasksContainer.getChildren().add(createTaskCard(session));
             }
         }
     }
 
-    private VBox createTaskCard(StudySession session) {
+    private VBox createTaskCard(SesiBelajar session) {
         VBox card = new VBox(8);
         card.getStyleClass().add("task-card");
 
@@ -455,35 +437,30 @@ public class MainController implements Initializable {
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         CheckBox checkBox = new CheckBox();
-        checkBox.setSelected(session.isCompleted());
-        checkBox.setOnAction(_ ->
-            markTaskComplete(session, checkBox.isSelected())
-        );
+        checkBox.setSelected(session.isSelesai());
+        checkBox.setOnAction(_ -> markTaskComplete(session, checkBox.isSelected()));
 
-        Label titleLabel = new Label(session.getTopicName());
+        Label titleLabel = new Label(session.getNamaTopik());
         titleLabel.getStyleClass().add("task-title");
-        if (session.isCompleted()) {
+        if (session.isSelesai()) {
             titleLabel.setStyle(
-                "-fx-text-fill: #888; -fx-strikethrough: true;"
-            );
+                    "-fx-text-fill: #888; -fx-strikethrough: true;");
         }
 
         header.getChildren().addAll(checkBox, titleLabel);
 
-        Label courseLabel = new Label(session.getCourseName());
+        Label courseLabel = new Label(session.getNamaMataKuliah());
         courseLabel.getStyleClass().add("task-course");
 
         Label typeLabel = new Label(
-            getSessionTypeLabel(session.getSessionType())
-        );
+                getSessionTypeLabel(session.getTipeSesi()));
         typeLabel.getStyleClass().add("task-type");
         typeLabel
-            .getStyleClass()
-            .add("badge-" + session.getSessionType().toLowerCase());
+                .getStyleClass()
+                .add("badge-" + session.getTipeSesi().toLowerCase());
 
         Label durationLabel = new Label(
-            session.getDurationMinutes() + " menit"
-        );
+                session.getDurasiMenit() + " menit");
         durationLabel.getStyleClass().add("task-duration");
 
         HBox footer = new HBox(15);
@@ -503,16 +480,16 @@ public class MainController implements Initializable {
         };
     }
 
-    private void markTaskComplete(StudySession session, boolean completed) {
+    private void markTaskComplete(SesiBelajar session, boolean completed) {
         try {
-            session.setCompleted(completed);
+            session.setSelesai(completed);
             if (completed) {
-                session.setCompletedAt(java.time.LocalDateTime.now());
+                session.setSelesaiPada(java.time.LocalDateTime.now());
                 showPerformanceRatingDialog(session);
             } else {
-                session.setCompletedAt(null);
-                session.setPerformanceRating(0);
-                dbManager.updateStudySession(session);
+                session.setSelesaiPada(null);
+                session.setRatingPerforma(0);
+                manajerBasisData.perbaruiSesiBelajar(session);
             }
 
             loadDashboardData();
@@ -521,19 +498,18 @@ public class MainController implements Initializable {
         }
     }
 
-    private void showPerformanceRatingDialog(StudySession session) {
+    private void showPerformanceRatingDialog(SesiBelajar session) {
         Dialog<Integer> dialog = new Dialog<>();
         dialog.setTitle("Rating Performa");
         dialog.setHeaderText("Bagaimana performa Anda untuk sesi ini?");
 
         ButtonType okButtonType = new ButtonType(
-            "OK",
-            ButtonBar.ButtonData.OK_DONE
-        );
+                "OK",
+                ButtonBar.ButtonData.OK_DONE);
         dialog
-            .getDialogPane()
-            .getButtonTypes()
-            .addAll(okButtonType, ButtonType.CANCEL);
+                .getDialogPane()
+                .getButtonTypes()
+                .addAll(okButtonType, ButtonType.CANCEL);
 
         VBox content = new VBox(10);
         Label label = new Label("Pilih rating (1-5):");
@@ -545,7 +521,8 @@ public class MainController implements Initializable {
             RadioButton rb = new RadioButton(i + " - " + getRatingLabel(i));
             rb.setToggleGroup(ratingGroup);
             rb.setUserData(i);
-            if (i == 3) rb.setSelected(true);
+            if (i == 3)
+                rb.setSelected(true);
             ratingBox.getChildren().add(rb);
         }
 
@@ -554,44 +531,40 @@ public class MainController implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == okButtonType) {
-                RadioButton selected =
-                    (RadioButton) ratingGroup.getSelectedToggle();
+                RadioButton selected = (RadioButton) ratingGroup.getSelectedToggle();
                 return (Integer) selected.getUserData();
             }
             return null;
         });
 
         dialog
-            .showAndWait()
-            .ifPresent(rating -> {
-                try {
-                    session.setPerformanceRating(rating);
-                    dbManager.updateStudySession(session);
+                .showAndWait()
+                .ifPresent(rating -> {
+                    try {
+                        session.setRatingPerforma(rating);
+                        manajerBasisData.perbaruiSesiBelajar(session);
 
-                    // Update topic based on spaced repetition algorithm
-                    Topic topic = dbManager.getTopicById(session.getTopicId());
-                    if (topic != null) {
-                        if (topic.getFirstStudyDate() == null) {
-                            topic.setFirstStudyDate(LocalDate.now());
+                        // Update topic based on spaced repetition algorithm
+                        Topik topic = manajerBasisData.ambilTopikBerdasarkanId(session.getIdTopik());
+                        if (topic != null) {
+                            if (topic.getTanggalBelajarPertama() == null) {
+                                topic.setTanggalBelajarPertama(LocalDate.now());
+                            }
+
+                            LocalDate nextReview = PengulanganBerjarak.hitungTanggalUlasanBerikutnya(
+                                    topic,
+                                    rating);
+
+                            manajerBasisData.perbaruiTopik(topic);
+
+                            showInfo(
+                                    "Sesi berhasil diselesaikan!\nReview berikutnya: " +
+                                            nextReview);
                         }
-
-                        LocalDate nextReview =
-                            com.studyplanner.algorithm.SpacedRepetition.calculateNextReviewDate(
-                                topic,
-                                rating
-                            );
-
-                        dbManager.updateTopic(topic);
-
-                        showInfo(
-                            "Sesi berhasil diselesaikan!\nReview berikutnya: " +
-                                nextReview
-                        );
+                    } catch (SQLException e) {
+                        showError("Error saving rating: " + e.getMessage());
                     }
-                } catch (SQLException e) {
-                    showError("Error saving rating: " + e.getMessage());
-                }
-            });
+                });
     }
 
     private String getRatingLabel(int rating) {
@@ -607,40 +580,40 @@ public class MainController implements Initializable {
 
     private void loadUpcomingExams() throws SQLException {
         upcomingExamsContainer.getChildren().clear();
-        List<ExamSchedule> exams = dbManager.getUpcomingExams();
+        List<JadwalUjian> exams = manajerBasisData.ambilUjianMendatang();
 
         if (exams.isEmpty()) {
             Label emptyLabel = new Label("Belum ada ujian yang dijadwalkan.");
             emptyLabel.setStyle("-fx-text-fill: #888; -fx-padding: 20;");
             upcomingExamsContainer.getChildren().add(emptyLabel);
         } else {
-            for (ExamSchedule exam : exams) {
+            for (JadwalUjian exam : exams) {
                 upcomingExamsContainer.getChildren().add(createExamCard(exam));
             }
         }
     }
 
-    private VBox createExamCard(ExamSchedule exam) throws SQLException {
+    private VBox createExamCard(JadwalUjian exam) throws SQLException {
         VBox card = new VBox(5);
         card.getStyleClass().add("exam-card");
 
-        Label titleLabel = new Label(exam.getTitle());
+        Label titleLabel = new Label(exam.getJudul());
         titleLabel.getStyleClass().add("exam-title");
 
-        Course course = dbManager.getCourseById(exam.getCourseId());
-        Label courseLabel = new Label(course != null ? course.getCode() : "");
+        MataKuliah course = manajerBasisData.ambilMataKuliahBerdasarkanId(exam.getIdMataKuliah());
+        Label courseLabel = new Label(course != null ? course.getKode() : "");
         courseLabel.getStyleClass().add("exam-course");
 
-        Label dateLabel = new Label(exam.getExamDate().toString());
+        Label dateLabel = new Label(exam.getTanggalUjian().toString());
         dateLabel.getStyleClass().add("exam-date");
 
-        int daysLeft = exam.getDaysUntilExam();
+        int daysLeft = exam.getHariMenujuUjian();
         Label daysLabel = new Label(daysLeft + " hari lagi");
         daysLabel.getStyleClass().add("exam-days");
 
         card
-            .getChildren()
-            .addAll(titleLabel, courseLabel, dateLabel, daysLabel);
+                .getChildren()
+                .addAll(titleLabel, courseLabel, dateLabel, daysLabel);
 
         return card;
     }
@@ -648,27 +621,25 @@ public class MainController implements Initializable {
     private void openCourseManagement() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/fxml/CourseManagement.fxml")
-            );
+                    getClass().getResource("/fxml/CourseManagement.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Manajemen Mata Kuliah & Topik");
             Scene scene = new Scene(root, 1000, 700);
             scene
-                .getStylesheets()
-                .add(getClass().getResource("/css/style.css").toExternalForm());
+                    .getStylesheets()
+                    .add(getClass().getResource("/css/style.css").toExternalForm());
             if (isDarkMode) {
                 scene.getRoot().getStyleClass().add("dark-mode");
             }
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL);
 
-            CustomWindowDecorator.decorate(
-                stage,
-                "Manajemen Mata Kuliah & Topik",
-                isDarkMode
-            );
+            DekoratorJendelaKustom.dekorasi(
+                    stage,
+                    "Manajemen Mata Kuliah & Topik",
+                    isDarkMode);
 
             CourseManagementController controller = loader.getController();
             controller.setMainController(this);
@@ -685,21 +656,20 @@ public class MainController implements Initializable {
     private void openScheduleView() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/fxml/ScheduleView.fxml")
-            );
+                    getClass().getResource("/fxml/ScheduleView.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             Scene scene = new Scene(root, 900, 700);
             scene
-                .getStylesheets()
-                .add(getClass().getResource("/css/style.css").toExternalForm());
+                    .getStylesheets()
+                    .add(getClass().getResource("/css/style.css").toExternalForm());
             if (isDarkMode) {
                 scene.getRoot().getStyleClass().add("dark-mode");
             }
             stage.setScene(scene);
 
-            CustomWindowDecorator.decorate(stage, "Jadwal Belajar", isDarkMode);
+            DekoratorJendelaKustom.dekorasi(stage, "Jadwal Belajar", isDarkMode);
 
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -711,10 +681,9 @@ public class MainController implements Initializable {
 
     private void generateNewSchedule() {
         try {
-            scheduleGenerator.generateAndSaveSchedule(7);
+            pembuatJadwal.buatDanSimpanJadwal(7);
             showInfo(
-                "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!"
-            );
+                    "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!");
             loadDashboardData();
         } catch (SQLException e) {
             showError("Error generating schedule: " + e.getMessage());
@@ -738,8 +707,8 @@ public class MainController implements Initializable {
         alert.showAndWait();
     }
 
-    public DatabaseManager getDbManager() {
-        return dbManager;
+    public ManajerBasisData getManajerBasisData() {
+        return manajerBasisData;
     }
 
     private static class AchievementSnapshot {
@@ -752,13 +721,12 @@ public class MainController implements Initializable {
         final int streakDays;
 
         AchievementSnapshot(
-            int tasksCompleted,
-            int tasksTotal,
-            int reviewCompleted,
-            int reviewTotal,
-            int focusMinutes,
-            int streakDays
-        ) {
+                int tasksCompleted,
+                int tasksTotal,
+                int reviewCompleted,
+                int reviewTotal,
+                int focusMinutes,
+                int streakDays) {
             this.tasksCompleted = tasksCompleted;
             this.tasksTotal = tasksTotal;
             this.reviewCompleted = reviewCompleted;

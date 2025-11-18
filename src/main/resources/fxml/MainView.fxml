@@ -11,11 +11,11 @@
     <top>
         <VBox styleClass="header">
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
-                <Label text="Adaptive Study Planner" styleClass="app-title"/>
+                <Label text="Perencana Belajar Adaptif" styleClass="app-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
                 <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
-                <Button fx:id="generateScheduleBtn" text="Generate Schedule" styleClass="btn-success"/>
+                <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="btn-success"/>
                 <Button fx:id="themeToggleBtn" text="◐" styleClass="theme-toggle"/>
             </HBox>
             <Separator/>

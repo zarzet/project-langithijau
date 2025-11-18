@@ -1,7 +1,7 @@
 package com.studyplanner.component;
 
-import com.studyplanner.database.DatabaseManager;
-import com.studyplanner.model.Topic;
+import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.model.Topik;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -19,11 +19,11 @@ public class NextReviewWidget extends VBox {
     private final Label courseLabel;
     private final Label dueLabel;
     private final Label statusLabel;
-    private final DatabaseManager dbManager;
+    private final ManajerBasisData manajerBasisData;
     private Timeline updateTimeline;
 
     public NextReviewWidget() {
-        dbManager = new DatabaseManager();
+        manajerBasisData = new ManajerBasisData();
         getStyleClass().add("next-review-widget");
         setAlignment(Pos.CENTER);
         setSpacing(8);
@@ -55,12 +55,11 @@ public class NextReviewWidget extends VBox {
         statusLabel.setAlignment(Pos.CENTER);
 
         getChildren().addAll(
-            titleLabel,
-            topicLabel,
-            courseLabel,
-            dueLabel,
-            statusLabel
-        );
+                titleLabel,
+                topicLabel,
+                courseLabel,
+                dueLabel,
+                statusLabel);
 
         updateNextReview();
         startAutoUpdate();
@@ -68,7 +67,7 @@ public class NextReviewWidget extends VBox {
 
     private void updateNextReview() {
         try {
-            var topics = dbManager.getNextReviewTopics(1);
+            var topics = manajerBasisData.ambilTopikUlasanBerikutnya(1);
 
             if (topics.isEmpty()) {
                 topicLabel.setText("Tidak ada review");
@@ -77,32 +76,28 @@ public class NextReviewWidget extends VBox {
                 statusLabel.setText("Semua selesai!");
                 statusLabel.setVisible(true);
             } else {
-                Topic topic = topics.get(0);
-                topicLabel.setText(topic.getName());
+                Topik topik = topics.get(0);
+                topicLabel.setText(topik.getNama());
 
                 courseLabel.setText("");
                 courseLabel.setVisible(false);
 
-                LocalDate nextReviewDate = topic
-                    .getLastReviewDate()
-                    .plusDays(topic.getInterval());
+                LocalDate nextReviewDate = topik
+                        .getTanggalUlasanTerakhir()
+                        .plusDays(topik.getInterval());
                 long daysUntil = ChronoUnit.DAYS.between(
-                    LocalDate.now(),
-                    nextReviewDate
-                );
+                        LocalDate.now(),
+                        nextReviewDate);
 
                 if (daysUntil < 0) {
                     dueLabel.setText(
-                        "Terlambat " + Math.abs(daysUntil) + " hari"
-                    );
+                            "Terlambat " + Math.abs(daysUntil) + " hari");
                     dueLabel.setStyle(
-                        "-fx-text-fill: #ef4444; -fx-font-weight: 600;"
-                    );
+                            "-fx-text-fill: #ef4444; -fx-font-weight: 600;");
                 } else if (daysUntil == 0) {
                     dueLabel.setText("Jatuh tempo hari ini");
                     dueLabel.setStyle(
-                        "-fx-text-fill: #3b82f6; -fx-font-weight: 600;"
-                    );
+                            "-fx-text-fill: #3b82f6; -fx-font-weight: 600;");
                 } else if (daysUntil == 1) {
                     dueLabel.setText("Jatuh tempo besok");
                     dueLabel.setStyle("-fx-text-fill: #3b82f6;");
@@ -111,7 +106,7 @@ public class NextReviewWidget extends VBox {
                     dueLabel.setStyle("-fx-text-fill: #3b82f6;");
                 }
 
-                statusLabel.setText("Prioritas: " + topic.getPriority() + "/5");
+                statusLabel.setText("Prioritas: " + topik.getPrioritas() + "/5");
                 statusLabel.setStyle("-fx-text-fill: #64748b;");
                 statusLabel.setVisible(true);
             }
@@ -126,8 +121,7 @@ public class NextReviewWidget extends VBox {
 
     private void startAutoUpdate() {
         updateTimeline = new Timeline(
-            new KeyFrame(Duration.minutes(5), _ -> updateNextReview())
-        );
+                new KeyFrame(Duration.minutes(5), _ -> updateNextReview()));
         updateTimeline.setCycleCount(Animation.INDEFINITE);
         updateTimeline.play();
     }

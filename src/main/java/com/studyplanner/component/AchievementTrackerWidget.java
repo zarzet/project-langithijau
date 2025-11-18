@@ -39,7 +39,7 @@ public class AchievementTrackerWidget extends VBox {
         title.setWrapText(true);
         title.setMaxWidth(170);
 
-        streakBadge = new Label("0-day streak");
+        streakBadge = new Label("0 hari beruntun");
         streakBadge.getStyleClass().add("achievement-badge");
         streakBadge.setWrapText(true);
         streakBadge.setMaxWidth(100);
@@ -55,18 +55,17 @@ public class AchievementTrackerWidget extends VBox {
         taskValueLabel.getStyleClass().add("achievement-value");
         taskValueLabel.setWrapText(true);
         taskValueLabel.setMaxWidth(170);
-        
+
         taskDetailLabel = new Label("Belum ada tugas hari ini");
         taskDetailLabel.getStyleClass().add("achievement-detail");
         taskDetailLabel.setWrapText(true);
         taskDetailLabel.setMaxWidth(170);
 
         VBox taskBox = buildAchievementItem(
-            "Target Harian",
-            taskValueLabel,
-            taskProgress,
-            taskDetailLabel
-        );
+                "Target Harian",
+                taskValueLabel,
+                taskProgress,
+                taskDetailLabel);
 
         reviewProgress = new ProgressBar(0);
         reviewProgress.setPrefWidth(150);
@@ -76,18 +75,17 @@ public class AchievementTrackerWidget extends VBox {
         reviewValueLabel.getStyleClass().add("achievement-value");
         reviewValueLabel.setWrapText(true);
         reviewValueLabel.setMaxWidth(170);
-        
+
         reviewDetailLabel = new Label("Review menjaga retensi materi");
         reviewDetailLabel.getStyleClass().add("achievement-detail");
         reviewDetailLabel.setWrapText(true);
         reviewDetailLabel.setMaxWidth(170);
 
         VBox reviewBox = buildAchievementItem(
-            "Sesi Review",
-            reviewValueLabel,
-            reviewProgress,
-            reviewDetailLabel
-        );
+                "Sesi Review",
+                reviewValueLabel,
+                reviewProgress,
+                reviewDetailLabel);
 
         focusProgress = new ProgressBar(0);
         focusProgress.setPrefWidth(150);
@@ -97,18 +95,17 @@ public class AchievementTrackerWidget extends VBox {
         focusValueLabel.getStyleClass().add("achievement-value");
         focusValueLabel.setWrapText(true);
         focusValueLabel.setMaxWidth(170);
-        
+
         focusDetailLabel = new Label("Mulai timer belajar");
         focusDetailLabel.getStyleClass().add("achievement-detail");
         focusDetailLabel.setWrapText(true);
         focusDetailLabel.setMaxWidth(170);
 
         VBox focusBox = buildAchievementItem(
-            "Menit Fokus",
-            focusValueLabel,
-            focusProgress,
-            focusDetailLabel
-        );
+                "Menit Fokus",
+                focusValueLabel,
+                focusProgress,
+                focusDetailLabel);
 
         content.getChildren().addAll(header, taskBox, reviewBox, focusBox);
 
@@ -123,11 +120,10 @@ public class AchievementTrackerWidget extends VBox {
     }
 
     private VBox buildAchievementItem(
-        String title,
-        Label value,
-        ProgressBar progressBar,
-        Label detail
-    ) {
+            String title,
+            Label value,
+            ProgressBar progressBar,
+            Label detail) {
         Label itemTitle = new Label(title);
         itemTitle.getStyleClass().add("achievement-title");
         itemTitle.setWrapText(true);
@@ -142,13 +138,12 @@ public class AchievementTrackerWidget extends VBox {
     }
 
     public void updateData(
-        int tasksCompleted,
-        int tasksTotal,
-        int reviewCompleted,
-        int reviewTotal,
-        int focusMinutes,
-        int streakDays
-    ) {
+            int tasksCompleted,
+            int tasksTotal,
+            int reviewCompleted,
+            int reviewTotal,
+            int focusMinutes,
+            int streakDays) {
         updateTasksSection(tasksCompleted, tasksTotal);
         updateReviewSection(reviewCompleted, reviewTotal);
         updateFocusSection(focusMinutes);
@@ -197,9 +192,8 @@ public class AchievementTrackerWidget extends VBox {
 
     private void updateFocusSection(int minutes) {
         double progress = Math.min(
-            (double) minutes / FOCUS_TARGET_MINUTES,
-            1.0
-        );
+                (double) minutes / FOCUS_TARGET_MINUTES,
+                1.0);
         focusProgress.setProgress(progress);
         focusValueLabel.setText(minutes + "/" + FOCUS_TARGET_MINUTES + " menit");
 

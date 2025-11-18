@@ -1,7 +1,7 @@
 package com.studyplanner.controller;
 
-import com.studyplanner.database.DatabaseManager;
-import com.studyplanner.model.StudySession;
+import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.model.SesiBelajar;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -29,11 +29,11 @@ public class ScheduleViewController implements Initializable {
     @FXML
     private Label sessionCountLabel;
 
-    private DatabaseManager dbManager;
+    private ManajerBasisData manajerBasisData;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        dbManager = new DatabaseManager();
+        manajerBasisData = new ManajerBasisData();
         datePicker.setValue(LocalDate.now());
         datePicker.setOnAction(_ -> loadSchedule());
         loadSchedule();
@@ -44,28 +44,25 @@ public class ScheduleViewController implements Initializable {
         scheduleContainer.getChildren().clear();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-            "EEEE, dd MMMM yyyy"
-        );
+                "EEEE, dd MMMM yyyy");
         selectedDateLabel.setText(selectedDate.format(formatter));
 
         try {
-            List<StudySession> sessions = dbManager.getSessionsByDate(
-                selectedDate
-            );
+            List<SesiBelajar> sessions = manajerBasisData.ambilSesiBerdasarkanTanggal(
+                    selectedDate);
             sessionCountLabel.setText(sessions.size() + " sesi belajar");
 
             if (sessions.isEmpty()) {
                 Label emptyLabel = new Label(
-                    "Tidak ada jadwal untuk tanggal ini."
-                );
+                        "Tidak ada jadwal untuk tanggal ini.");
                 emptyLabel.getStyleClass().add("text-muted");
                 emptyLabel.setStyle("-fx-padding: 20;");
                 scheduleContainer.getChildren().add(emptyLabel);
             } else {
-                for (StudySession session : sessions) {
+                for (SesiBelajar session : sessions) {
                     scheduleContainer
-                        .getChildren()
-                        .add(createScheduleCard(session));
+                            .getChildren()
+                            .add(createScheduleCard(session));
                 }
             }
         } catch (SQLException e) {
@@ -73,45 +70,41 @@ public class ScheduleViewController implements Initializable {
         }
     }
 
-    private VBox createScheduleCard(StudySession session) {
+    private VBox createScheduleCard(SesiBelajar session) {
         VBox card = new VBox(10);
         card.getStyleClass().add("schedule-card");
 
-        Label titleLabel = new Label(session.getTopicName());
+        Label titleLabel = new Label(session.getNamaTopik());
         titleLabel.getStyleClass().add("task-title");
 
-        Label courseLabel = new Label(session.getCourseName());
+        Label courseLabel = new Label(session.getNamaMataKuliah());
         courseLabel.getStyleClass().add("task-course");
 
         HBox typeRow = new HBox(10);
         typeRow.setAlignment(Pos.CENTER_LEFT);
 
         Label typeLabel = new Label(
-            getSessionTypeLabel(session.getSessionType())
-        );
+                getSessionTypeLabel(session.getTipeSesi()));
         typeLabel
-            .getStyleClass()
-            .addAll("task-type", getBadgeClass(session.getSessionType()));
+                .getStyleClass()
+                .addAll("task-type", getBadgeClass(session.getTipeSesi()));
 
         Label durationLabel = new Label(
-            session.getDurationMinutes() + " menit"
-        );
+                session.getDurasiMenit() + " menit");
         durationLabel.getStyleClass().add("task-duration");
 
         typeRow.getChildren().addAll(typeLabel, durationLabel);
 
         Label statusLabel = new Label(
-            session.isCompleted() ? "Selesai" : "Belum selesai"
-        );
+                session.isSelesai() ? "Selesai" : "Belum selesai");
         statusLabel.setStyle(
-            session.isCompleted()
-                ? "-fx-text-fill: #10b981; -fx-font-weight: 600;"
-                : "-fx-text-fill: #f59e0b;"
-        );
+                session.isSelesai()
+                        ? "-fx-text-fill: #10b981; -fx-font-weight: 600;"
+                        : "-fx-text-fill: #f59e0b;");
 
         card
-            .getChildren()
-            .addAll(titleLabel, courseLabel, typeRow, statusLabel);
+                .getChildren()
+                .addAll(titleLabel, courseLabel, typeRow, statusLabel);
 
         return card;
     }

@@ -1,6 +1,6 @@
 package com.studyplanner.component;
 
-import com.studyplanner.database.DatabaseManager;
+import com.studyplanner.database.ManajerBasisData;
 import java.sql.SQLException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -15,11 +15,11 @@ public class StudyStreakWidget extends VBox {
     private final Label streakNumber;
     private final Label streakLabel;
     private final Label motivationLabel;
-    private final DatabaseManager dbManager;
+    private final ManajerBasisData manajerBasisData;
     private Timeline updateTimeline;
 
     public StudyStreakWidget() {
-        dbManager = new DatabaseManager();
+        manajerBasisData = new ManajerBasisData();
         getStyleClass().add("streak-widget");
         setAlignment(Pos.CENTER);
         setSpacing(8);
@@ -44,7 +44,7 @@ public class StudyStreakWidget extends VBox {
 
     private void updateStreak() {
         try {
-            int streak = dbManager.getStudyStreak();
+            int streak = manajerBasisData.ambilRuntutanBelajar();
             streakNumber.setText(String.valueOf(streak));
             updateMotivation(streak);
         } catch (SQLException e) {
@@ -71,8 +71,7 @@ public class StudyStreakWidget extends VBox {
 
     private void startAutoUpdate() {
         updateTimeline = new Timeline(
-            new KeyFrame(Duration.minutes(5), _ -> updateStreak())
-        );
+                new KeyFrame(Duration.minutes(5), _ -> updateStreak()));
         updateTimeline.setCycleCount(Animation.INDEFINITE);
         updateTimeline.play();
     }
