@@ -6,6 +6,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -44,7 +45,7 @@ public class KontrolerTampilanJadwal implements Initializable {
         scheduleContainer.getChildren().clear();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "EEEE, dd MMMM yyyy");
+                "EEEE, dd MMMM yyyy", Locale.of("id", "ID"));
         selectedDateLabel.setText(selectedDate.format(formatter));
 
         try {

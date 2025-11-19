@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.kontroler.KontrolerManajemenMataKuliah"
             prefWidth="1000" prefHeight="700">
 
@@ -14,7 +14,7 @@
                 <Insets top="20" right="20" bottom="20" left="20"/>
             </padding>
 
-            <!-- Left Panel: Courses -->
+            <!-- Panel Kiri: Mata Kuliah -->
             <VBox spacing="15">
                 <padding>
                     <Insets top="10" right="10" bottom="10" left="10"/>
@@ -39,13 +39,13 @@
                 </HBox>
             </VBox>
 
-            <!-- Right Panel: Topics and Exams -->
+            <!-- Panel Kanan: Topik dan Ujian -->
             <VBox spacing="25">
                 <padding>
                     <Insets top="10" right="10" bottom="10" left="10"/>
                 </padding>
 
-                <!-- Topics Section -->
+                <!-- Bagian Topik -->
                 <VBox spacing="15">
                     <Label text="Topik Materi" styleClass="section-title"/>
 
@@ -70,7 +70,7 @@
 
                 <Separator styleClass="separator"/>
 
-                <!-- Exams Section -->
+                <!-- Bagian Ujian -->
                 <VBox spacing="15">
                     <Label text="Jadwal Ujian" styleClass="section-title"/>
 

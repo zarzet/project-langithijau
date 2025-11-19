@@ -1,5 +1,6 @@
 package com.studyplanner.basisdata;
 
+import com.studyplanner.utilitas.PencatatLog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -19,11 +20,11 @@ public class PencatatQuery {
     }
 
     public void catat(String query) {
+        // Log to console via configurable logger
+        PencatatLog.db(query);
+        
         String timestamp = java.time.LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
         String logMessage = "[" + timestamp + "] " + query;
-        
-        // Print to console standard as well
-        System.out.println("DB_LOG: " + logMessage);
 
         for (Consumer<String> listener : listeners) {
             // Ensure UI updates happen on JavaFX thread if listener updates UI

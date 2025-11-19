@@ -4,10 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.kontroler.KontrolerUtama">
 
-    <!-- Header -->
+    <!-- Bagian Atas -->
     <top>
         <VBox styleClass="header">
             <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
@@ -16,24 +16,31 @@
                 <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
                 <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
                 <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="btn-success"/>
-                <Button fx:id="themeToggleBtn" text="◐" styleClass="theme-toggle"/>
+                <MenuButton fx:id="userMenuBtn" text="👤 Pengguna" styleClass="btn-secondary" mnemonicParsing="false">
+                    <items>
+                        <MenuItem fx:id="profileMenuItem" text="👤 Profil Saya"/>
+                        <MenuItem fx:id="settingsMenuItem" text="⚙ Pengaturan"/>
+                        <SeparatorMenuItem/>
+                        <MenuItem fx:id="logoutMenuItem" text="← Keluar"/>
+                    </items>
+                </MenuButton>
             </HBox>
             <Separator/>
         </VBox>
     </top>
 
-    <!-- Main Content -->
+    <!-- Konten Utama -->
     <center>
         <ScrollPane fitToWidth="true" styleClass="scroll-pane">
             <VBox spacing="20" style="-fx-padding: 30;">
 
-                <!-- Welcome Section -->
+                <!-- Bagian Selamat Datang -->
                 <VBox spacing="10" styleClass="card">
                     <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title"/>
                     <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label"/>
                 </VBox>
 
-                <!-- Widgets Grid -->
+                <!-- Grid Widget -->
                 <GridPane hgap="12" vgap="20">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="16.67"/>
@@ -44,28 +51,28 @@
                         <ColumnConstraints percentWidth="16.67"/>
                     </columnConstraints>
 
-                    <!-- Study Streak Widget -->
+                    <!-- Widget Runtutan Belajar -->
                     <VBox fx:id="streakContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-                    <!-- Clock Widget -->
+                    <!-- Widget Jam -->
                     <VBox fx:id="clockContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                    <!-- Study Time Today Widget -->
+                    <!-- Widget Waktu Belajar Hari Ini -->
                     <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
 
-                    <!-- Next Review Widget -->
+                    <!-- Widget Ulasan Berikutnya -->
                     <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
 
-                    <!-- Achievement Tracker Widget -->
+                    <!-- Widget Pelacak Pencapaian -->
                     <VBox fx:id="achievementContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
 
-                    <!-- Upcoming Tasks Widget -->
+                    <!-- Widget Tugas Mendatang -->
                     <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
                 </GridPane>
 
-                <!-- Statistics Cards -->
+                <!-- Kartu Statistik -->
                 <HBox spacing="20">
-                    <!-- Overall Progress Card -->
+                    <!-- Kartu Progress Keseluruhan -->
                     <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label text="Progress Keseluruhan" styleClass="stat-title"/>
                         <HBox spacing="10" alignment="CENTER_LEFT">
@@ -83,7 +90,7 @@
                         <Label fx:id="overallProgressLabel" text="0%" styleClass="progress-label"/>
                     </VBox>
 
-                    <!-- Today Progress Card -->
+                    <!-- Kartu Progress Hari Ini -->
                     <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
                         <Label text="Progress Hari Ini" styleClass="stat-title"/>
                         <HBox spacing="10" alignment="CENTER_LEFT">
@@ -102,9 +109,9 @@
                     </VBox>
                 </HBox>
 
-                <!-- Main Content Grid -->
+                <!-- Grid Konten Utama -->
                 <HBox spacing="12">
-                    <!-- Today's Tasks -->
+                    <!-- Tugas Hari Ini -->
                     <VBox spacing="15" styleClass="card" HBox.hgrow="ALWAYS">
                         <Label text="Tugas Hari Ini" styleClass="section-title"/>
                         <Separator/>
@@ -113,7 +120,7 @@
                         </ScrollPane>
                     </VBox>
 
-                    <!-- Upcoming Exams -->
+                    <!-- Ujian Mendatang -->
                     <VBox spacing="15" styleClass="card" prefWidth="350">
                         <Label text="Ujian Mendatang" styleClass="section-title"/>
                         <Separator/>

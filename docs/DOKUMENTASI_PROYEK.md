@@ -205,9 +205,9 @@ Tujuan utama dari pengembangan aplikasi **"Adaptive Study Planner"** adalah seba
 ### 1. Design Pattern
 Aplikasi menggunakan **Model-View-Controller (MVC)** pattern:
 
-- **Model**: `Course`, `Topic`, `ExamSchedule`, `StudySession`
-- **View**: FXML files (`MainView.fxml`, `CourseManagement.fxml`, `ScheduleView.fxml`)
-- **Controller**: `MainController`, `CourseManagementController`, `ScheduleViewController`
+- **Model**: `MataKuliah`, `Topik`, `JadwalUjian`, `SesiBelajar`
+- **View**: FXML files (`MainView.fxml`, `ManajemenMataKuliah.fxml`, `ScheduleView.fxml`)
+- **Controller**: `KontrolerUtama`, `KontrolerManajemenMataKuliah`, `KontrolerTampilanJadwal`
 
 ### 2. Database Schema
 

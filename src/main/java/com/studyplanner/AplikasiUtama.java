@@ -1,6 +1,7 @@
 package com.studyplanner;
 
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,20 +16,21 @@ public class AplikasiUtama extends Application {
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
 
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/fxml/MainView.fxml"));
+        ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+        auth.cobaPulihkanSesi();
+        
+        String fxmlFile = auth.isLoggedIn() ? "/fxml/MainView.fxml" : "/fxml/LoginView.fxml";
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 1200, 800);
-        scene
-                .getStylesheets()
-                .add(getClass().getResource("/css/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
         stage.setScene(scene);
         stage.setMinWidth(1000);
         stage.setMinHeight(700);
 
-        // Apply custom window decoration
         DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", false);
 
         stage.show();

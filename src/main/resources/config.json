@@ -1,0 +1,10 @@
+{
+  "logging": {
+    "enable_db_log": true,
+    "enable_app_log": true
+  },
+  "app": {
+    "version": "1.0.0",
+    "language": "id"
+  }
+}

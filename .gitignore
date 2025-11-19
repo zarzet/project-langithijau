@@ -46,3 +46,11 @@ desktop.ini
 # Backup files
 *.bak
 *.backup
+
+# Secrets & Credentials
+src/main/resources/credentials.json
+tokens/
+*.credentials
+
+# Screenshots
+Screenshot*.png

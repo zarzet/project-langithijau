@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.studyplanner.kontroler.KontrolerLogin"
+           fx:id="rootPane"
+           styleClass="login-root" prefWidth="1000" prefHeight="700">
+
+    <!-- Lapisan Latar Belakang: Pratinjau Buram -->
+    <StackPane fx:id="wadahLatar" mouseTransparent="true">
+        <ImageView fx:id="gambarLatar" preserveRatio="false" smooth="true"/>
+    </StackPane>
+
+    <!-- Overlay: Peredup untuk memastikan kontras -->
+    <Region style="-fx-background-color: rgba(0, 0, 0, 0.3);" mouseTransparent="true"/>
+
+    <VBox styleClass="login-card" spacing="30" alignment="TOP_CENTER">
+        
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <VBox spacing="15" alignment="CENTER">
+            <Label text="Masuk atau Daftar" styleClass="login-title"/>
+            <Label text="Perencana Belajar Adaptif membutuhkan login&#10;untuk menyimpan progres Anda." 
+                   styleClass="login-subtitle" wrapText="true" textAlignment="CENTER"/>
+        </VBox>
+        
+        <VBox spacing="15" alignment="CENTER">
+            <Button fx:id="googleLoginBtn" text="Masuk dengan Google" 
+                    styleClass="btn-login-google" maxWidth="Infinity"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

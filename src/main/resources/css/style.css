@@ -125,6 +125,51 @@
     -fx-background-color: #e2e8f0;
 }
 
+/* ========== Menu Button ========== */
+.menu-button {
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 10 20;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+.menu-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0, 0, 2);
+}
+
+.menu-button .label {
+    -fx-text-fill: #475569;
+}
+
+.menu-button:hover .label {
+    -fx-text-fill: #0f172a;
+}
+
+.menu-button .arrow {
+    -fx-background-color: #475569;
+}
+
+.menu-button:hover .arrow {
+    -fx-background-color: #0f172a;
+}
+
+.context-menu .menu-item {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 10 20;
+}
+
+.context-menu .menu-item:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.context-menu .menu-item .label {
+    -fx-font-size: 13px;
+}
+
 /* ========== Modern Cards ========== */
 .card {
     -fx-background-color: #ffffff;
@@ -355,15 +400,29 @@
 
 .scroll-bar {
     -fx-background-color: transparent;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 0;
+    -fx-min-width: 0;
+    -fx-max-width: 0;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #cbd5e1;
+    -fx-background-color: transparent;
     -fx-background-radius: 4;
 }
 
 .scroll-bar .thumb:hover {
-    -fx-background-color: #94a3b8;
+    -fx-background-color: transparent;
 }
 
 .scroll-bar .track {
@@ -374,6 +433,8 @@
 .scroll-bar .decrement-button {
     -fx-background-color: transparent;
     -fx-padding: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
 }
 
 /* Transparent ScrollPane for widgets */
@@ -1013,6 +1074,30 @@
     -fx-background-color: #1e293b;
 }
 
+.dark-mode .menu-button {
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .menu-button:hover {
+    -fx-background-color: #334155;
+}
+
+.dark-mode .menu-button .label {
+    -fx-text-fill: #cbd5e1;
+}
+
+.dark-mode .menu-button:hover .label {
+    -fx-text-fill: #f8fafc;
+}
+
+.dark-mode .menu-button .arrow {
+    -fx-background-color: #cbd5e1;
+}
+
+.dark-mode .menu-button:hover .arrow {
+    -fx-background-color: #f8fafc;
+}
+
 .dark-mode .streak-widget {
     -fx-background-color: #1e293b;
     -fx-border-color: #334155;
@@ -1122,4 +1207,125 @@
 .task-card,
 .check-box .box {
     -fx-transition: all 0.15s ease;
+}
+
+/* ========== Login Screen ========== */
+.login-root {
+    -fx-background-color: transparent;
+}
+
+.login-card {
+    -fx-background-color: rgba(22, 27, 34, 0.95); /* Sedikit transparan */
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-border-color: rgba(48, 54, 61, 0.5);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 40, 0, 0, 20);
+    -fx-padding: 30;
+    -fx-min-width: 420;
+    -fx-max-width: 420;
+}
+
+/* Light Mode Login */
+.light-mode .login-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: #e1e4e8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 40, 0, 0, 15);
+}
+
+.light-mode .login-title {
+    -fx-text-fill: #24292f;
+}
+
+.light-mode .login-subtitle {
+    -fx-text-fill: #57606a;
+}
+
+.login-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #f0f6fc;
+    -fx-alignment: center;
+}
+
+.login-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: #8b949e;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+    -fx-line-spacing: 4px;
+}
+
+.btn-login-google {
+    -fx-background-color: transparent;
+    -fx-border-color: #30363d;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-text-fill: #f0f6fc;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 20;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+    -fx-graphic-text-gap: 15;
+}
+
+.light-mode .btn-login-google {
+    -fx-border-color: #d0d7de;
+    -fx-text-fill: #24292f;
+}
+
+.btn-login-google:hover {
+    -fx-background-color: rgba(177, 186, 196, 0.1);
+    -fx-border-color: #8b949e;
+}
+
+.theme-toggle-icon {
+    -fx-font-size: 16px;
+    -fx-text-fill: #8b949e;
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+    -fx-padding: 8;
+    -fx-background-radius: 50%;
+}
+
+.theme-toggle-icon:hover {
+    -fx-background-color: rgba(177, 186, 196, 0.1);
+    -fx-text-fill: #f0f6fc;
+}
+
+.login-divider {
+    -fx-background-color: #30363d;
+}
+
+.login-divider-text {
+    -fx-text-fill: #8b949e;
+    -fx-font-size: 12px;
+    -fx-background-color: #161b22; 
+    -fx-padding: 0 10;
+}
+
+.login-input {
+    -fx-background-color: #0d1117;
+    -fx-border-color: #30363d;
+    -fx-border-radius: 6;
+    -fx-text-fill: #c9d1d9;
+    -fx-padding: 10;
+}
+
+.login-input:focused {
+    -fx-border-color: #58a6ff;
+}
+
+.btn-continue {
+    -fx-background-color: #f0f6fc;
+    -fx-text-fill: #0d1117;
+    -fx-font-weight: 700;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.btn-continue:hover {
+    -fx-background-color: #ffffff;
 }

@@ -1,5 +1,7 @@
 package com.studyplanner.kontroler;
 
+import com.studyplanner.utilitas.ManajerOtentikasi;
+import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.algoritma.PembuatJadwal;
 import com.studyplanner.algoritma.PengulanganBerjarak;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
@@ -16,6 +18,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
@@ -84,6 +87,18 @@ public class KontrolerUtama implements Initializable {
     private Button themeToggleBtn;
 
     @FXML
+    private MenuButton userMenuBtn;
+
+    @FXML
+    private MenuItem profileMenuItem;
+
+    @FXML
+    private MenuItem settingsMenuItem;
+
+    @FXML
+    private MenuItem logoutMenuItem;
+
+    @FXML
     private VBox streakContainer;
 
     @FXML
@@ -117,14 +132,14 @@ public class KontrolerUtama implements Initializable {
         manajerBasisData = new ManajerBasisData();
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
-        setupUI();
+        siapkanUI();
         loadDashboardData();
-        setupAutoRefresh();
+        siapkanPembaruanOtomatis();
     }
 
-    private void setupUI() {
+    private void siapkanUI() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "EEEE, dd MMMM yyyy");
+                "EEEE, dd MMMM yyyy", Locale.of("id", "ID"));
         dateLabel.setText(LocalDate.now().format(formatter));
 
         if (streakContainer != null) {
@@ -162,31 +177,52 @@ public class KontrolerUtama implements Initializable {
 
         if (achievementContainer != null) {
             achievementWidget = new WidgetPelacakPencapaian();
-            applyCompactWidgetSizing(achievementWidget);
+            terapkanUkuranWidgetKompak(achievementWidget);
             achievementWidget.setOnMouseClicked(_ -> showAchievementDetailDialog());
             achievementContainer.getChildren().setAll(achievementWidget);
         }
 
         if (upcomingTasksWidgetContainer != null) {
             upcomingTasksWidget = new WidgetTugasMendatang();
-            applyCompactWidgetSizing(upcomingTasksWidget);
+            terapkanUkuranWidgetKompak(upcomingTasksWidget);
             upcomingTasksWidget.setOnMouseClicked(_ -> showUpcomingTasksDetailDialog());
             upcomingTasksWidgetContainer
                     .getChildren()
                     .setAll(upcomingTasksWidget);
         }
 
-        manageCourseBtn.setOnAction(_ -> openCourseManagement());
-        viewScheduleBtn.setOnAction(_ -> openScheduleView());
-        generateScheduleBtn.setOnAction(_ -> generateNewSchedule());
+        manageCourseBtn.setOnAction(_ -> bukaManajemenMataKuliah());
+        viewScheduleBtn.setOnAction(_ -> bukaLihatJadwal());
+        generateScheduleBtn.setOnAction(_ -> buatJadwalBaru());
 
         if (themeToggleBtn != null) {
             themeToggleBtn.setText(isDarkMode ? "☼" : "◐");
-            themeToggleBtn.setOnAction(_ -> toggleDarkMode());
+            themeToggleBtn.setOnAction(_ -> alihkanModaGelap());
+        }
+        
+        if (ManajerOtentikasi.getInstance().isLoggedIn()) {
+            Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
+            welcomeLabel.setText("Selamat Datang, " + user.getGivenName() + "!");
+            
+            // Setup user menu
+            if (userMenuBtn != null) {
+                userMenuBtn.setText("👤 " + user.getGivenName());
+            }
+        }
+        
+        // Setup menu item handlers
+        if (profileMenuItem != null) {
+            profileMenuItem.setOnAction(_ -> tampilkanProfil());
+        }
+        if (settingsMenuItem != null) {
+            settingsMenuItem.setOnAction(_ -> tampilkanPengaturan());
+        }
+        if (logoutMenuItem != null) {
+            logoutMenuItem.setOnAction(_ -> keluar());
         }
     }
 
-    private void applyCompactWidgetSizing(Region region) {
+    private void terapkanUkuranWidgetKompak(Region region) {
         if (region != null) {
             region.setPrefSize(180, 180);
             region.setMinSize(180, 180);
@@ -194,14 +230,14 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    private void setupAutoRefresh() {
+    private void siapkanPembaruanOtomatis() {
         autoRefreshTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(30), _ -> loadDashboardData()));
         autoRefreshTimeline.setCycleCount(Animation.INDEFINITE);
         autoRefreshTimeline.play();
     }
 
-    private void toggleDarkMode() {
+    private void alihkanModaGelap() {
         isDarkMode = !isDarkMode;
 
         if (themeToggleBtn != null) {
@@ -615,10 +651,10 @@ public class KontrolerUtama implements Initializable {
         return card;
     }
 
-    private void openCourseManagement() {
+    private void bukaManajemenMataKuliah() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/fxml/CourseManagement.fxml"));
+                    getClass().getResource("/fxml/ManajemenMataKuliah.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
@@ -650,7 +686,7 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    private void openScheduleView() {
+    private void bukaLihatJadwal() {
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/fxml/ScheduleView.fxml"));
@@ -676,7 +712,7 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    private void generateNewSchedule() {
+    private void buatJadwalBaru() {
         try {
             pembuatJadwal.buatDanSimpanJadwal(7);
             showInfo(
@@ -702,6 +738,98 @@ public class KontrolerUtama implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void tampilkanProfil() {
+        if (!ManajerOtentikasi.getInstance().isLoggedIn()) {
+            return;
+        }
+        
+        Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
+        
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Profil Pengguna");
+        dialog.setHeaderText("Informasi Profil Anda");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-min-width: 400px;");
+        
+        // Info pengguna
+        Label nameLabel = new Label("Nama: " + user.getName());
+        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+        
+        Label emailLabel = new Label("Email: " + (user.getEmail() != null ? user.getEmail() : "Tidak tersedia"));
+        emailLabel.setStyle("-fx-font-size: 13px;");
+        
+        Label idLabel = new Label("ID: " + user.getId());
+        idLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
+        
+        content.getChildren().addAll(nameLabel, emailLabel, idLabel);
+        
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        
+        dialog.showAndWait();
+    }
+
+    private void tampilkanPengaturan() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Pengaturan");
+        dialog.setHeaderText("Pengaturan Aplikasi");
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-min-width: 400px;");
+        
+        Label infoLabel = new Label("Fitur pengaturan akan segera hadir!");
+        infoLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+        
+        // Dark mode toggle
+        HBox darkModeBox = new HBox(10);
+        darkModeBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        Label darkModeLabel = new Label("Mode Gelap:");
+        darkModeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+        CheckBox darkModeCheck = new CheckBox();
+        darkModeCheck.setSelected(isDarkMode);
+        darkModeCheck.setOnAction(_ -> alihkanModaGelap());
+        darkModeBox.getChildren().addAll(darkModeLabel, darkModeCheck);
+        
+        content.getChildren().addAll(infoLabel, new Separator(), darkModeBox);
+        
+        dialog.getDialogPane().setContent(content);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        
+        dialog.showAndWait();
+    }
+
+    private void keluar() {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Konfirmasi Keluar");
+        confirmation.setHeaderText("Apakah Anda yakin ingin keluar?");
+        confirmation.setContentText("Anda akan logout dari aplikasi.");
+        
+        confirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                try {
+                    ManajerOtentikasi.getInstance().logout();
+                    
+                    // Kembali ke login screen
+                    Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginView.fxml"));
+                    Parent root = loader.load();
+                    
+                    Scene scene = new Scene(root, 1000, 700);
+                    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+                    
+                    stage.setScene(scene);
+                    DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", false);
+                } catch (Exception e) {
+                    showError("Gagal logout: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public ManajerBasisData getManajerBasisData() {

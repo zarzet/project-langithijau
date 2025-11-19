@@ -39,14 +39,16 @@ public class DekoratorJendelaKustom {
             originalRoot = scene.getRoot();
             lebar = scene.getWidth();
             tinggi = scene.getHeight();
-            // Cek jika root asli memiliki dark-mode
-            if (originalRoot.getStyleClass().contains("dark-mode")) {
-                modeGelap = true;
-            }
+            
+            originalRoot.getStyleClass().remove("dark-mode");
+            originalRoot.getStyleClass().remove("light-mode");
         }
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("custom-window");
+        
+        String bgColor = modeGelap ? "#020617" : "#fafbfc";
+        root.setStyle("-fx-background-color: " + bgColor + ";");
 
         HBox titleBar = buatTitleBar(stage, judul, modeGelap);
         root.setTop(titleBar);
@@ -63,6 +65,9 @@ public class DekoratorJendelaKustom {
 
         if (modeGelap) {
             sceneBaru.getRoot().getStyleClass().add("dark-mode");
+        } else {
+            sceneBaru.getRoot().getStyleClass().remove("dark-mode");
+            sceneBaru.getRoot().getStyleClass().add("light-mode");
         }
 
         stage.setScene(sceneBaru);
