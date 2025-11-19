@@ -1,4 +1,4 @@
-package com.studyplanner.component;
+package com.studyplanner.tampilan;
 
 import com.studyplanner.model.SesiBelajar;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import javafx.scene.layout.VBox;
 
 public class WidgetTugasMendatang extends VBox {
 
-    private static final Locale ID_LOCALE = new Locale("id", "ID");
+    private static final Locale ID_LOCALE = Locale.of("id", "ID");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
             "EEEE, dd MMM",
             ID_LOCALE);

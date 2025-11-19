@@ -1,4 +1,4 @@
-package com.studyplanner.algorithm;
+package com.studyplanner.algoritma;
 
 import com.studyplanner.model.Topik;
 import java.time.LocalDate;

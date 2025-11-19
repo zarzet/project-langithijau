@@ -1,6 +1,6 @@
-package com.studyplanner.controller;
+package com.studyplanner.kontroler;
 
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.model.Topik;
@@ -17,7 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class CourseManagementController implements Initializable {
+public class KontrolerManajemenMataKuliah implements Initializable {
 
     @FXML
     private TableView<MataKuliah> courseTable;
@@ -83,7 +83,7 @@ public class CourseManagementController implements Initializable {
     private Button deleteExamBtn;
 
     private ManajerBasisData manajerBasisData;
-    private MainController mainController;
+    private KontrolerUtama kontrolerUtama;
     private ObservableList<MataKuliah> courses;
     private ObservableList<Topik> topics;
     private ObservableList<JadwalUjian> exams;
@@ -97,21 +97,21 @@ public class CourseManagementController implements Initializable {
         loadCourses();
     }
 
-    public void setMainController(MainController controller) {
-        this.mainController = controller;
-        if (this.mainController != null) {
-            this.manajerBasisData = this.mainController.getManajerBasisData();
+    public void aturKontrolerUtama(KontrolerUtama kontroler) {
+        this.kontrolerUtama = kontroler;
+        if (this.kontrolerUtama != null) {
+            this.manajerBasisData = this.kontrolerUtama.getManajerBasisData();
         }
     }
 
     private void setupTables() {
-        courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         courseCodeColumn.setCellValueFactory(
                 new PropertyValueFactory<>("kode"));
         courseNameColumn.setCellValueFactory(
                 new PropertyValueFactory<>("nama"));
 
-        topicTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        topicTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
         courseTable
                 .getSelectionModel()
@@ -131,7 +131,7 @@ public class CourseManagementController implements Initializable {
         topicReviewCountColumn.setCellValueFactory(
                 new PropertyValueFactory<>("jumlahUlasan"));
 
-        examTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        examTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         examTitleColumn.setCellValueFactory(
                 new PropertyValueFactory<>("judul"));
         examTypeColumn.setCellValueFactory(
@@ -160,7 +160,7 @@ public class CourseManagementController implements Initializable {
             courses = FXCollections.observableArrayList(courseList);
             courseTable.setItems(courses);
         } catch (SQLException e) {
-            showError("Error loading courses: " + e.getMessage());
+            showError("Gagal memuat daftar mata kuliah: " + e.getMessage());
         }
     }
 
@@ -170,7 +170,7 @@ public class CourseManagementController implements Initializable {
             topics = FXCollections.observableArrayList(topicList);
             topicTable.setItems(topics);
         } catch (SQLException e) {
-            showError("Error loading topics: " + e.getMessage());
+            showError("Gagal memuat topik: " + e.getMessage());
         }
     }
 
@@ -180,7 +180,7 @@ public class CourseManagementController implements Initializable {
             exams = FXCollections.observableArrayList(examList);
             examTable.setItems(exams);
         } catch (SQLException e) {
-            showError("Error loading exams: " + e.getMessage());
+            showError("Gagal memuat ujian: " + e.getMessage());
         }
     }
 
@@ -235,7 +235,7 @@ public class CourseManagementController implements Initializable {
                 loadCourses();
                 showInfo("Mata kuliah berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Error adding course: " + e.getMessage());
+                showError("Gagal menambahkan mata kuliah: " + e.getMessage());
             }
         });
     }
@@ -292,7 +292,7 @@ public class CourseManagementController implements Initializable {
                 loadCourses();
                 showInfo("Mata kuliah berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Error updating course: " + e.getMessage());
+                showError("Gagal memperbarui mata kuliah: " + e.getMessage());
             }
         });
     }
@@ -319,7 +319,7 @@ public class CourseManagementController implements Initializable {
                 examTable.getItems().clear();
                 showInfo("Mata kuliah berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Error deleting course: " + e.getMessage());
+                showError("Gagal menghapus mata kuliah: " + e.getMessage());
             }
         }
     }
@@ -388,7 +388,7 @@ public class CourseManagementController implements Initializable {
                 loadTopics(selectedCourse.getId());
                 showInfo("Topik berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Error adding topic: " + e.getMessage());
+                showError("Gagal menambahkan topik: " + e.getMessage());
             }
         });
     }
@@ -455,7 +455,7 @@ public class CourseManagementController implements Initializable {
                 loadTopics(topic.getIdMataKuliah());
                 showInfo("Topik berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Error updating topic: " + e.getMessage());
+                showError("Gagal memperbarui topik: " + e.getMessage());
             }
         });
     }
@@ -479,7 +479,7 @@ public class CourseManagementController implements Initializable {
                 loadTopics(courseId);
                 showInfo("Topik berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Error deleting topic: " + e.getMessage());
+                showError("Gagal menghapus topik: " + e.getMessage());
             }
         }
     }
@@ -508,8 +508,8 @@ public class CourseManagementController implements Initializable {
         titleField.setPromptText("Judul (contoh: UTS)");
 
         ComboBox<String> typeCombo = new ComboBox<>();
-        typeCombo.getItems().addAll("MIDTERM", "FINAL", "QUIZ", "ASSIGNMENT");
-        typeCombo.setValue("MIDTERM");
+        typeCombo.getItems().addAll("UTS", "UAS", "Kuis", "Tugas");
+        typeCombo.setValue("UTS");
 
         DatePicker datePicker = new DatePicker(LocalDate.now().plusDays(7));
 
@@ -544,7 +544,7 @@ public class CourseManagementController implements Initializable {
                 loadExams(selectedCourse.getId());
                 showInfo("Jadwal ujian berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Error adding exam: " + e.getMessage());
+                showError("Gagal menambahkan ujian: " + e.getMessage());
             }
         });
     }
@@ -569,7 +569,7 @@ public class CourseManagementController implements Initializable {
 
         TextField titleField = new TextField(selected.getJudul());
         ComboBox<String> typeCombo = new ComboBox<>();
-        typeCombo.getItems().addAll("MIDTERM", "FINAL", "QUIZ", "ASSIGNMENT");
+        typeCombo.getItems().addAll("UTS", "UAS", "Kuis", "Tugas");
         typeCombo.setValue(selected.getTipeUjian());
         DatePicker datePicker = new DatePicker(selected.getTanggalUjian());
 
@@ -602,7 +602,7 @@ public class CourseManagementController implements Initializable {
                 loadExams(exam.getIdMataKuliah());
                 showInfo("Jadwal ujian berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Error updating exam: " + e.getMessage());
+                showError("Gagal memperbarui ujian: " + e.getMessage());
             }
         });
     }
@@ -626,7 +626,7 @@ public class CourseManagementController implements Initializable {
                 loadExams(courseId);
                 showInfo("Jadwal ujian berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Error deleting exam: " + e.getMessage());
+                showError("Gagal menghapus ujian: " + e.getMessage());
             }
         }
     }

@@ -1,6 +1,6 @@
-package com.studyplanner.component;
+package com.studyplanner.tampilan;
 
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.Topik;
 import java.sql.SQLException;
 import java.time.LocalDate;

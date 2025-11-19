@@ -1,4 +1,4 @@
-package com.studyplanner.component;
+package com.studyplanner.tampilan;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

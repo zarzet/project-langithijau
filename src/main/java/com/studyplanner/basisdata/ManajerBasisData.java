@@ -1,4 +1,4 @@
-package com.studyplanner.database;
+package com.studyplanner.basisdata;
 
 import com.studyplanner.model.*;
 import java.sql.*;
@@ -101,10 +101,15 @@ public class ManajerBasisData {
         }
     }
 
+    private void catatKueri(String sql) {
+        PencatatQuery.getInstance().catat(sql);
+    }
+
     // ==================== OPERASI MATA KULIAH ====================
 
     public int tambahMataKuliah(MataKuliah mataKuliah) throws SQLException {
         String sql = "INSERT INTO mata_kuliah (nama, kode, deskripsi) VALUES (?, ?, ?)";
+        catatKueri(sql);
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(
                         sql,
@@ -124,6 +129,7 @@ public class ManajerBasisData {
 
     public void perbaruiMataKuliah(MataKuliah mataKuliah) throws SQLException {
         String sql = "UPDATE mata_kuliah SET nama = ?, kode = ?, deskripsi = ? WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setString(1, mataKuliah.getNama());
             pstmt.setString(2, mataKuliah.getKode());
@@ -135,6 +141,7 @@ public class ManajerBasisData {
 
     public void hapusMataKuliah(int idMataKuliah) throws SQLException {
         String sql = "DELETE FROM mata_kuliah WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idMataKuliah);
             pstmt.executeUpdate();
@@ -144,6 +151,7 @@ public class ManajerBasisData {
     public List<MataKuliah> ambilSemuaMataKuliah() throws SQLException {
         List<MataKuliah> daftarMataKuliah = new ArrayList<>();
         String sql = "SELECT * FROM mata_kuliah ORDER BY kode";
+        catatKueri(sql);
 
         try (
                 Statement stmt = koneksi.createStatement();
@@ -162,6 +170,7 @@ public class ManajerBasisData {
 
     public MataKuliah ambilMataKuliahBerdasarkanId(int id) throws SQLException {
         String sql = "SELECT * FROM mata_kuliah WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -187,6 +196,7 @@ public class ManajerBasisData {
                                        faktor_kemudahan, interval, dikuasai)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(
@@ -222,6 +232,7 @@ public class ManajerBasisData {
                                     interval = ?, dikuasai = ?
                     WHERE id = ?
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, topik.getIdMataKuliah());
@@ -242,6 +253,7 @@ public class ManajerBasisData {
 
     public void hapusTopik(int idTopik) throws SQLException {
         String sql = "DELETE FROM topik WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idTopik);
             pstmt.executeUpdate();
@@ -251,6 +263,7 @@ public class ManajerBasisData {
     public List<Topik> ambilTopikBerdasarkanMataKuliah(int idMataKuliah) throws SQLException {
         List<Topik> daftarTopik = new ArrayList<>();
         String sql = "SELECT * FROM topik WHERE id_mata_kuliah = ? ORDER BY prioritas DESC, nama";
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idMataKuliah);
@@ -265,6 +278,7 @@ public class ManajerBasisData {
 
     public Topik ambilTopikBerdasarkanId(int id) throws SQLException {
         String sql = "SELECT * FROM topik WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -279,6 +293,7 @@ public class ManajerBasisData {
     public List<Topik> ambilSemuaTopik() throws SQLException {
         List<Topik> daftarTopik = new ArrayList<>();
         String sql = "SELECT * FROM topik ORDER BY prioritas DESC, nama";
+        catatKueri(sql);
 
         try (
                 Statement stmt = koneksi.createStatement();
@@ -325,6 +340,7 @@ public class ManajerBasisData {
                                                waktu_ujian, lokasi, catatan, selesai)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(
@@ -355,6 +371,7 @@ public class ManajerBasisData {
                                              catatan = ?, selesai = ?
                     WHERE id = ?
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, ujian.getIdMataKuliah());
@@ -372,6 +389,7 @@ public class ManajerBasisData {
 
     public void hapusJadwalUjian(int idUjian) throws SQLException {
         String sql = "DELETE FROM jadwal_ujian WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idUjian);
             pstmt.executeUpdate();
@@ -385,6 +403,7 @@ public class ManajerBasisData {
                     WHERE tanggal_ujian >= date('now') AND selesai = 0
                     ORDER BY tanggal_ujian ASC
                 """;
+        catatKueri(sql);
 
         try (
                 Statement stmt = koneksi.createStatement();
@@ -400,6 +419,7 @@ public class ManajerBasisData {
             throws SQLException {
         List<JadwalUjian> daftarUjian = new ArrayList<>();
         String sql = "SELECT * FROM jadwal_ujian WHERE id_mata_kuliah = ? ORDER BY tanggal_ujian";
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idMataKuliah);
@@ -446,6 +466,7 @@ public class ManajerBasisData {
                                                rating_performa, catatan, durasi_menit)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(
@@ -481,6 +502,7 @@ public class ManajerBasisData {
                                              rating_performa = ?, catatan = ?, durasi_menit = ?
                     WHERE id = ?
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, sesi.getIdTopik());
@@ -503,6 +525,7 @@ public class ManajerBasisData {
 
     public void hapusSesiBelajar(int idSesi) throws SQLException {
         String sql = "DELETE FROM sesi_belajar WHERE id = ?";
+        catatKueri(sql);
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, idSesi);
             pstmt.executeUpdate();
@@ -520,6 +543,7 @@ public class ManajerBasisData {
                     WHERE s.tanggal_jadwal = ?
                     ORDER BY s.tipe_sesi, c.kode
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setObject(1, tanggal);
@@ -555,6 +579,7 @@ public class ManajerBasisData {
                     ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi
                     LIMIT ?
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, batas);
@@ -643,6 +668,7 @@ public class ManajerBasisData {
                         )
                     )
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(sql);
@@ -661,6 +687,7 @@ public class ManajerBasisData {
                     WHERE tanggal_jadwal = DATE('now')
                     AND selesai = 1
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(sql);
@@ -679,6 +706,7 @@ public class ManajerBasisData {
                     WHERE tanggal_jadwal = DATE('now', '-1 day')
                     AND selesai = 1
                 """;
+        catatKueri(sql);
 
         try (
                 PreparedStatement pstmt = koneksi.prepareStatement(sql);
@@ -703,6 +731,7 @@ public class ManajerBasisData {
                     ORDER BY tanggal_ulasan_berikutnya ASC, t.prioritas DESC
                     LIMIT ?
                 """;
+        catatKueri(sql);
 
         try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, batas);
@@ -724,6 +753,51 @@ public class ManajerBasisData {
         } catch (SQLException e) {
             System.err.println(
                     "Gagal menutup koneksi basis data: " + e.getMessage());
+        }
+    }
+
+    // ==================== HELPER INSPEKTUR BASIS DATA ====================
+
+    public List<String> ambilDaftarTabel() throws SQLException {
+        List<String> tables = new ArrayList<>();
+        DatabaseMetaData md = koneksi.getMetaData();
+        try (ResultSet rs = md.getTables(null, null, "%", new String[] { "TABLE" })) {
+            while (rs.next()) {
+                String tableName = rs.getString("TABLE_NAME");
+                if (!tableName.startsWith("sqlite_")) {
+                    tables.add(tableName);
+                }
+            }
+        }
+        return tables;
+    }
+
+    // Mengembalikan list of maps (column name -> value)
+    public List<java.util.Map<String, Object>> jalankanQuerySelect(String sql) throws SQLException {
+        catatKueri("[MANUAL] " + sql);
+        List<java.util.Map<String, Object>> results = new ArrayList<>();
+        
+        try (Statement stmt = koneksi.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            
+            while (rs.next()) {
+                java.util.Map<String, Object> row = new java.util.HashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.put(metaData.getColumnName(i), rs.getObject(i));
+                }
+                results.add(row);
+            }
+        }
+        return results;
+    }
+    
+    public void jalankanQueryUpdate(String sql) throws SQLException {
+        catatKueri("[MANUAL] " + sql);
+        try (Statement stmt = koneksi.createStatement()) {
+            stmt.executeUpdate(sql);
         }
     }
 }

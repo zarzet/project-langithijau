@@ -1,6 +1,6 @@
-package com.studyplanner.controller;
+package com.studyplanner.kontroler;
 
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.SesiBelajar;
 import java.net.URL;
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class ScheduleViewController implements Initializable {
+public class KontrolerTampilanJadwal implements Initializable {
 
     @FXML
     private DatePicker datePicker;

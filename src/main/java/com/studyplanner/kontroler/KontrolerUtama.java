@@ -1,15 +1,15 @@
-package com.studyplanner.controller;
+package com.studyplanner.kontroler;
 
-import com.studyplanner.algorithm.PembuatJadwal;
-import com.studyplanner.algorithm.PengulanganBerjarak;
-import com.studyplanner.component.DekoratorJendelaKustom;
-import com.studyplanner.component.JamAnalog;
-import com.studyplanner.component.WidgetPelacakPencapaian;
-import com.studyplanner.component.WidgetRuntutanBelajar;
-import com.studyplanner.component.WidgetTugasMendatang;
-import com.studyplanner.component.WidgetUlasanBerikutnya;
-import com.studyplanner.component.WidgetWaktuBelajarHariIni;
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.algoritma.PembuatJadwal;
+import com.studyplanner.algoritma.PengulanganBerjarak;
+import com.studyplanner.tampilan.DekoratorJendelaKustom;
+import com.studyplanner.tampilan.JamAnalog;
+import com.studyplanner.tampilan.WidgetPelacakPencapaian;
+import com.studyplanner.tampilan.WidgetRuntutanBelajar;
+import com.studyplanner.tampilan.WidgetTugasMendatang;
+import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
+import com.studyplanner.tampilan.WidgetWaktuBelajarHariIni;
+import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.*;
 import java.io.IOException;
 import java.net.URL;
@@ -33,7 +33,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MainController implements Initializable {
+public class KontrolerUtama implements Initializable {
 
     @FXML
     private Label welcomeLabel;
@@ -112,9 +112,6 @@ public class MainController implements Initializable {
     private WidgetTugasMendatang upcomingTasksWidget;
     private Timeline autoRefreshTimeline;
     private AchievementSnapshot latestAchievementData;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy",
-            java.util.Locale.of("id", "ID"));
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
@@ -267,7 +264,7 @@ public class MainController implements Initializable {
                 nextReviewWidget.segarkan();
             }
         } catch (SQLException e) {
-            showError("Error loading dashboard data: " + e.getMessage());
+            showError("Gagal memuat data dashboard: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -494,7 +491,7 @@ public class MainController implements Initializable {
 
             loadDashboardData();
         } catch (SQLException e) {
-            showError("Error updating task: " + e.getMessage());
+            showError("Gagal memperbarui tugas: " + e.getMessage());
         }
     }
 
@@ -562,7 +559,7 @@ public class MainController implements Initializable {
                                             nextReview);
                         }
                     } catch (SQLException e) {
-                        showError("Error saving rating: " + e.getMessage());
+                        showError("Gagal menyimpan rating: " + e.getMessage());
                     }
                 });
     }
@@ -641,14 +638,14 @@ public class MainController implements Initializable {
                     "Manajemen Mata Kuliah & Topik",
                     isDarkMode);
 
-            CourseManagementController controller = loader.getController();
-            controller.setMainController(this);
+            KontrolerManajemenMataKuliah controller = loader.getController();
+            controller.aturKontrolerUtama(this);
 
             stage.showAndWait();
 
             loadDashboardData();
         } catch (IOException e) {
-            showError("Error opening course management: " + e.getMessage());
+            showError("Gagal membuka manajemen mata kuliah: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -674,7 +671,7 @@ public class MainController implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         } catch (IOException e) {
-            showError("Error opening schedule view: " + e.getMessage());
+            showError("Gagal membuka tampilan jadwal: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -686,7 +683,7 @@ public class MainController implements Initializable {
                     "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!");
             loadDashboardData();
         } catch (SQLException e) {
-            showError("Error generating schedule: " + e.getMessage());
+            showError("Gagal membuat jadwal: " + e.getMessage());
             e.printStackTrace();
         }
     }

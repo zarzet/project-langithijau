@@ -1,6 +1,6 @@
 package com.studyplanner;
 
-import com.studyplanner.component.DekoratorJendelaKustom;
+import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studyplanner.kontroler.KontrolerInspekturBasisData"
+            prefWidth="900" prefHeight="600">
+    
+    <top>
+        <VBox styleClass="header">
+            <padding>
+                <Insets top="15" right="20" bottom="15" left="20"/>
+            </padding>
+            <Label text="Inspektur Basis Data" styleClass="app-title"/>
+            <Label text="Visualisasi dan Pemantauan Aktivitas Database" styleClass="text-muted"/>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane>
+            <!-- Tab 1: Live Log Monitor -->
+            <Tab text="Log Aktivitas (Live)" closable="false">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Log Kueri Real-time:" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="clearLogBtn" text="Bersihkan Log" styleClass="btn-secondary"/>
+                    </HBox>
+                    
+                    <TextArea fx:id="logArea" VBox.vgrow="ALWAYS" editable="false" 
+                              style="-fx-font-family: 'Consolas', monospace;"/>
+                    <Label text="*Menampilkan semua kueri SQL yang dijalankan oleh aplikasi." styleClass="text-small"/>
+                </VBox>
+            </Tab>
+
+            <!-- Tab 2: Tabel & Data -->
+            <Tab text="Penjelajah Tabel" closable="false">
+                <SplitPane dividerPositions="0.25">
+                    <!-- Sidebar: List of Tables -->
+                    <VBox spacing="10">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                        <Label text="Tabel:" styleClass="section-title"/>
+                        <ListView fx:id="tableList" VBox.vgrow="ALWAYS"/>
+                        <Button fx:id="refreshTablesBtn" text="Segarkan" maxWidth="Infinity"/>
+                    </VBox>
+                    
+                    <!-- Main: Data View -->
+                    <VBox spacing="10">
+                        <padding>
+                            <Insets top="10" right="10" bottom="10" left="10"/>
+                        </padding>
+                        <Label fx:id="selectedTableLabel" text="Pilih tabel untuk melihat data" styleClass="section-title"/>
+                        <TableView fx:id="dataTableView" VBox.vgrow="ALWAYS">
+                            <placeholder>
+                                <Label text="Tidak ada data untuk ditampilkan"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <!-- Tab 3: SQL Editor -->
+            <Tab text="Eksekusi SQL" closable="false">
+                <VBox spacing="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                    
+                    <Label text="Kueri SQL:" styleClass="section-title"/>
+                    <TextArea fx:id="queryInput" prefHeight="150" 
+                              promptText="SELECT * FROM ..." 
+                              style="-fx-font-family: 'Consolas', monospace;"/>
+                    
+                    <HBox spacing="10">
+                        <Button fx:id="executeBtn" text="Jalankan (Execute)" styleClass="btn-primary"/>
+                        <Label fx:id="statusLabel" text=""/>
+                    </HBox>
+                    
+                    <Label text="Hasil:" styleClass="section-title"/>
+                    <TableView fx:id="resultTableView" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </center>
+
+</BorderPane>

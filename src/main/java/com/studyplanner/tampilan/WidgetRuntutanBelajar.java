@@ -1,6 +1,6 @@
-package com.studyplanner.component;
+package com.studyplanner.tampilan;
 
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.basisdata.ManajerBasisData;
 import java.sql.SQLException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

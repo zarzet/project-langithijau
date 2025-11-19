@@ -1,7 +1,7 @@
-package com.studyplanner.algorithm;
+package com.studyplanner.algoritma;
 
 import com.studyplanner.model.*;
-import com.studyplanner.database.ManajerBasisData;
+import com.studyplanner.basisdata.ManajerBasisData;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;

@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.47.1.0</version>
+            <version>3.51.0.0</version>
         </dependency>
 
         <!-- JSON Processing -->
@@ -69,7 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.5.0</version>
                 <configuration>
                     <argLine>
                         --add-opens java.base/java.lang=ALL-UNNAMED
@@ -89,6 +89,21 @@
                         <option>--add-opens</option>
                         <option>java.base/java.util=ALL-UNNAMED</option>
                     </options>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.studyplanner.AplikasiInspekturDB</mainClass>
                 </configuration>
             </plugin>
         </plugins>

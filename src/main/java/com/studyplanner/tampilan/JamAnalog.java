@@ -1,4 +1,4 @@
-package com.studyplanner.component;
+package com.studyplanner.tampilan;
 
 import java.time.LocalTime;
 import javafx.animation.Animation;
