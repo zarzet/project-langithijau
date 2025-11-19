@@ -9,126 +9,117 @@
 
     <!-- Bagian Atas -->
     <top>
-        <VBox styleClass="header">
-            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 20;">
-                <Label text="Perencana Belajar Adaptif" styleClass="app-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
-                <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
-                <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="btn-success"/>
-                <MenuButton fx:id="userMenuBtn" text="👤 Pengguna" styleClass="btn-secondary" mnemonicParsing="false">
-                    <items>
-                        <MenuItem fx:id="profileMenuItem" text="👤 Profil Saya"/>
-                        <MenuItem fx:id="settingsMenuItem" text="⚙ Pengaturan"/>
-                        <SeparatorMenuItem/>
-                        <MenuItem fx:id="logoutMenuItem" text="← Keluar"/>
-                    </items>
-                </MenuButton>
-            </HBox>
-            <Separator/>
-        </VBox>
+        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header" style="-fx-padding: 16 24;">
+            <Label text="Perencana Belajar Adaptif" styleClass="app-title"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
+            <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
+            <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="btn-success"/>
+            <MenuButton fx:id="userMenuBtn" text="👤 Pengguna" styleClass="btn-secondary" mnemonicParsing="false">
+                <items>
+                    <MenuItem fx:id="profileMenuItem" text="👤 Profil Saya"/>
+                    <MenuItem fx:id="settingsMenuItem" text="⚙ Pengaturan"/>
+                    <SeparatorMenuItem/>
+                    <MenuItem fx:id="logoutMenuItem" text="← Keluar"/>
+                </items>
+            </MenuButton>
+        </HBox>
     </top>
 
     <!-- Konten Utama -->
     <center>
         <ScrollPane fitToWidth="true" styleClass="scroll-pane">
-            <VBox spacing="20" style="-fx-padding: 30;">
+            <VBox spacing="24" style="-fx-padding: 24;">
 
-                <!-- Bagian Selamat Datang -->
-                <VBox spacing="10" styleClass="card">
-                    <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title"/>
-                    <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label"/>
-                </VBox>
-
-                <!-- Grid Widget -->
-                <GridPane hgap="12" vgap="20">
-                    <columnConstraints>
-                        <ColumnConstraints percentWidth="16.67"/>
-                        <ColumnConstraints percentWidth="16.67"/>
-                        <ColumnConstraints percentWidth="16.67"/>
-                        <ColumnConstraints percentWidth="16.67"/>
-                        <ColumnConstraints percentWidth="16.67"/>
-                        <ColumnConstraints percentWidth="16.67"/>
-                    </columnConstraints>
-
-                    <!-- Widget Runtutan Belajar -->
-                    <VBox fx:id="streakContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-
-                    <!-- Widget Jam -->
-                    <VBox fx:id="clockContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-
-                    <!-- Widget Waktu Belajar Hari Ini -->
-                    <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-
-                    <!-- Widget Ulasan Berikutnya -->
-                    <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
-
-                    <!-- Widget Pelacak Pencapaian -->
-                    <VBox fx:id="achievementContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
-
-                    <!-- Widget Tugas Mendatang -->
-                    <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
-                </GridPane>
-
-                <!-- Kartu Statistik -->
-                <HBox spacing="20">
-                    <!-- Kartu Progress Keseluruhan -->
-                    <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                        <Label text="Progress Keseluruhan" styleClass="stat-title"/>
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Label text="Total Topik" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
-                                <Label fx:id="totalTopicsLabel" text="0" styleClass="stat-number"/>
-                            </VBox>
-                            <Separator orientation="VERTICAL"/>
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Label text="Dikuasai" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
-                                <Label fx:id="masteredTopicsLabel" text="0" styleClass="stat-number"/>
-                            </VBox>
-                        </HBox>
-                        <ProgressBar fx:id="overallProgressBar" progress="0" maxWidth="Infinity"/>
-                        <Label fx:id="overallProgressLabel" text="0%" styleClass="progress-label"/>
-                    </VBox>
-
-                    <!-- Kartu Progress Hari Ini -->
-                    <VBox spacing="10" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                        <Label text="Progress Hari Ini" styleClass="stat-title"/>
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Label text="Total Tugas" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
-                                <Label fx:id="todayTasksLabel" text="0" styleClass="stat-number"/>
-                            </VBox>
-                            <Separator orientation="VERTICAL"/>
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Label text="Selesai" style="-fx-text-fill: #666; -fx-font-size: 12px;"/>
-                                <Label fx:id="completedTasksLabel" text="0" styleClass="stat-number"/>
-                            </VBox>
-                        </HBox>
-                        <ProgressBar fx:id="todayProgressBar" progress="0" maxWidth="Infinity"/>
-                        <Label fx:id="todayProgressLabel" text="0%" styleClass="progress-label"/>
+                <!-- Hero Section - Welcome & Date -->
+                <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 8 0;">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title" style="-fx-font-size: 28px; -fx-font-weight: 600;"/>
+                        <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label" style="-fx-font-size: 14px; -fx-opacity: 0.7;"/>
                     </VBox>
                 </HBox>
 
-                <!-- Grid Konten Utama -->
-                <HBox spacing="12">
+                <!-- Stats Overview Cards -->
+                <GridPane hgap="16" vgap="16">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50" minWidth="200"/>
+                        <ColumnConstraints percentWidth="50" minWidth="200"/>
+                    </columnConstraints>
+
+                    <!-- Kartu Progress Keseluruhan -->
+                    <VBox spacing="12" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Progress Keseluruhan" styleClass="stat-title" style="-fx-font-size: 15px; -fx-font-weight: 600;"/>
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Total Topik" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
+                                <Label fx:id="totalTopicsLabel" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Dikuasai" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
+                                <Label fx:id="masteredTopicsLabel" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
+                            </VBox>
+                        </HBox>
+                        <VBox spacing="8">
+                            <ProgressBar fx:id="overallProgressBar" progress="0" maxWidth="Infinity" style="-fx-pref-height: 8px;"/>
+                            <Label fx:id="overallProgressLabel" text="0%" styleClass="progress-label" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Kartu Progress Hari Ini -->
+                    <VBox spacing="12" styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Progress Hari Ini" styleClass="stat-title" style="-fx-font-size: 15px; -fx-font-weight: 600;"/>
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Total Tugas" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
+                                <Label fx:id="todayTasksLabel" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Selesai" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
+                                <Label fx:id="completedTasksLabel" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
+                            </VBox>
+                        </HBox>
+                        <VBox spacing="8">
+                            <ProgressBar fx:id="todayProgressBar" progress="0" maxWidth="Infinity" style="-fx-pref-height: 8px;"/>
+                            <Label fx:id="todayProgressLabel" text="0%" styleClass="progress-label" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                        </VBox>
+                    </VBox>
+                </GridPane>
+
+                <!-- Activity Widgets Grid -->
+                <VBox spacing="12">
+                    <Label text="Aktivitas" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                    <FlowPane hgap="16" vgap="16" alignment="TOP_LEFT">
+                        <VBox fx:id="streakContainer" alignment="CENTER" spacing="8"/>
+                        <VBox fx:id="clockContainer" alignment="CENTER" spacing="8"/>
+                        <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8"/>
+                        <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8"/>
+                        <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8"/>
+                    </FlowPane>
+                </VBox>
+
+                <!-- Main Content Grid -->
+                <GridPane hgap="16" vgap="16">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="60" minWidth="400"/>
+                        <ColumnConstraints percentWidth="40" minWidth="300"/>
+                    </columnConstraints>
+
                     <!-- Tugas Hari Ini -->
-                    <VBox spacing="15" styleClass="card" HBox.hgrow="ALWAYS">
-                        <Label text="Tugas Hari Ini" styleClass="section-title"/>
-                        <Separator/>
-                        <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
-                            <VBox fx:id="todayTasksContainer" spacing="10" style="-fx-padding: 5;"/>
+                    <VBox spacing="12" styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Tugas Hari Ini" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                        <ScrollPane fitToWidth="true" minHeight="350" style="-fx-background-color: transparent;">
+                            <VBox fx:id="todayTasksContainer" spacing="10" style="-fx-padding: 4;"/>
                         </ScrollPane>
                     </VBox>
 
                     <!-- Ujian Mendatang -->
-                    <VBox spacing="15" styleClass="card" prefWidth="350">
-                        <Label text="Ujian Mendatang" styleClass="section-title"/>
-                        <Separator/>
-                        <ScrollPane fitToWidth="true" prefHeight="400" style="-fx-background-color: transparent;">
-                            <VBox fx:id="upcomingExamsContainer" spacing="10" style="-fx-padding: 5;"/>
+                    <VBox spacing="12" styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Ujian Mendatang" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                        <ScrollPane fitToWidth="true" minHeight="350" style="-fx-background-color: transparent;">
+                            <VBox fx:id="upcomingExamsContainer" spacing="10" style="-fx-padding: 4;"/>
                         </ScrollPane>
                     </VBox>
-                </HBox>
+                </GridPane>
 
             </VBox>
         </ScrollPane>

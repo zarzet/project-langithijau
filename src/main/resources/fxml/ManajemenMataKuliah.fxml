@@ -5,8 +5,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.studyplanner.kontroler.KontrolerManajemenMataKuliah"
-            prefWidth="1000" prefHeight="700">
+            fx:controller="com.studyplanner.kontroler.KontrolerManajemenMataKuliah">
 
     <center>
         <SplitPane dividerPositions="0.3" styleClass="split-pane-custom">
@@ -46,10 +45,10 @@
                 </padding>
 
                 <!-- Bagian Topik -->
-                <VBox spacing="15">
+                <VBox spacing="15" VBox.vgrow="ALWAYS">
                     <Label text="Topik Materi" styleClass="section-title"/>
 
-                    <TableView fx:id="topicTable" prefHeight="250" styleClass="table-view">
+                    <TableView fx:id="topicTable" minHeight="200" VBox.vgrow="ALWAYS" styleClass="table-view">
                         <columns>
                             <TableColumn fx:id="topicNameColumn" text="Nama Topik" minWidth="150"/>
                             <TableColumn fx:id="topicPriorityColumn" text="Prioritas" minWidth="70" prefWidth="90"/>
@@ -71,10 +70,10 @@
                 <Separator styleClass="separator"/>
 
                 <!-- Bagian Ujian -->
-                <VBox spacing="15">
+                <VBox spacing="15" VBox.vgrow="ALWAYS">
                     <Label text="Jadwal Ujian" styleClass="section-title"/>
 
-                    <TableView fx:id="examTable" prefHeight="200" styleClass="table-view">
+                    <TableView fx:id="examTable" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
                         <columns>
                             <TableColumn fx:id="examTitleColumn" text="Judul" minWidth="120"/>
                             <TableColumn fx:id="examTypeColumn" text="Tipe" minWidth="80" prefWidth="100"/>

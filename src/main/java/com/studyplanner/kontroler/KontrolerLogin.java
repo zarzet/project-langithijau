@@ -100,7 +100,7 @@ public class KontrolerLogin {
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     PencatatLog.error("Gagal login: " + e.getMessage());
-                    googleLoginBtn.setText("Failed. Try Again.");
+                    googleLoginBtn.setText("Gagal. Coba Lagi.");
                     googleLoginBtn.setDisable(false);
                 });
                 e.printStackTrace();

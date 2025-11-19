@@ -130,7 +130,7 @@ public class KontrolerTampilanJadwal implements Initializable {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle("Kesalahan");
         alert.setContentText(message);
         alert.showAndWait();
     }

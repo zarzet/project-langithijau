@@ -101,13 +101,13 @@ public class KontrolerInspekturBasisData implements Initializable {
                 statusLabel.setStyle("-fx-text-fill: green;");
             } else {
                 manajerBasisData.jalankanQueryUpdate(sql);
-                statusLabel.setText("Update Sukses: " + java.time.LocalTime.now());
+                statusLabel.setText("Pembaruan Berhasil: " + java.time.LocalTime.now());
                 statusLabel.setStyle("-fx-text-fill: green;");
                 // Refresh table list just in case CREATE/DROP
                 muatDaftarTabel();
             }
         } catch (SQLException e) {
-            statusLabel.setText("Error: " + e.getMessage());
+            statusLabel.setText("Kesalahan: " + e.getMessage());
             statusLabel.setStyle("-fx-text-fill: red;");
         }
     }
@@ -130,9 +130,9 @@ public class KontrolerInspekturBasisData implements Initializable {
             }
             
             targetTable.setItems(FXCollections.observableArrayList(rows));
-            
+
         } catch (SQLException e) {
-            statusLabel.setText("Error Select: " + e.getMessage());
+            statusLabel.setText("Kesalahan Query: " + e.getMessage());
             statusLabel.setStyle("-fx-text-fill: red;");
         }
     }

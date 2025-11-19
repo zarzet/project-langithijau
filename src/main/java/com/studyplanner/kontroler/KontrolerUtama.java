@@ -6,7 +6,6 @@ import com.studyplanner.algoritma.PembuatJadwal;
 import com.studyplanner.algoritma.PengulanganBerjarak;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.tampilan.JamAnalog;
-import com.studyplanner.tampilan.WidgetPelacakPencapaian;
 import com.studyplanner.tampilan.WidgetRuntutanBelajar;
 import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
@@ -111,9 +110,6 @@ public class KontrolerUtama implements Initializable {
     private VBox clockContainer;
 
     @FXML
-    private VBox achievementContainer;
-
-    @FXML
     private VBox upcomingTasksWidgetContainer;
 
     private ManajerBasisData manajerBasisData;
@@ -123,10 +119,8 @@ public class KontrolerUtama implements Initializable {
     private WidgetWaktuBelajarHariIni studyTimeWidget;
     private WidgetUlasanBerikutnya nextReviewWidget;
     private JamAnalog analogClock;
-    private WidgetPelacakPencapaian achievementWidget;
     private WidgetTugasMendatang upcomingTasksWidget;
     private Timeline autoRefreshTimeline;
-    private AchievementSnapshot latestAchievementData;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
@@ -173,13 +167,6 @@ public class KontrolerUtama implements Initializable {
 
             clockContainer.getChildren().clear();
             clockContainer.getChildren().add(clockBox);
-        }
-
-        if (achievementContainer != null) {
-            achievementWidget = new WidgetPelacakPencapaian();
-            terapkanUkuranWidgetKompak(achievementWidget);
-            achievementWidget.setOnMouseClicked(_ -> showAchievementDetailDialog());
-            achievementContainer.getChildren().setAll(achievementWidget);
         }
 
         if (upcomingTasksWidgetContainer != null) {
@@ -288,7 +275,6 @@ public class KontrolerUtama implements Initializable {
             loadTodayTasks();
             loadUpcomingExams();
 
-            refreshAchievementWidget(progress);
             refreshUpcomingTasksWidget();
             if (streakWidget != null) {
                 streakWidget.segarkan();
@@ -305,51 +291,6 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    private void refreshAchievementWidget(
-            PembuatJadwal.KemajuanBelajar progress) throws SQLException {
-        latestAchievementData = null;
-
-        if (achievementWidget == null) {
-            return;
-        }
-
-        List<SesiBelajar> todaySessions = manajerBasisData.ambilSesiHariIni();
-        int reviewTotal = (int) todaySessions
-                .stream()
-                .filter(s -> "REVIEW".equalsIgnoreCase(s.getTipeSesi()))
-                .count();
-        int reviewCompleted = (int) todaySessions
-                .stream()
-                .filter(
-                        s -> s.isSelesai() &&
-                                "REVIEW".equalsIgnoreCase(s.getTipeSesi()))
-                .count();
-
-        int focusMinutes;
-        if (studyTimeWidget != null) {
-            focusMinutes = studyTimeWidget.ambilMenitHariIniSaatIni();
-        } else {
-            focusMinutes = manajerBasisData.ambilWaktuBelajarHariIni();
-        }
-        int streakDays = manajerBasisData.ambilRuntutanBelajar();
-
-        achievementWidget.perbaruiData(
-                progress.getSelesaiHariIni(),
-                progress.getTotalHariIni(),
-                reviewCompleted,
-                reviewTotal,
-                focusMinutes,
-                streakDays);
-
-        latestAchievementData = new AchievementSnapshot(
-                progress.getSelesaiHariIni(),
-                progress.getTotalHariIni(),
-                reviewCompleted,
-                reviewTotal,
-                focusMinutes,
-                streakDays);
-    }
-
     private void refreshUpcomingTasksWidget() throws SQLException {
         if (upcomingTasksWidget == null) {
             return;
@@ -357,49 +298,6 @@ public class KontrolerUtama implements Initializable {
 
         List<SesiBelajar> upcomingSessions = manajerBasisData.ambilSesiMendatang(4);
         upcomingTasksWidget.aturSesi(upcomingSessions);
-    }
-
-    private void showAchievementDetailDialog() {
-        if (achievementWidget == null) {
-            return;
-        }
-        if (latestAchievementData == null) {
-            showInfo(
-                    "Data achievement belum tersedia, coba lagi setelah data dimuat.");
-            return;
-        }
-
-        Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Detail Achievement Tracker");
-        dialog
-                .getDialogPane()
-                .getButtonTypes()
-                .add(new ButtonType("Tutup", ButtonBar.ButtonData.OK_DONE));
-        dialog
-                .getDialogPane()
-                .getStylesheets()
-                .add(getClass().getResource("/css/style.css").toExternalForm());
-
-        WidgetPelacakPencapaian detailWidget = new WidgetPelacakPencapaian();
-        detailWidget.getStyleClass().removeAll("widget-interactive");
-        detailWidget.setPrefWidth(420);
-        detailWidget.setMaxWidth(Double.MAX_VALUE);
-        detailWidget.perbaruiData(
-                latestAchievementData.tasksCompleted,
-                latestAchievementData.tasksTotal,
-                latestAchievementData.reviewCompleted,
-                latestAchievementData.reviewTotal,
-                latestAchievementData.focusMinutes,
-                latestAchievementData.streakDays);
-
-        VBox content = new VBox(12);
-        content.setPadding(new Insets(20));
-        Label title = new Label("Ringkasan Pencapaian Hari Ini");
-        title.getStyleClass().add("section-title");
-        content.getChildren().addAll(title, detailWidget);
-
-        dialog.getDialogPane().setContent(content);
-        dialog.showAndWait();
     }
 
     private void showUpcomingTasksDetailDialog() {
@@ -726,7 +624,7 @@ public class KontrolerUtama implements Initializable {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle("Kesalahan");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
@@ -834,30 +732,5 @@ public class KontrolerUtama implements Initializable {
 
     public ManajerBasisData getManajerBasisData() {
         return manajerBasisData;
-    }
-
-    private static class AchievementSnapshot {
-
-        final int tasksCompleted;
-        final int tasksTotal;
-        final int reviewCompleted;
-        final int reviewTotal;
-        final int focusMinutes;
-        final int streakDays;
-
-        AchievementSnapshot(
-                int tasksCompleted,
-                int tasksTotal,
-                int reviewCompleted,
-                int reviewTotal,
-                int focusMinutes,
-                int streakDays) {
-            this.tasksCompleted = tasksCompleted;
-            this.tasksTotal = tasksTotal;
-            this.reviewCompleted = reviewCompleted;
-            this.reviewTotal = reviewTotal;
-            this.focusMinutes = focusMinutes;
-            this.streakDays = streakDays;
-        }
     }
 }
