@@ -7,24 +7,33 @@
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.kontroler.KontrolerUtama">
 
-    <!-- Bagian Atas -->
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="20" styleClass="header" style="-fx-padding: 16 24;">
-            <Label text="Perencana Belajar Adaptif" styleClass="app-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="btn-primary"/>
-            <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="btn-secondary"/>
-            <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="btn-success"/>
-            <MenuButton fx:id="userMenuBtn" text="👤 Pengguna" styleClass="btn-secondary" mnemonicParsing="false">
+    <!-- Sidebar Kiri -->
+    <left>
+        <VBox fx:id="sidebar" spacing="8" styleClass="sidebar" style="-fx-padding: 20 16; -fx-min-width: 240; -fx-pref-width: 240;">
+            <!-- Logo/Title Section -->
+            <VBox spacing="4" style="-fx-padding: 0 0 24 0;">
+                <Label text="Perencana Belajar" styleClass="sidebar-title" style="-fx-font-size: 18px; -fx-font-weight: 700;"/>
+                <Label text="Adaptif" styleClass="sidebar-subtitle" style="-fx-font-size: 13px; -fx-opacity: 0.7;"/>
+            </VBox>
+
+            <!-- Navigation Buttons -->
+            <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-padding: 8 0;">
+                <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
+                <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
+                <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="sidebar-btn-primary" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
+            </VBox>
+
+            <!-- User Section at Bottom -->
+            <MenuButton fx:id="userMenuBtn" text="Pengguna" styleClass="sidebar-btn" maxWidth="Infinity" mnemonicParsing="false" style="-fx-padding: 12 16;">
                 <items>
-                    <MenuItem fx:id="profileMenuItem" text="👤 Profil Saya"/>
-                    <MenuItem fx:id="settingsMenuItem" text="⚙ Pengaturan"/>
+                    <MenuItem fx:id="profileMenuItem" text="Profil Saya"/>
+                    <MenuItem fx:id="settingsMenuItem" text="Pengaturan"/>
                     <SeparatorMenuItem/>
-                    <MenuItem fx:id="logoutMenuItem" text="← Keluar"/>
+                    <MenuItem fx:id="logoutMenuItem" text="Keluar"/>
                 </items>
             </MenuButton>
-        </HBox>
-    </top>
+        </VBox>
+    </left>
 
     <!-- Konten Utama -->
     <center>
@@ -32,7 +41,10 @@
             <VBox spacing="24" style="-fx-padding: 24;">
 
                 <!-- Hero Section - Welcome & Date -->
-                <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 8 0;">
+                <HBox fx:id="welcomeSection" alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 8 0;">
+                    <!-- Toggle Sidebar Button -->
+                    <Button fx:id="toggleSidebarBtn" styleClass="toggle-sidebar-btn" style="-fx-font-size: 24px; -fx-padding: 8 12;"/>
+
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
                         <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title" style="-fx-font-size: 28px; -fx-font-weight: 600;"/>
                         <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label" style="-fx-font-size: 14px; -fx-opacity: 0.7;"/>
@@ -40,7 +52,7 @@
                 </HBox>
 
                 <!-- Stats Overview Cards -->
-                <GridPane hgap="16" vgap="16">
+                <GridPane fx:id="statsGrid" hgap="16" vgap="16">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="50" minWidth="200"/>
                         <ColumnConstraints percentWidth="50" minWidth="200"/>
@@ -86,19 +98,21 @@
                 </GridPane>
 
                 <!-- Activity Widgets Grid -->
-                <VBox spacing="12">
+                <VBox fx:id="activitySection" spacing="12">
                     <Label text="Aktivitas" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
-                    <FlowPane hgap="16" vgap="16" alignment="TOP_LEFT">
-                        <VBox fx:id="streakContainer" alignment="CENTER" spacing="8"/>
-                        <VBox fx:id="clockContainer" alignment="CENTER" spacing="8"/>
-                        <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8"/>
-                        <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8"/>
-                        <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8"/>
-                    </FlowPane>
+                    <ScrollPane fitToHeight="true" vbarPolicy="NEVER" hbarPolicy="NEVER" styleClass="widget-scroll-pane" style="-fx-background-color: transparent;">
+                        <HBox spacing="16" alignment="CENTER_LEFT">
+                            <VBox fx:id="streakContainer" alignment="CENTER" spacing="8"/>
+                            <VBox fx:id="clockContainer" alignment="CENTER" spacing="8"/>
+                            <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8"/>
+                            <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8"/>
+                            <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8"/>
+                        </HBox>
+                    </ScrollPane>
                 </VBox>
 
                 <!-- Main Content Grid -->
-                <GridPane hgap="16" vgap="16">
+                <GridPane fx:id="mainContentGrid" hgap="16" vgap="16">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="60" minWidth="400"/>
                         <ColumnConstraints percentWidth="40" minWidth="300"/>

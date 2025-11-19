@@ -4,39 +4,60 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.studyplanner.kontroler.KontrolerTampilanJadwal"
-      spacing="0" styleClass="root">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.studyplanner.kontroler.KontrolerTampilanJadwal"
+            styleClass="root">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+    <!-- Header Section -->
+    <top>
+        <VBox spacing="20" styleClass="schedule-header">
+            <!-- Title & Date Picker Row -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Jadwal Belajar" styleClass="schedule-page-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox spacing="12" alignment="CENTER">
+                    <Button fx:id="prevWeekBtn" text="‹" styleClass="nav-arrow-btn"/>
+                    <DatePicker fx:id="datePicker" styleClass="date-picker-modern"/>
+                    <Button fx:id="nextWeekBtn" text="›" styleClass="nav-arrow-btn"/>
+                    <Button fx:id="todayBtn" text="Hari Ini" styleClass="btn-primary"/>
+                </HBox>
+            </HBox>
 
-    <VBox styleClass="header" spacing="15" VBox.vgrow="NEVER">
-        <padding>
-            <Insets top="10" right="20" bottom="10" left="20"/>
-        </padding>
+            <!-- Week Calendar View -->
+            <HBox fx:id="weekCalendar" spacing="8" alignment="CENTER" styleClass="week-calendar-container">
+                <!-- Will be populated dynamically with day cards -->
+            </HBox>
 
-        <HBox spacing="20" alignment="CENTER_LEFT">
-            <Label text="Pilih Tanggal:" styleClass="label"/>
-            <DatePicker fx:id="datePicker"/>
-        </HBox>
-
-        <HBox spacing="15" alignment="CENTER_LEFT">
-            <Label fx:id="selectedDateLabel" text="Senin, 20 Oktober 2025"
-                   styleClass="section-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="sessionCountLabel" text="0 sesi belajar"
-                   styleClass="text-small"/>
-        </HBox>
-    </VBox>
-
-    <ScrollPane fitToWidth="true" styleClass="scroll-pane" VBox.vgrow="ALWAYS">
-        <VBox fx:id="scheduleContainer" spacing="20">
-            <padding>
-                <Insets top="30" right="20" bottom="30" left="20"/>
-            </padding>
+            <!-- Selected Date Info -->
+            <HBox spacing="16" alignment="CENTER_LEFT" styleClass="selected-date-info">
+                <VBox spacing="4">
+                    <Label fx:id="selectedDateLabel" text="Kamis, 20 November 2025"
+                           styleClass="selected-date-label"/>
+                    <Label fx:id="sessionCountLabel" text="0 sesi belajar"
+                           styleClass="session-count-label"/>
+                </VBox>
+            </HBox>
         </VBox>
-    </ScrollPane>
+    </top>
 
-</VBox>
+    <!-- Main Content - Timeline Schedule -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane" style="-fx-padding: 0 24 24 24;">
+            <VBox spacing="0">
+                <!-- Timeline Container -->
+                <VBox fx:id="scheduleContainer" spacing="16">
+                    <!-- Will be populated with schedule cards -->
+                </VBox>
+
+                <!-- Empty State -->
+                <VBox fx:id="emptyState" alignment="CENTER" spacing="16" styleClass="empty-state-schedule">
+                    <Label text="Tidak ada jadwal untuk tanggal ini"
+                           styleClass="empty-state-title"/>
+                    <Label text="Pilih tanggal lain atau buat jadwal baru"
+                           styleClass="empty-state-subtitle"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

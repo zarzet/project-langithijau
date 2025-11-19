@@ -4,6 +4,8 @@ import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.model.Topik;
+import com.studyplanner.utilitas.PembuatDialogMD3;
+import com.studyplanner.utilitas.PembuatIkon;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -20,40 +22,40 @@ import javafx.scene.control.cell.PropertyValueFactory;
 public class KontrolerManajemenMataKuliah implements Initializable {
 
     @FXML
-    private TableView<MataKuliah> courseTable;
+    private TableView<MataKuliah> tabelMataKuliah;
 
     @FXML
-    private TableColumn<MataKuliah, String> courseCodeColumn;
+    private TableColumn<MataKuliah, String> kolomKodeMataKuliah;
 
     @FXML
-    private TableColumn<MataKuliah, String> courseNameColumn;
+    private TableColumn<MataKuliah, String> kolomNamaMataKuliah;
 
     @FXML
-    private TableView<Topik> topicTable;
+    private TableView<Topik> tabelTopik;
 
     @FXML
-    private TableColumn<Topik, String> topicNameColumn;
+    private TableColumn<Topik, String> kolomNamaTopik;
 
     @FXML
-    private TableColumn<Topik, Integer> topicPriorityColumn;
+    private TableColumn<Topik, Integer> kolomPrioritasTopik;
 
     @FXML
-    private TableColumn<Topik, Integer> topicDifficultyColumn;
+    private TableColumn<Topik, Integer> kolomKesulitanTopik;
 
     @FXML
-    private TableColumn<Topik, Integer> topicReviewCountColumn;
+    private TableColumn<Topik, Integer> kolomJumlahUlasanTopik;
 
     @FXML
-    private TableView<JadwalUjian> examTable;
+    private TableView<JadwalUjian> tabelUjian;
 
     @FXML
-    private TableColumn<JadwalUjian, String> examTitleColumn;
+    private TableColumn<JadwalUjian, String> kolomJudulUjian;
 
     @FXML
-    private TableColumn<JadwalUjian, String> examTypeColumn;
+    private TableColumn<JadwalUjian, String> kolomTipeUjian;
 
     @FXML
-    private TableColumn<JadwalUjian, LocalDate> examDateColumn;
+    private TableColumn<JadwalUjian, LocalDate> kolomTanggalUjian;
 
     @FXML
     private Button addCourseBtn;
@@ -84,9 +86,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
     private ManajerBasisData manajerBasisData;
     private KontrolerUtama kontrolerUtama;
-    private ObservableList<MataKuliah> courses;
-    private ObservableList<Topik> topics;
-    private ObservableList<JadwalUjian> exams;
+    private ObservableList<MataKuliah> daftarMataKuliah;
+    private ObservableList<Topik> daftarTopik;
+    private ObservableList<JadwalUjian> daftarUjian;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -105,15 +107,15 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void setupTables() {
-        courseTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        courseCodeColumn.setCellValueFactory(
+        tabelMataKuliah.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        kolomKodeMataKuliah.setCellValueFactory(
                 new PropertyValueFactory<>("kode"));
-        courseNameColumn.setCellValueFactory(
+        kolomNamaMataKuliah.setCellValueFactory(
                 new PropertyValueFactory<>("nama"));
 
-        topicTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        tabelTopik.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
 
-        courseTable
+        tabelMataKuliah
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener((_, _, newSelection) -> {
@@ -123,24 +125,38 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                     }
                 });
 
-        topicNameColumn.setCellValueFactory(new PropertyValueFactory<>("nama"));
-        topicPriorityColumn.setCellValueFactory(
+        kolomNamaTopik.setCellValueFactory(new PropertyValueFactory<>("nama"));
+        kolomPrioritasTopik.setCellValueFactory(
                 new PropertyValueFactory<>("prioritas"));
-        topicDifficultyColumn.setCellValueFactory(
+        kolomKesulitanTopik.setCellValueFactory(
                 new PropertyValueFactory<>("tingkatKesulitan"));
-        topicReviewCountColumn.setCellValueFactory(
+        kolomJumlahUlasanTopik.setCellValueFactory(
                 new PropertyValueFactory<>("jumlahUlasan"));
 
-        examTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        examTitleColumn.setCellValueFactory(
+        tabelUjian.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        kolomJudulUjian.setCellValueFactory(
                 new PropertyValueFactory<>("judul"));
-        examTypeColumn.setCellValueFactory(
+        kolomTipeUjian.setCellValueFactory(
                 new PropertyValueFactory<>("tipeUjian"));
-        examDateColumn.setCellValueFactory(
+        kolomTanggalUjian.setCellValueFactory(
                 new PropertyValueFactory<>("tanggalUjian"));
     }
 
     private void setupButtons() {
+        // Setup ikon untuk buttons
+        addCourseBtn.setGraphic(PembuatIkon.ikonTambah());
+        editCourseBtn.setGraphic(PembuatIkon.ikonEdit());
+        deleteCourseBtn.setGraphic(PembuatIkon.ikonHapus());
+
+        addTopicBtn.setGraphic(PembuatIkon.ikonTambah());
+        editTopicBtn.setGraphic(PembuatIkon.ikonEdit());
+        deleteTopicBtn.setGraphic(PembuatIkon.ikonHapus());
+
+        addExamBtn.setGraphic(PembuatIkon.ikonTambah());
+        editExamBtn.setGraphic(PembuatIkon.ikonEdit());
+        deleteExamBtn.setGraphic(PembuatIkon.ikonHapus());
+
+        // Setup action handlers
         addCourseBtn.setOnAction(_ -> addCourse());
         editCourseBtn.setOnAction(_ -> editCourse());
         deleteCourseBtn.setOnAction(_ -> deleteCourse());
@@ -157,8 +173,8 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void loadCourses() {
         try {
             List<MataKuliah> courseList = manajerBasisData.ambilSemuaMataKuliah();
-            courses = FXCollections.observableArrayList(courseList);
-            courseTable.setItems(courses);
+            daftarMataKuliah = FXCollections.observableArrayList(courseList);
+            tabelMataKuliah.setItems(daftarMataKuliah);
         } catch (SQLException e) {
             showError("Gagal memuat daftar mata kuliah: " + e.getMessage());
         }
@@ -167,8 +183,8 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void loadTopics(int courseId) {
         try {
             List<Topik> topicList = manajerBasisData.ambilTopikBerdasarkanMataKuliah(courseId);
-            topics = FXCollections.observableArrayList(topicList);
-            topicTable.setItems(topics);
+            daftarTopik = FXCollections.observableArrayList(topicList);
+            tabelTopik.setItems(daftarTopik);
         } catch (SQLException e) {
             showError("Gagal memuat topik: " + e.getMessage());
         }
@@ -177,21 +193,17 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void loadExams(int courseId) {
         try {
             List<JadwalUjian> examList = manajerBasisData.ambilUjianBerdasarkanMataKuliah(courseId);
-            exams = FXCollections.observableArrayList(examList);
-            examTable.setItems(exams);
+            daftarUjian = FXCollections.observableArrayList(examList);
+            tabelUjian.setItems(daftarUjian);
         } catch (SQLException e) {
             showError("Gagal memuat ujian: " + e.getMessage());
         }
     }
 
     private void addCourse() {
-        Dialog<MataKuliah> dialog = new Dialog<>();
-        dialog.setTitle("Tambah Mata Kuliah");
-        dialog.setHeaderText("Masukkan data mata kuliah baru");
+        Dialog<MataKuliah> dialog = PembuatDialogMD3.buatDialog("Tambah Mata Kuliah", "Masukkan data mata kuliah baru");
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -241,18 +253,15 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void editCourse() {
-        MataKuliah selected = courseTable.getSelectionModel().getSelectedItem();
+        MataKuliah selected = tabelMataKuliah.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih mata kuliah yang akan diedit!");
             return;
         }
 
-        Dialog<MataKuliah> dialog = new Dialog<>();
-        dialog.setTitle("Edit Mata Kuliah");
+        Dialog<MataKuliah> dialog = PembuatDialogMD3.buatDialog("Edit Mata Kuliah", null);
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -298,16 +307,16 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void deleteCourse() {
-        MataKuliah selected = courseTable.getSelectionModel().getSelectedItem();
+        MataKuliah selected = tabelMataKuliah.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih mata kuliah yang akan dihapus!");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Konfirmasi Hapus");
-        confirm.setHeaderText("Hapus mata kuliah: " + selected.getNama() + "?");
-        confirm.setContentText(
+        Alert confirm = PembuatDialogMD3.buatAlert(
+                Alert.AlertType.CONFIRMATION,
+                "Konfirmasi Hapus",
+                "Hapus mata kuliah: " + selected.getNama() + "?",
                 "Semua topik dan ujian terkait juga akan dihapus. Lanjutkan?");
 
         Optional<ButtonType> result = confirm.showAndWait();
@@ -315,8 +324,8 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 manajerBasisData.hapusMataKuliah(selected.getId());
                 loadCourses();
-                topicTable.getItems().clear();
-                examTable.getItems().clear();
+                tabelTopik.getItems().clear();
+                tabelUjian.getItems().clear();
                 showInfo("Mata kuliah berhasil dihapus!");
             } catch (SQLException e) {
                 showError("Gagal menghapus mata kuliah: " + e.getMessage());
@@ -325,7 +334,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void addTopic() {
-        MataKuliah selectedCourse = courseTable
+        MataKuliah selectedCourse = tabelMataKuliah
                 .getSelectionModel()
                 .getSelectedItem();
         if (selectedCourse == null) {
@@ -333,13 +342,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             return;
         }
 
-        Dialog<Topik> dialog = new Dialog<>();
-        dialog.setTitle("Tambah Topik");
-        dialog.setHeaderText("Tambah topik untuk: " + selectedCourse.getNama());
+        Dialog<Topik> dialog = PembuatDialogMD3.buatDialog("Tambah Topik", "Tambah topik untuk: " + selectedCourse.getNama());
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -394,18 +399,15 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void editTopic() {
-        Topik selected = topicTable.getSelectionModel().getSelectedItem();
+        Topik selected = tabelTopik.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih topik yang akan diedit!");
             return;
         }
 
-        Dialog<Topik> dialog = new Dialog<>();
-        dialog.setTitle("Edit Topik");
+        Dialog<Topik> dialog = PembuatDialogMD3.buatDialog("Edit Topik", null);
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -461,15 +463,16 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void deleteTopic() {
-        Topik selected = topicTable.getSelectionModel().getSelectedItem();
+        Topik selected = tabelTopik.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih topik yang akan dihapus!");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Konfirmasi Hapus");
-        confirm.setContentText("Hapus topik: " + selected.getNama() + "?");
+        Alert confirm = PembuatDialogMD3.buatAlert(
+                Alert.AlertType.CONFIRMATION,
+                "Konfirmasi Hapus",
+                "Hapus topik: " + selected.getNama() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -485,7 +488,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void addExam() {
-        MataKuliah selectedCourse = courseTable
+        MataKuliah selectedCourse = tabelMataKuliah
                 .getSelectionModel()
                 .getSelectedItem();
         if (selectedCourse == null) {
@@ -493,12 +496,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             return;
         }
 
-        Dialog<JadwalUjian> dialog = new Dialog<>();
-        dialog.setTitle("Tambah Jadwal Ujian");
+        Dialog<JadwalUjian> dialog = PembuatDialogMD3.buatDialog("Tambah Jadwal Ujian", null);
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -550,18 +550,15 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void editExam() {
-        JadwalUjian selected = examTable.getSelectionModel().getSelectedItem();
+        JadwalUjian selected = tabelUjian.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih ujian yang akan diedit!");
             return;
         }
 
-        Dialog<JadwalUjian> dialog = new Dialog<>();
-        dialog.setTitle("Edit Jadwal Ujian");
+        Dialog<JadwalUjian> dialog = PembuatDialogMD3.buatDialog("Edit Jadwal Ujian", null);
 
-        ButtonType saveButtonType = new ButtonType(
-                "Simpan",
-                ButtonBar.ButtonData.OK_DONE);
+        ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
                 .getDialogPane()
                 .getButtonTypes()
@@ -608,14 +605,15 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void deleteExam() {
-        JadwalUjian selected = examTable.getSelectionModel().getSelectedItem();
+        JadwalUjian selected = tabelUjian.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showWarning("Pilih ujian yang akan dihapus!");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setContentText(
+        Alert confirm = PembuatDialogMD3.buatAlert(
+                Alert.AlertType.CONFIRMATION,
+                "Konfirmasi Hapus",
                 "Hapus jadwal ujian: " + selected.getJudul() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
@@ -632,23 +630,17 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Kesalahan");
-        alert.setContentText(message);
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", message);
         alert.showAndWait();
     }
 
     private void showWarning(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Peringatan");
-        alert.setContentText(message);
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.WARNING, "Peringatan", message);
         alert.showAndWait();
     }
 
     private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Informasi");
-        alert.setContentText(message);
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", message);
         alert.showAndWait();
     }
 }

@@ -39,14 +39,24 @@ public class DekoratorJendelaKustom {
             originalRoot = scene.getRoot();
             lebar = scene.getWidth();
             tinggi = scene.getHeight();
-            
-            originalRoot.getStyleClass().remove("dark-mode");
-            originalRoot.getStyleClass().remove("light-mode");
+
+            // Jika sudah ada dekorasi (BorderPane dengan custom-window), ambil content aslinya
+            if (originalRoot instanceof BorderPane) {
+                BorderPane bp = (BorderPane) originalRoot;
+                if (bp.getStyleClass().contains("custom-window") && bp.getCenter() instanceof javafx.scene.Parent) {
+                    originalRoot = (javafx.scene.Parent) bp.getCenter();
+                }
+            }
+
+            if (originalRoot != null) {
+                originalRoot.getStyleClass().remove("dark-mode");
+                originalRoot.getStyleClass().remove("light-mode");
+            }
         }
 
         BorderPane root = new BorderPane();
         root.getStyleClass().add("custom-window");
-        
+
         // MD3 Surface colors
         String bgColor = modeGelap ? "#0f1419" : "#f8f9ff";
         root.setStyle("-fx-background-color: " + bgColor + ";");

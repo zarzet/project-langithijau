@@ -21,10 +21,10 @@
 
                 <Label text="Daftar Mata Kuliah" styleClass="section-title"/>
 
-                <TableView fx:id="courseTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+                <TableView fx:id="tabelMataKuliah" VBox.vgrow="ALWAYS" styleClass="table-view">
                     <columns>
-                        <TableColumn fx:id="courseCodeColumn" text="Kode" minWidth="60" prefWidth="80"/>
-                        <TableColumn fx:id="courseNameColumn" text="Nama Mata Kuliah" minWidth="120"/>
+                        <TableColumn fx:id="kolomKodeMataKuliah" text="Kode" minWidth="60" prefWidth="80"/>
+                        <TableColumn fx:id="kolomNamaMataKuliah" text="Nama Mata Kuliah" minWidth="120"/>
                     </columns>
                 </TableView>
 
@@ -48,12 +48,12 @@
                 <VBox spacing="15" VBox.vgrow="ALWAYS">
                     <Label text="Topik Materi" styleClass="section-title"/>
 
-                    <TableView fx:id="topicTable" minHeight="200" VBox.vgrow="ALWAYS" styleClass="table-view">
+                    <TableView fx:id="tabelTopik" minHeight="200" VBox.vgrow="ALWAYS" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="topicNameColumn" text="Nama Topik" minWidth="150"/>
-                            <TableColumn fx:id="topicPriorityColumn" text="Prioritas" minWidth="70" prefWidth="90"/>
-                            <TableColumn fx:id="topicDifficultyColumn" text="Kesulitan" minWidth="70" prefWidth="90"/>
-                            <TableColumn fx:id="topicReviewCountColumn" text="Review" minWidth="60" prefWidth="80"/>
+                            <TableColumn fx:id="kolomNamaTopik" text="Nama Topik" minWidth="150"/>
+                            <TableColumn fx:id="kolomPrioritasTopik" text="Prioritas" minWidth="70" prefWidth="90"/>
+                            <TableColumn fx:id="kolomKesulitanTopik" text="Kesulitan" minWidth="70" prefWidth="90"/>
+                            <TableColumn fx:id="kolomJumlahUlasanTopik" text="Review" minWidth="60" prefWidth="80"/>
                         </columns>
                     </TableView>
 
@@ -73,11 +73,11 @@
                 <VBox spacing="15" VBox.vgrow="ALWAYS">
                     <Label text="Jadwal Ujian" styleClass="section-title"/>
 
-                    <TableView fx:id="examTable" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
+                    <TableView fx:id="tabelUjian" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
                         <columns>
-                            <TableColumn fx:id="examTitleColumn" text="Judul" minWidth="120"/>
-                            <TableColumn fx:id="examTypeColumn" text="Tipe" minWidth="80" prefWidth="100"/>
-                            <TableColumn fx:id="examDateColumn" text="Tanggal" minWidth="100" prefWidth="120"/>
+                            <TableColumn fx:id="kolomJudulUjian" text="Judul" minWidth="120"/>
+                            <TableColumn fx:id="kolomTipeUjian" text="Tipe" minWidth="80" prefWidth="100"/>
+                            <TableColumn fx:id="kolomTanggalUjian" text="Tanggal" minWidth="100" prefWidth="120"/>
                         </columns>
                     </TableView>
 

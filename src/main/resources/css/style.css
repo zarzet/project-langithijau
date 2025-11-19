@@ -47,6 +47,91 @@
     -fx-text-fill: #191c20;
 }
 
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+    -fx-background-color: #f2f3fa;
+    -fx-border-color: transparent #dde0e8 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 8, 0, 2, 0);
+}
+
+.sidebar-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #191c20;
+}
+
+.sidebar-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #42474e;
+    -fx-opacity: 0.7;
+}
+
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #42474e;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-padding: 12 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: #e7e9f0;
+    -fx-text-fill: #191c20;
+}
+
+.sidebar-btn:pressed {
+    -fx-background-color: #dde0e8;
+}
+
+.sidebar-btn-primary {
+    -fx-background-color: #006495;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 12 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.3), 4, 0, 0, 2);
+}
+
+.sidebar-btn-primary:hover {
+    -fx-background-color: #00538b;
+}
+
+.sidebar-btn-primary:pressed {
+    -fx-background-color: #004a7a;
+}
+
+.toggle-sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #42474e;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 24px;
+    -fx-font-weight: 400;
+    -fx-padding: 8 12;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.toggle-sidebar-btn:hover {
+    -fx-background-color: #e7e9f0;
+    -fx-text-fill: #191c20;
+}
+
+.toggle-sidebar-btn:pressed {
+    -fx-background-color: #dde0e8;
+}
+
 /* ==================== MD3 BUTTONS ==================== */
 .button {
     -fx-background-radius: 28;
@@ -121,6 +206,15 @@
     -fx-background-color: #901414;
 }
 
+/* Minimum width for buttons with icons and text */
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger {
+    -fx-min-width: 100px;
+    -fx-pref-width: -1;
+}
+
 /* Text Button */
 .btn-icon {
     -fx-background-color: transparent;
@@ -137,6 +231,78 @@
 
 .btn-icon:pressed {
     -fx-background-color: rgba(0, 100, 149, 0.12);
+}
+
+/* ==================== IKONLI ICONS ==================== */
+/* Icon inherit colors from parent */
+.ikonli-font-icon {
+    -fx-icon-color: inherit;
+    -fx-fill: inherit;
+}
+
+/* Sidebar button icons */
+.sidebar-btn .ikonli-font-icon {
+    -fx-icon-color: #42474e;
+}
+
+.sidebar-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #191c20;
+}
+
+.sidebar-btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Toggle sidebar button icon */
+.toggle-sidebar-btn .ikonli-font-icon {
+    -fx-icon-color: #42474e;
+}
+
+.toggle-sidebar-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #191c20;
+}
+
+/* Primary button icons */
+.btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Secondary button icons */
+.btn-secondary .ikonli-font-icon {
+    -fx-icon-color: #0b1d29;
+}
+
+/* Success button icons */
+.btn-success .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Danger button icons */
+.btn-danger .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Menu button icons */
+.menu-button .ikonli-font-icon {
+    -fx-icon-color: #191c20;
+}
+
+/* Menu item icons */
+.menu-item .ikonli-font-icon {
+    -fx-icon-color: #42474e;
+}
+
+.menu-item:hover .ikonli-font-icon {
+    -fx-icon-color: #191c20;
+}
+
+/* Theme toggle button icon */
+.theme-toggle .ikonli-font-icon {
+    -fx-icon-color: #42474e;
+}
+
+.theme-toggle:hover .ikonli-font-icon {
+    -fx-icon-color: #191c20;
 }
 
 /* Theme Toggle */
@@ -241,11 +407,178 @@
 
 .schedule-card {
     -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-border-color: #e1e2e9;
+    -fx-border-radius: 16;
+    -fx-border-width: 0 0 0 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 4, 0, 0, 2);
+}
+
+.schedule-card.completed {
+    -fx-border-color: #10b981;
+}
+
+.schedule-card:hover {
+    -fx-background-color: #f8f9ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+.schedule-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #191c20;
+}
+
+.schedule-course {
+    -fx-font-size: 13px;
+    -fx-text-fill: #42474e;
+}
+
+.schedule-duration {
+    -fx-font-size: 13px;
+    -fx-text-fill: #42474e;
+}
+
+.status-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 12;
+    -fx-background-radius: 8;
+}
+
+.status-badge.completed {
+    -fx-background-color: #d1fae5;
+    -fx-text-fill: #065f46;
+}
+
+.status-badge.pending {
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #92400e;
+}
+
+/* Week Calendar Cards */
+.week-day-card {
+    -fx-background-color: #f2f3fa;
     -fx-background-radius: 12;
-    -fx-padding: 16;
-    -fx-border-color: #c2c7cf;
-    -fx-border-radius: 12;
-    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 2, 0, 0, 1);
+}
+
+.week-day-card.selected {
+    -fx-background-color: #006495;
+}
+
+.week-day-card:hover {
+    -fx-background-color: #e7e9f0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 3, 0, 0, 2);
+}
+
+.week-day-card.selected:hover {
+    -fx-background-color: #006495;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.2), 4, 0, 0, 2);
+}
+
+.day-name-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #42474e;
+}
+
+.week-day-card.selected .day-name-label {
+    -fx-text-fill: white;
+}
+
+.day-number-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #191c20;
+}
+
+.week-day-card.selected .day-number-label {
+    -fx-text-fill: white;
+}
+
+.today-indicator {
+    -fx-font-size: 16px;
+    -fx-text-fill: #006495;
+}
+
+.week-day-card.selected .today-indicator {
+    -fx-text-fill: white;
+}
+
+/* Schedule Header */
+.schedule-header {
+    -fx-padding: 24;
+    -fx-background-color: #ffffff;
+}
+
+.schedule-page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #191c20;
+}
+
+.week-calendar-container {
+    -fx-padding: 16 0;
+}
+
+/* Navigation Arrow Buttons */
+.nav-arrow-btn {
+    -fx-min-width: 40px;
+    -fx-pref-width: 40px;
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-background-color: #f2f3fa;
+    -fx-text-fill: #191c20;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.nav-arrow-btn:hover {
+    -fx-background-color: #e7e9f0;
+}
+
+.nav-arrow-btn:pressed {
+    -fx-background-color: #dde0e8;
+}
+
+/* Selected Date Info Box */
+.selected-date-info {
+    -fx-padding: 12 16;
+    -fx-background-color: #e9eaf1;
+    -fx-background-radius: 12;
+}
+
+.selected-date-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #191c20;
+}
+
+.session-count-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #42474e;
+}
+
+/* Empty State */
+.empty-state-schedule {
+    -fx-padding: 60 40;
+}
+
+.empty-state-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #42474e;
+}
+
+.empty-state-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #72777f;
 }
 
 /* ==================== LABELS & TEXT ==================== */
@@ -475,6 +808,42 @@
     -fx-background-radius: 4;
 }
 
+.widget-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.widget-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.widget-scroll-pane > .scroll-bar:horizontal,
+.widget-scroll-pane > .scroll-bar:vertical {
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+    -fx-min-height: 0;
+    -fx-min-width: 0;
+    -fx-max-height: 0;
+    -fx-max-width: 0;
+    -fx-background-color: transparent;
+    -fx-opacity: 0;
+}
+
+.widget-scroll-pane .scroll-bar .track,
+.widget-scroll-pane .scroll-bar .thumb,
+.widget-scroll-pane .scroll-bar .increment-button,
+.widget-scroll-pane .scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+    -fx-min-height: 0;
+    -fx-min-width: 0;
+    -fx-max-height: 0;
+    -fx-max-width: 0;
+    -fx-background-color: transparent;
+    -fx-opacity: 0;
+}
+
 .scroll-pane-transparent .scroll-bar:vertical .thumb:hover,
 .scroll-pane-transparent .scroll-bar:horizontal .thumb:hover {
     -fx-background-color: #72777f;
@@ -573,9 +942,55 @@
 }
 
 .date-picker-popup {
-    -fx-background-color: #ecedf4;
+    -fx-background-color: #ffffff;
     -fx-border-radius: 12;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 4);
+}
+
+.date-picker-popup > * > .spinner {
+    -fx-background-color: #f2f3fa;
+}
+
+.date-picker-popup > * > .spinner > .button {
+    -fx-background-color: transparent;
+}
+
+.date-picker-popup > * > .spinner > .label {
+    -fx-text-fill: #191c20;
+}
+
+.date-picker-popup > * > .day-name-cell,
+.date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: #42474e;
+    -fx-font-weight: 600;
+}
+
+.date-picker-popup > * > .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #191c20;
+}
+
+.date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: #e7e9f0;
+}
+
+.date-picker-popup > * > .day-cell.selected {
+    -fx-background-color: #006495;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > * > .day-cell.today {
+    -fx-text-fill: #006495;
+    -fx-font-weight: 700;
+}
+
+.date-picker-popup > * > .day-cell.selected.today {
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > * > .previous-month,
+.date-picker-popup > * > .next-month {
+    -fx-text-fill: #72777f;
 }
 
 /* ==================== SEPARATOR ==================== */
@@ -784,6 +1199,60 @@
     -fx-text-fill: #e1e2e9;
 }
 
+.dark-mode .sidebar {
+    -fx-background-color: #171c21;
+    -fx-border-color: transparent #2b3137 transparent transparent;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0, 2, 0);
+}
+
+.dark-mode .sidebar-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .sidebar-subtitle {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .sidebar-btn {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .sidebar-btn:hover {
+    -fx-background-color: #1f252b;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .sidebar-btn:pressed {
+    -fx-background-color: #272e35;
+}
+
+.dark-mode .sidebar-btn-primary {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+    -fx-effect: dropshadow(gaussian, rgba(141, 205, 255, 0.3), 6, 0, 0, 2);
+}
+
+.dark-mode .sidebar-btn-primary:hover {
+    -fx-background-color: #a5d6ff;
+}
+
+.dark-mode .sidebar-btn-primary:pressed {
+    -fx-background-color: #bce0ff;
+}
+
+.dark-mode .toggle-sidebar-btn {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .toggle-sidebar-btn:hover {
+    -fx-background-color: #1f252b;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .toggle-sidebar-btn:pressed {
+    -fx-background-color: #272e35;
+}
+
 .dark-mode .label {
     -fx-text-fill: #e1e2e9;
 }
@@ -924,8 +1393,124 @@
 }
 
 .dark-mode .schedule-card {
-    -fx-background-color: #0a0e13;
+    -fx-background-color: #1b2025;
     -fx-border-color: #42474e;
+}
+
+.dark-mode .schedule-card.completed {
+    -fx-border-color: #10b981;
+}
+
+.dark-mode .schedule-card:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .schedule-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .schedule-course {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .schedule-duration {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .status-badge.completed {
+    -fx-background-color: #064e3b;
+    -fx-text-fill: #a7f3d0;
+}
+
+.dark-mode .status-badge.pending {
+    -fx-background-color: #78350f;
+    -fx-text-fill: #fde68a;
+}
+
+/* Dark Mode - Week Calendar Cards */
+.dark-mode .week-day-card {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .week-day-card.selected {
+    -fx-background-color: #8dcdff;
+}
+
+.dark-mode .week-day-card:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .week-day-card.selected:hover {
+    -fx-background-color: #a5d6ff;
+}
+
+.dark-mode .day-name-label {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .week-day-card.selected .day-name-label {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .day-number-label {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .week-day-card.selected .day-number-label {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .today-indicator {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .week-day-card.selected .today-indicator {
+    -fx-text-fill: #00344e;
+}
+
+/* Dark Mode - Schedule Header */
+.dark-mode .schedule-header {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .schedule-page-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+/* Dark Mode - Navigation Arrow Buttons */
+.dark-mode .nav-arrow-btn {
+    -fx-background-color: #1b2025;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .nav-arrow-btn:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .nav-arrow-btn:pressed {
+    -fx-background-color: #272e35;
+}
+
+/* Dark Mode - Selected Date Info */
+.dark-mode .selected-date-info {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .selected-date-label {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .session-count-label {
+    -fx-text-fill: #c2c7cf;
+}
+
+/* Dark Mode - Empty State */
+.dark-mode .empty-state-title {
+    -fx-text-fill: #c2c7cf;
+}
+
+.dark-mode .empty-state-subtitle {
+    -fx-text-fill: #8c9199;
 }
 
 .dark-mode .section-title,
@@ -1091,6 +1676,56 @@
     -fx-border-color: #42474e;
 }
 
+.dark-mode .date-picker-popup > * > .spinner {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .button {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .label {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .date-picker-popup > * > .day-name-cell,
+.dark-mode .date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: #c2c7cf;
+    -fx-font-weight: 600;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.selected {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.today {
+    -fx-text-fill: #8dcdff;
+    -fx-font-weight: 700;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.selected.today {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .date-picker-popup > * > .previous-month,
+.dark-mode .date-picker-popup > * > .next-month {
+    -fx-text-fill: #72777f;
+}
+
 .dark-mode .separator,
 .dark-mode .separator .line {
     -fx-background-color: #42474e;
@@ -1162,6 +1797,72 @@
 
 .dark-mode .upcoming-task-date {
     -fx-text-fill: #8dcdff;
+}
+
+/* ==================== DARK MODE IKONLI ICONS ==================== */
+/* Sidebar button icons - dark mode */
+.dark-mode .sidebar-btn .ikonli-font-icon {
+    -fx-icon-color: #c2c7cf;
+}
+
+.dark-mode .sidebar-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #e1e2e9;
+}
+
+.dark-mode .sidebar-btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Toggle sidebar button icon - dark mode */
+.dark-mode .toggle-sidebar-btn .ikonli-font-icon {
+    -fx-icon-color: #c2c7cf;
+}
+
+.dark-mode .toggle-sidebar-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #e1e2e9;
+}
+
+/* Primary button icons - dark mode */
+.dark-mode .btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+/* Secondary button icons - dark mode */
+.dark-mode .btn-secondary .ikonli-font-icon {
+    -fx-icon-color: #d2e5f5;
+}
+
+/* Success button icons - dark mode */
+.dark-mode .btn-success .ikonli-font-icon {
+    -fx-icon-color: #342e4b;
+}
+
+/* Danger button icons - dark mode */
+.dark-mode .btn-danger .ikonli-font-icon {
+    -fx-icon-color: #690005;
+}
+
+/* Menu button icons - dark mode */
+.dark-mode .menu-button .ikonli-font-icon {
+    -fx-icon-color: #e1e2e9;
+}
+
+/* Menu item icons - dark mode */
+.dark-mode .menu-item .ikonli-font-icon {
+    -fx-icon-color: #c2c7cf;
+}
+
+.dark-mode .menu-item:hover .ikonli-font-icon {
+    -fx-icon-color: #e1e2e9;
+}
+
+/* Theme toggle button icon - dark mode */
+.dark-mode .theme-toggle .ikonli-font-icon {
+    -fx-icon-color: #c2c7cf;
+}
+
+.dark-mode .theme-toggle:hover .ikonli-font-icon {
+    -fx-icon-color: #e1e2e9;
 }
 
 /* ==================== LOGIN SCREEN ==================== */
