@@ -1,43 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.studyplanner.kontroler.KontrolerLogin"
            fx:id="rootPane"
-           styleClass="login-root" prefWidth="1000" prefHeight="700">
+           styleClass="login-root">
 
-    <!-- Lapisan Latar Belakang: Pratinjau Buram -->
-    <StackPane fx:id="wadahLatar" mouseTransparent="true">
-        <ImageView fx:id="gambarLatar" preserveRatio="false" smooth="true"/>
-    </StackPane>
+    <!-- Main Container with Two Panels -->
+    <HBox styleClass="login-container" alignment="CENTER" spacing="0">
 
-    <!-- Overlay: Peredup untuk memastikan kontras -->
-    <Region style="-fx-background-color: rgba(0, 0, 0, 0.3);" mouseTransparent="true"/>
+        <!-- Left Panel - Branding -->
+        <VBox styleClass="login-branding-panel" alignment="CENTER" spacing="40" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets top="80" right="60" bottom="80" left="60"/>
+            </padding>
 
-    <VBox styleClass="login-card" spacing="30" alignment="TOP_CENTER">
-        
-        <padding>
-            <Insets top="30" right="30" bottom="30" left="30"/>
-        </padding>
+            <!-- Logo/Icon - Simple -->
+            <Label text="📚" style="-fx-font-size: 80px;"/>
 
-        <VBox spacing="15" alignment="CENTER">
-            <Label text="Masuk atau Daftar" styleClass="login-title"/>
-            <Label text="Perencana Belajar Adaptif membutuhkan login&#10;untuk menyimpan progres Anda." 
-                   styleClass="login-subtitle" wrapText="true" textAlignment="CENTER"/>
+            <!-- Branding Text -->
+            <VBox spacing="16" alignment="CENTER">
+                <Label text="Perencana Belajar Adaptif" styleClass="login-brand-title"/>
+                <Label text="Sistem pembelajaran dengan spaced repetition yang membantu Anda menguasai materi dengan lebih efektif"
+                       styleClass="login-brand-subtitle" wrapText="true" textAlignment="CENTER" maxWidth="380"/>
+            </VBox>
+
+            <!-- Simple Features List - No Box -->
+            <VBox spacing="16" alignment="CENTER">
+                <Label text="Jadwal belajar otomatis" styleClass="login-feature-text-simple"/>
+                <Label text="Pelacakan progres real-time" styleClass="login-feature-text-simple"/>
+                <Label text="Sistem ulasan adaptif" styleClass="login-feature-text-simple"/>
+            </VBox>
         </VBox>
-        
-        <VBox spacing="15" alignment="CENTER">
-            <Button fx:id="googleLoginBtn" text="Masuk dengan Google" 
-                    styleClass="btn-login-google" maxWidth="Infinity"/>
+
+        <!-- Right Panel - Login Forms -->
+        <VBox styleClass="login-form-panel" alignment="CENTER" spacing="32" HBox.hgrow="ALWAYS">
+            <padding>
+                <Insets top="60" right="60" bottom="60" left="60"/>
+            </padding>
+
+            <!-- Header -->
+            <VBox spacing="8" alignment="CENTER">
+                <Label text="Selamat Datang" styleClass="login-form-title"/>
+                <Label text="Masuk untuk melanjutkan" styleClass="login-form-subtitle"/>
+            </VBox>
+
+            <!-- Tab Pane -->
+            <TabPane fx:id="loginTabPane" styleClass="login-tab-pane-modern" tabClosingPolicy="UNAVAILABLE" maxWidth="400">
+
+                <!-- Google Login Tab -->
+                <Tab text="Google" styleClass="login-tab-modern">
+                    <VBox spacing="24" alignment="CENTER">
+                        <padding>
+                            <Insets top="32" right="0" bottom="32" left="0"/>
+                        </padding>
+
+                        <VBox spacing="16" alignment="CENTER">
+                            <Label text="Login cepat dengan" styleClass="tab-description-modern"/>
+                            <Button fx:id="googleLoginBtn" text="Lanjutkan dengan Google"
+                                    styleClass="btn-google-modern" maxWidth="Infinity"/>
+                        </VBox>
+
+                        <Separator maxWidth="300"/>
+
+                        <Label text="Aman, cepat, dan mudah dengan akun Google Anda"
+                               styleClass="tab-hint-text" wrapText="true" textAlignment="CENTER" maxWidth="300"/>
+                    </VBox>
+                </Tab>
+
+                <!-- Username/Password Tab -->
+                <Tab text="Username" styleClass="login-tab-modern">
+                    <VBox spacing="24" alignment="CENTER">
+                        <padding>
+                            <Insets top="32" right="0" bottom="32" left="0"/>
+                        </padding>
+
+                        <!-- Login Form -->
+                        <VBox fx:id="loginForm" spacing="20" styleClass="modern-form">
+
+                            <VBox spacing="8">
+                                <Label text="Username" styleClass="modern-form-label"/>
+                                <TextField fx:id="usernameField" promptText="Masukkan username Anda"
+                                         styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <VBox spacing="8">
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Password" styleClass="modern-form-label" HBox.hgrow="ALWAYS"/>
+                                    <Label text="Lupa?" styleClass="link-text" style="-fx-cursor: hand;"/>
+                                </HBox>
+                                <PasswordField fx:id="passwordField" promptText="Masukkan password Anda"
+                                             styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <Button fx:id="loginBtn" text="Masuk"
+                                    styleClass="btn-primary-modern" maxWidth="Infinity"/>
+
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label text="Belum punya akun?" styleClass="form-hint-text"/>
+                                <Label fx:id="showRegisterBtn" text="Daftar sekarang" styleClass="link-text-bold"
+                                       style="-fx-cursor: hand;"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Register Form -->
+                        <VBox fx:id="registerForm" spacing="20" styleClass="modern-form" visible="false" managed="false">
+
+                            <Label text="Buat Akun Baru" styleClass="register-form-title"/>
+
+                            <VBox spacing="8">
+                                <Label text="Nama Lengkap" styleClass="modern-form-label"/>
+                                <TextField fx:id="namaRegField" promptText="Nama lengkap Anda"
+                                         styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <VBox spacing="8">
+                                <Label text="Username" styleClass="modern-form-label"/>
+                                <TextField fx:id="usernameRegField" promptText="Pilih username (min. 3 karakter)"
+                                         styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <VBox spacing="8">
+                                <Label text="Email (opsional)" styleClass="modern-form-label"/>
+                                <TextField fx:id="emailRegField" promptText="email@example.com"
+                                         styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <VBox spacing="8">
+                                <Label text="Password" styleClass="modern-form-label"/>
+                                <PasswordField fx:id="passwordRegField" promptText="Minimal 6 karakter"
+                                             styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <VBox spacing="8">
+                                <Label text="Konfirmasi Password" styleClass="modern-form-label"/>
+                                <PasswordField fx:id="confirmPasswordField" promptText="Ulangi password Anda"
+                                             styleClass="modern-text-field"/>
+                            </VBox>
+
+                            <Button fx:id="registerBtn" text="Daftar"
+                                    styleClass="btn-primary-modern" maxWidth="Infinity"/>
+
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label text="Sudah punya akun?" styleClass="form-hint-text"/>
+                                <Label fx:id="backToLoginBtn" text="Masuk" styleClass="link-text-bold"
+                                       style="-fx-cursor: hand;"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </Tab>
+            </TabPane>
+
+            <!-- Footer -->
+            <Label text="© 2025 Perencana Belajar Adaptif" styleClass="login-footer-text"/>
         </VBox>
-    </VBox>
+    </HBox>
 
 </StackPane>

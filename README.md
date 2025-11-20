@@ -1,86 +1,200 @@
-# Adaptive Study Planner
+# Perencana Belajar Adaptif
 
-Aplikasi desktop untuk membantu mahasiswa mengelola jadwal belajar dengan teknik Spaced Repetition (SM-2) dan Interleaving.
+Aplikasi desktop untuk membantu mahasiswa mengelola jadwal belajar dengan teknik **Spaced Repetition (SM-2)** dan sistem pembelajaran adaptif.
 
-## Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
-- Java Development Kit (JDK) 25+
-- Maven 3.6+
+### Cara Tercepat (Windows)
+1. **Double-click** file `run.bat`
+2. Pilih menu yang diinginkan
+3. Selesai!
 
-### Installation & Run
+### Menu yang Tersedia
 
+```
+[1] Aplikasi Utama              → Login & Dashboard
+[2] Aplikasi Utama (Fast)       → Tanpa compile (lebih cepat)
+[3] Inspektur Database          → Lihat data database
+[4] Inspektur Database (Fast)   → Tanpa compile (lebih cepat)
+[5] Build Project               → Compile saja
+[0] Keluar
+```
+
+### Manual Build & Run
 ```bash
-# Clone repository
-git clone https://github.com/zarzet/project-langithijau.git
-cd project-langithijau
-
 # Build project
 mvn clean install
 
-# Run application
-mvn javafx:run
+# Run aplikasi utama
+mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiUtama"
+
+# Run inspektur database
+mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiInspekturDB"
 ```
 
-### Alternative Run Scripts
-- Windows: `run.bat`
-- Linux/Mac: `./run.sh`
+## 📋 Requirements
 
-## Key Features
+- **Java Development Kit (JDK) 25+**
+- **Maven 3.9+**
+- **JavaFX 25**
 
-- Manajemen mata kuliah dan topik
+## ✨ Key Features
+
+### 🔐 Login & Authentication
+- Login dengan Google OAuth 2.0
+- Login dengan Username & Password
+- Register akun baru
+- Password encryption (SHA-256)
+- Session persistence
+
+### 📊 Dashboard
+- Widget runtutan belajar (streak counter)
+- Widget waktu belajar hari ini
+- Widget ulasan berikutnya
+- Widget tugas mendatang
+- Sidebar collapsible dengan animasi smooth
+- Dark mode / Light mode toggle
+
+### 📚 Mata Kuliah
+- Tambah, edit, hapus mata kuliah
+- Kelola topik per mata kuliah
+- Sistem spaced repetition otomatis
+- Tracking progress per topik
+
+### 📅 Jadwal
+- View jadwal mingguan
+- Calendar picker dengan navigasi
+- Timeline schedule cards
 - Auto-generate jadwal belajar dengan algoritma SM-2
-- Tracking progress dan review scheduling
-- Dashboard tugas harian
-- Dark mode support with custom window decoration
-- Real-time analog clock widget
-- Weather widget with live weather data
 
-## Technology Stack
+### ⚙️ Settings
+- Toggle dark mode
+- Durasi belajar default
+- Pengingat belajar
+- Backup & export data
+- About aplikasi
 
-- Java 25
-- JavaFX 25
-- SQLite 3.47
-- Maven
+### 🔍 Inspektur Database
+- View semua tabel
+- Lihat struktur & data
+- Query SQL custom
+- Export data
+- View username & password (ter-hash)
 
-## Documentation
+## 🎨 Design System
 
-Dokumentasi lengkap tersedia di folder `docs/`:
-- `docs/DOKUMENTASI_PROYEK.md` - Dokumentasi lengkap proyek
-- `docs/USE_CASE_DIAGRAM.md` - Use case dan diagram
-- `docs/USE_CASE_DETAIL_DOSEN_ADMIN.md` - Detail use case dosen & admin
-- `docs/CHANGELOG.md` - Riwayat perubahan
-- `docs/WEATHER_API_SETUP.md` - Weather API configuration guide
+Aplikasi ini menggunakan **Material Design 3** dengan:
+- ✨ Modern card-based layouts
+- 🎭 Smooth animations & transitions
+- 📐 Elevation & shadows untuk depth
+- 🎨 Color tokens untuk konsistensi visual
+- 📝 Responsive typography dengan Google Sans
+- 🌙 Full dark mode support
+- 🖼️ Custom window decorations
 
-## Project Structure
+## 🗄️ Database
+
+**Database**: `data/study_planner.db` (SQLite)
+
+### Tables
+- `users` - User accounts (username/password & Google OAuth)
+- `mata_kuliah` - Courses/subjects
+- `topik` - Topics per course
+- `jadwal_ujian` - Exam schedules
+- `sesi_belajar` - Study sessions with spaced repetition
+
+## 📂 Project Structure
 
 ```
-project-langithijau/
-├── src/main/
+src/
+├── main/
 │   ├── java/com/studyplanner/
-│   │   ├── algorithm/         # SM-2 & Schedule Generator
-│   │   ├── controller/        # JavaFX Controllers
-│   │   ├── database/          # SQLite Manager
-│   │   ├── model/             # Data Models
-│   │   └── MainApp.java       # Entry Point
+│   │   ├── AplikasiUtama.java              → Main app entry point
+│   │   ├── AplikasiInspekturDB.java        → DB inspector tool
+│   │   ├── basisdata/                      → Database layer
+│   │   │   └── ManajerBasisData.java       → DB manager
+│   │   ├── kontroler/                      → MVC Controllers
+│   │   │   ├── KontrolerLogin.java         → Login controller
+│   │   │   ├── KontrolerUtama.java         → Main dashboard
+│   │   │   ├── KontrolerMataKuliah.java    → Course management
+│   │   │   └── KontrolerTampilanJadwal.java → Schedule view
+│   │   ├── model/                          → Data models
+│   │   │   ├── MataKuliah.java
+│   │   │   ├── Topik.java
+│   │   │   └── JadwalUjian.java
+│   │   ├── tampilan/                       → Custom UI components
+│   │   │   ├── Widget*.java                → Dashboard widgets
+│   │   │   └── DekoratorJendelaKustom.java → Custom window
+│   │   └── utilitas/                       → Utilities
+│   │       ├── ManajerOtentikasi.java      → OAuth & auth manager
+│   │       ├── PembuatIkon.java            → Material icons
+│   │       └── PembuatDialogMD3.java       → MD3 dialogs
 │   └── resources/
-│       ├── css/               # Stylesheets (dark mode support)
-│       └── fxml/              # UI Layouts
-├── docs/                      # Documentation
-└── pom.xml                    # Maven Config
+│       ├── css/
+│       │   └── style.css                   → MD3 styling (2300+ lines)
+│       ├── fxml/
+│       │   ├── LoginView.fxml              → Modern login UI
+│       │   ├── MainView.fxml               → Dashboard layout
+│       │   ├── CourseView.fxml             → Course management
+│       │   └── ScheduleView.fxml           → Weekly schedule
+│       ├── fonts/
+│       │   └── GoogleSans-*.ttf            → Google Sans Variable
+│       └── credentials.json                → Google OAuth config
+├── run.bat                                 → Interactive run menu
+├── CARA_MENJALANKAN.txt                   → User guide (Indonesian)
+└── pom.xml                                 → Maven configuration
 ```
 
-## Weather Widget Setup
+## 🔐 Security
 
-The application includes a weather widget that requires a free API key from OpenWeatherMap:
+- ✅ Password di-hash dengan SHA-256
+- ✅ Google OAuth 2.0 untuk authentication
+- ✅ Session tokens untuk persistence
+- ✅ Validasi input di semua form
+- ✅ SQL injection protection dengan PreparedStatement
 
-1. Get your free API key at [OpenWeatherMap](https://openweathermap.org/api)
-2. Edit `src/main/java/com/studyplanner/component/WeatherWidget.java`
-3. Replace `YOUR_API_KEY` with your actual API key
-4. Rebuild: `mvn clean install`
+## 🛠️ Technology Stack
 
-For detailed setup instructions, see `docs/WEATHER_API_SETUP.md`
+- **Java 25** - Latest LTS
+- **JavaFX 25** - Modern UI framework
+- **SQLite 3.47** - Embedded database
+- **Maven** - Build & dependency management
+- **Google OAuth 2.0** - Authentication
+- **Ikonli Material Design 2** - Material icons
+- **Google Sans Flex** - Variable font
 
-## License
+## 📖 Documentation
 
-Educational project.
+Dokumentasi lengkap tersedia di:
+- `CARA_MENJALANKAN.txt` - Panduan lengkap menjalankan aplikasi
+- `docs/` - Dokumentasi teknis proyek
+
+## 💡 Development Tips
+
+1. **Pertama kali**: Gunakan `run.bat` pilih `[1]` (dengan compile)
+2. **Development**: Gunakan pilihan `[2]` (fast mode - lebih cepat)
+3. **Setelah pull**: Pilih `[5]` untuk build ulang
+4. **Debug database**: Gunakan `[3]` untuk inspektur database
+5. **Lihat users**: Buka Inspektur DB → Pilih tabel `users`
+
+## 🐛 Troubleshooting
+
+### IDE Error (Red Underlines)
+Jika IDE menunjukkan error tapi build success:
+- Reload Window (VS Code)
+- Clean Java Language Server Workspace
+- Jalankan `mvn clean install`
+
+### Database Locked
+Jika database terkunci:
+- Tutup semua instance aplikasi
+- Tutup Inspektur Database
+- Restart aplikasi
+
+## 📝 License
+
+© 2025 Perencana Belajar Adaptif - Educational Project
+
+---
+
+**Dibuat dengan ❤️ menggunakan Material Design 3**

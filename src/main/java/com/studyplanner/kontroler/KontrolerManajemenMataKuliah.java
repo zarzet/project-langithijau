@@ -1,6 +1,9 @@
 package com.studyplanner.kontroler;
 
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.dao.DAOMataKuliah;
+import com.studyplanner.dao.DAOTopik;
+import com.studyplanner.dao.DAOJadwalUjian;
 import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.model.Topik;
@@ -85,6 +88,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private Button deleteExamBtn;
 
     private ManajerBasisData manajerBasisData;
+    private DAOMataKuliah daoMataKuliah;
+    private DAOTopik daoTopik;
+    private DAOJadwalUjian daoJadwalUjian;
     private KontrolerUtama kontrolerUtama;
     private ObservableList<MataKuliah> daftarMataKuliah;
     private ObservableList<Topik> daftarTopik;
@@ -93,20 +99,28 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
+        inisialisasiDAO();
 
-        setupTables();
-        setupButtons();
-        loadCourses();
+        aturTabel();
+        aturTombol();
+        muatMataKuliah();
     }
 
     public void aturKontrolerUtama(KontrolerUtama kontroler) {
         this.kontrolerUtama = kontroler;
         if (this.kontrolerUtama != null) {
             this.manajerBasisData = this.kontrolerUtama.getManajerBasisData();
+            inisialisasiDAO();
         }
     }
 
-    private void setupTables() {
+    private void inisialisasiDAO() {
+        this.daoMataKuliah = new DAOMataKuliah(manajerBasisData);
+        this.daoTopik = new DAOTopik(manajerBasisData);
+        this.daoJadwalUjian = new DAOJadwalUjian(manajerBasisData);
+    }
+
+    private void aturTabel() {
         tabelMataKuliah.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         kolomKodeMataKuliah.setCellValueFactory(
                 new PropertyValueFactory<>("kode"));
@@ -118,10 +132,10 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         tabelMataKuliah
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener((_, _, newSelection) -> {
-                    if (newSelection != null) {
-                        loadTopics(newSelection.getId());
-                        loadExams(newSelection.getId());
+                .addListener((_, _, pilihan) -> {
+                    if (pilihan != null) {
+                        muatTopik(pilihan.getId());
+                        muatUjian(pilihan.getId());
                     }
                 });
 
@@ -142,7 +156,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 new PropertyValueFactory<>("tanggalUjian"));
     }
 
-    private void setupButtons() {
+    private void aturTombol() {
         // Setup ikon untuk buttons
         addCourseBtn.setGraphic(PembuatIkon.ikonTambah());
         editCourseBtn.setGraphic(PembuatIkon.ikonEdit());
@@ -157,50 +171,50 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         deleteExamBtn.setGraphic(PembuatIkon.ikonHapus());
 
         // Setup action handlers
-        addCourseBtn.setOnAction(_ -> addCourse());
-        editCourseBtn.setOnAction(_ -> editCourse());
-        deleteCourseBtn.setOnAction(_ -> deleteCourse());
+        addCourseBtn.setOnAction(_ -> tambahMataKuliah());
+        editCourseBtn.setOnAction(_ -> editMataKuliah());
+        deleteCourseBtn.setOnAction(_ -> hapusMataKuliah());
 
-        addTopicBtn.setOnAction(_ -> addTopic());
-        editTopicBtn.setOnAction(_ -> editTopic());
-        deleteTopicBtn.setOnAction(_ -> deleteTopic());
+        addTopicBtn.setOnAction(_ -> tambahTopik());
+        editTopicBtn.setOnAction(_ -> editTopik());
+        deleteTopicBtn.setOnAction(_ -> hapusTopik());
 
-        addExamBtn.setOnAction(_ -> addExam());
-        editExamBtn.setOnAction(_ -> editExam());
-        deleteExamBtn.setOnAction(_ -> deleteExam());
+        addExamBtn.setOnAction(_ -> tambahUjian());
+        editExamBtn.setOnAction(_ -> editUjian());
+        deleteExamBtn.setOnAction(_ -> hapusUjian());
     }
 
-    private void loadCourses() {
+    private void muatMataKuliah() {
         try {
-            List<MataKuliah> courseList = manajerBasisData.ambilSemuaMataKuliah();
-            daftarMataKuliah = FXCollections.observableArrayList(courseList);
+            List<MataKuliah> daftarMK = daoMataKuliah.ambilSemua();
+            daftarMataKuliah = FXCollections.observableArrayList(daftarMK);
             tabelMataKuliah.setItems(daftarMataKuliah);
         } catch (SQLException e) {
-            showError("Gagal memuat daftar mata kuliah: " + e.getMessage());
+            tampilkanKesalahan("Gagal memuat daftar mata kuliah: " + e.getMessage());
         }
     }
 
-    private void loadTopics(int courseId) {
+    private void muatTopik(int idMataKuliah) {
         try {
-            List<Topik> topicList = manajerBasisData.ambilTopikBerdasarkanMataKuliah(courseId);
-            daftarTopik = FXCollections.observableArrayList(topicList);
+            List<Topik> daftarTop = daoTopik.ambilBerdasarkanMataKuliahId(idMataKuliah);
+            daftarTopik = FXCollections.observableArrayList(daftarTop);
             tabelTopik.setItems(daftarTopik);
         } catch (SQLException e) {
-            showError("Gagal memuat topik: " + e.getMessage());
+            tampilkanKesalahan("Gagal memuat topik: " + e.getMessage());
         }
     }
 
-    private void loadExams(int courseId) {
+    private void muatUjian(int idMataKuliah) {
         try {
-            List<JadwalUjian> examList = manajerBasisData.ambilUjianBerdasarkanMataKuliah(courseId);
-            daftarUjian = FXCollections.observableArrayList(examList);
+            List<JadwalUjian> daftarUj = daoJadwalUjian.ambilBerdasarkanMataKuliahId(idMataKuliah);
+            daftarUjian = FXCollections.observableArrayList(daftarUj);
             tabelUjian.setItems(daftarUjian);
         } catch (SQLException e) {
-            showError("Gagal memuat ujian: " + e.getMessage());
+            tampilkanKesalahan("Gagal memuat ujian: " + e.getMessage());
         }
     }
 
-    private void addCourse() {
+    private void tambahMataKuliah() {
         Dialog<MataKuliah> dialog = PembuatDialogMD3.buatDialog("Tambah Mata Kuliah", "Masukkan data mata kuliah baru");
 
         ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
@@ -241,21 +255,21 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         });
 
         Optional<MataKuliah> result = dialog.showAndWait();
-        result.ifPresent(course -> {
+        result.ifPresent(mataKuliah -> {
             try {
-                manajerBasisData.tambahMataKuliah(course);
-                loadCourses();
-                showInfo("Mata kuliah berhasil ditambahkan!");
+                daoMataKuliah.simpan(mataKuliah);
+                muatMataKuliah();
+                tampilkanInfo("Mata kuliah berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Gagal menambahkan mata kuliah: " + e.getMessage());
+                tampilkanKesalahan("Gagal menambahkan mata kuliah: " + e.getMessage());
             }
         });
     }
 
-    private void editCourse() {
-        MataKuliah selected = tabelMataKuliah.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih mata kuliah yang akan diedit!");
+    private void editMataKuliah() {
+        MataKuliah terpilih = tabelMataKuliah.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih mata kuliah yang akan diedit!");
             return;
         }
 
@@ -267,9 +281,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 .getButtonTypes()
                 .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField codeField = new TextField(selected.getKode());
-        TextField nameField = new TextField(selected.getNama());
-        TextArea descArea = new TextArea(selected.getDeskripsi());
+        TextField codeField = new TextField(terpilih.getKode());
+        TextField nameField = new TextField(terpilih.getNama());
+        TextArea descArea = new TextArea(terpilih.getDeskripsi());
         descArea.setPrefRowCount(3);
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
@@ -286,63 +300,63 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setKode(codeField.getText());
-                selected.setNama(nameField.getText());
-                selected.setDeskripsi(descArea.getText());
-                return selected;
+                terpilih.setKode(codeField.getText());
+                terpilih.setNama(nameField.getText());
+                terpilih.setDeskripsi(descArea.getText());
+                return terpilih;
             }
             return null;
         });
 
         Optional<MataKuliah> result = dialog.showAndWait();
-        result.ifPresent(course -> {
+        result.ifPresent(mataKuliah -> {
             try {
-                manajerBasisData.perbaruiMataKuliah(course);
-                loadCourses();
-                showInfo("Mata kuliah berhasil diupdate!");
+                daoMataKuliah.perbarui(mataKuliah);
+                muatMataKuliah();
+                tampilkanInfo("Mata kuliah berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Gagal memperbarui mata kuliah: " + e.getMessage());
+                tampilkanKesalahan("Gagal memperbarui mata kuliah: " + e.getMessage());
             }
         });
     }
 
-    private void deleteCourse() {
-        MataKuliah selected = tabelMataKuliah.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih mata kuliah yang akan dihapus!");
+    private void hapusMataKuliah() {
+        MataKuliah terpilih = tabelMataKuliah.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih mata kuliah yang akan dihapus!");
             return;
         }
 
         Alert confirm = PembuatDialogMD3.buatAlert(
                 Alert.AlertType.CONFIRMATION,
                 "Konfirmasi Hapus",
-                "Hapus mata kuliah: " + selected.getNama() + "?",
+                "Hapus mata kuliah: " + terpilih.getNama() + "?",
                 "Semua topik dan ujian terkait juga akan dihapus. Lanjutkan?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                manajerBasisData.hapusMataKuliah(selected.getId());
-                loadCourses();
+                daoMataKuliah.hapus(terpilih.getId());
+                muatMataKuliah();
                 tabelTopik.getItems().clear();
                 tabelUjian.getItems().clear();
-                showInfo("Mata kuliah berhasil dihapus!");
+                tampilkanInfo("Mata kuliah berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Gagal menghapus mata kuliah: " + e.getMessage());
+                tampilkanKesalahan("Gagal menghapus mata kuliah: " + e.getMessage());
             }
         }
     }
 
-    private void addTopic() {
-        MataKuliah selectedCourse = tabelMataKuliah
+    private void tambahTopik() {
+        MataKuliah mkTerpilih = tabelMataKuliah
                 .getSelectionModel()
                 .getSelectedItem();
-        if (selectedCourse == null) {
-            showWarning("Pilih mata kuliah terlebih dahulu!");
+        if (mkTerpilih == null) {
+            tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
-        Dialog<Topik> dialog = PembuatDialogMD3.buatDialog("Tambah Topik", "Tambah topik untuk: " + selectedCourse.getNama());
+        Dialog<Topik> dialog = PembuatDialogMD3.buatDialog("Tambah Topik", "Tambah topik untuk: " + mkTerpilih.getNama());
 
         ButtonType saveButtonType = PembuatDialogMD3.buatTombolSimpan();
         dialog
@@ -375,33 +389,33 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                Topik topic = new Topik();
-                topic.setIdMataKuliah(selectedCourse.getId());
-                topic.setNama(nameField.getText());
-                topic.setDeskripsi(descArea.getText());
-                topic.setPrioritas(prioritySpinner.getValue());
-                topic.setTingkatKesulitan(difficultySpinner.getValue());
-                return topic;
+                Topik topik = new Topik();
+                topik.setIdMataKuliah(mkTerpilih.getId());
+                topik.setNama(nameField.getText());
+                topik.setDeskripsi(descArea.getText());
+                topik.setPrioritas(prioritySpinner.getValue());
+                topik.setTingkatKesulitan(difficultySpinner.getValue());
+                return topik;
             }
             return null;
         });
 
         Optional<Topik> result = dialog.showAndWait();
-        result.ifPresent(topic -> {
+        result.ifPresent(topik -> {
             try {
-                manajerBasisData.tambahTopik(topic);
-                loadTopics(selectedCourse.getId());
-                showInfo("Topik berhasil ditambahkan!");
+                daoTopik.simpan(topik);
+                muatTopik(mkTerpilih.getId());
+                tampilkanInfo("Topik berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Gagal menambahkan topik: " + e.getMessage());
+                tampilkanKesalahan("Gagal menambahkan topik: " + e.getMessage());
             }
         });
     }
 
-    private void editTopic() {
-        Topik selected = tabelTopik.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih topik yang akan diedit!");
+    private void editTopik() {
+        Topik terpilih = tabelTopik.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih topik yang akan diedit!");
             return;
         }
 
@@ -413,17 +427,17 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 .getButtonTypes()
                 .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField nameField = new TextField(selected.getNama());
-        TextArea descArea = new TextArea(selected.getDeskripsi());
+        TextField nameField = new TextField(terpilih.getNama());
+        TextArea descArea = new TextArea(terpilih.getDeskripsi());
         descArea.setPrefRowCount(2);
         Spinner<Integer> prioritySpinner = new Spinner<>(
                 1,
                 5,
-                selected.getPrioritas());
+                terpilih.getPrioritas());
         Spinner<Integer> difficultySpinner = new Spinner<>(
                 1,
                 5,
-                selected.getTingkatKesulitan());
+                terpilih.getTingkatKesulitan());
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
         grid.setHgap(10);
@@ -441,58 +455,58 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setNama(nameField.getText());
-                selected.setDeskripsi(descArea.getText());
-                selected.setPrioritas(prioritySpinner.getValue());
-                selected.setTingkatKesulitan(difficultySpinner.getValue());
-                return selected;
+                terpilih.setNama(nameField.getText());
+                terpilih.setDeskripsi(descArea.getText());
+                terpilih.setPrioritas(prioritySpinner.getValue());
+                terpilih.setTingkatKesulitan(difficultySpinner.getValue());
+                return terpilih;
             }
             return null;
         });
 
         Optional<Topik> result = dialog.showAndWait();
-        result.ifPresent(topic -> {
+        result.ifPresent(topik -> {
             try {
-                manajerBasisData.perbaruiTopik(topic);
-                loadTopics(topic.getIdMataKuliah());
-                showInfo("Topik berhasil diupdate!");
+                daoTopik.perbarui(topik);
+                muatTopik(topik.getIdMataKuliah());
+                tampilkanInfo("Topik berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Gagal memperbarui topik: " + e.getMessage());
+                tampilkanKesalahan("Gagal memperbarui topik: " + e.getMessage());
             }
         });
     }
 
-    private void deleteTopic() {
-        Topik selected = tabelTopik.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih topik yang akan dihapus!");
+    private void hapusTopik() {
+        Topik terpilih = tabelTopik.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih topik yang akan dihapus!");
             return;
         }
 
         Alert confirm = PembuatDialogMD3.buatAlert(
                 Alert.AlertType.CONFIRMATION,
                 "Konfirmasi Hapus",
-                "Hapus topik: " + selected.getNama() + "?");
+                "Hapus topik: " + terpilih.getNama() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                int courseId = selected.getIdMataKuliah();
-                manajerBasisData.hapusTopik(selected.getId());
-                loadTopics(courseId);
-                showInfo("Topik berhasil dihapus!");
+                int idMataKuliah = terpilih.getIdMataKuliah();
+                daoTopik.hapus(terpilih.getId());
+                muatTopik(idMataKuliah);
+                tampilkanInfo("Topik berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Gagal menghapus topik: " + e.getMessage());
+                tampilkanKesalahan("Gagal menghapus topik: " + e.getMessage());
             }
         }
     }
 
-    private void addExam() {
-        MataKuliah selectedCourse = tabelMataKuliah
+    private void tambahUjian() {
+        MataKuliah mkTerpilih = tabelMataKuliah
                 .getSelectionModel()
                 .getSelectedItem();
-        if (selectedCourse == null) {
-            showWarning("Pilih mata kuliah terlebih dahulu!");
+        if (mkTerpilih == null) {
+            tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
@@ -527,32 +541,32 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                JadwalUjian exam = new JadwalUjian();
-                exam.setIdMataKuliah(selectedCourse.getId());
-                exam.setJudul(titleField.getText());
-                exam.setTipeUjian(typeCombo.getValue());
-                exam.setTanggalUjian(datePicker.getValue());
-                return exam;
+                JadwalUjian ujian = new JadwalUjian();
+                ujian.setIdMataKuliah(mkTerpilih.getId());
+                ujian.setJudul(titleField.getText());
+                ujian.setTipeUjian(typeCombo.getValue());
+                ujian.setTanggalUjian(datePicker.getValue());
+                return ujian;
             }
             return null;
         });
 
         Optional<JadwalUjian> result = dialog.showAndWait();
-        result.ifPresent(exam -> {
+        result.ifPresent(ujian -> {
             try {
-                manajerBasisData.tambahJadwalUjian(exam);
-                loadExams(selectedCourse.getId());
-                showInfo("Jadwal ujian berhasil ditambahkan!");
+                daoJadwalUjian.simpan(ujian);
+                muatUjian(mkTerpilih.getId());
+                tampilkanInfo("Jadwal ujian berhasil ditambahkan!");
             } catch (SQLException e) {
-                showError("Gagal menambahkan ujian: " + e.getMessage());
+                tampilkanKesalahan("Gagal menambahkan ujian: " + e.getMessage());
             }
         });
     }
 
-    private void editExam() {
-        JadwalUjian selected = tabelUjian.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih ujian yang akan diedit!");
+    private void editUjian() {
+        JadwalUjian terpilih = tabelUjian.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih ujian yang akan diedit!");
             return;
         }
 
@@ -564,11 +578,11 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 .getButtonTypes()
                 .addAll(saveButtonType, ButtonType.CANCEL);
 
-        TextField titleField = new TextField(selected.getJudul());
+        TextField titleField = new TextField(terpilih.getJudul());
         ComboBox<String> typeCombo = new ComboBox<>();
         typeCombo.getItems().addAll("UTS", "UAS", "Kuis", "Tugas");
-        typeCombo.setValue(selected.getTipeUjian());
-        DatePicker datePicker = new DatePicker(selected.getTanggalUjian());
+        typeCombo.setValue(terpilih.getTipeUjian());
+        DatePicker datePicker = new DatePicker(terpilih.getTanggalUjian());
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
         grid.setHgap(10);
@@ -584,63 +598,63 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
-                selected.setJudul(titleField.getText());
-                selected.setTipeUjian(typeCombo.getValue());
-                selected.setTanggalUjian(datePicker.getValue());
-                return selected;
+                terpilih.setJudul(titleField.getText());
+                terpilih.setTipeUjian(typeCombo.getValue());
+                terpilih.setTanggalUjian(datePicker.getValue());
+                return terpilih;
             }
             return null;
         });
 
         Optional<JadwalUjian> result = dialog.showAndWait();
-        result.ifPresent(exam -> {
+        result.ifPresent(ujian -> {
             try {
-                manajerBasisData.perbaruiJadwalUjian(exam);
-                loadExams(exam.getIdMataKuliah());
-                showInfo("Jadwal ujian berhasil diupdate!");
+                daoJadwalUjian.perbarui(ujian);
+                muatUjian(ujian.getIdMataKuliah());
+                tampilkanInfo("Jadwal ujian berhasil diupdate!");
             } catch (SQLException e) {
-                showError("Gagal memperbarui ujian: " + e.getMessage());
+                tampilkanKesalahan("Gagal memperbarui ujian: " + e.getMessage());
             }
         });
     }
 
-    private void deleteExam() {
-        JadwalUjian selected = tabelUjian.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showWarning("Pilih ujian yang akan dihapus!");
+    private void hapusUjian() {
+        JadwalUjian terpilih = tabelUjian.getSelectionModel().getSelectedItem();
+        if (terpilih == null) {
+            tampilkanPeringatan("Pilih ujian yang akan dihapus!");
             return;
         }
 
         Alert confirm = PembuatDialogMD3.buatAlert(
                 Alert.AlertType.CONFIRMATION,
                 "Konfirmasi Hapus",
-                "Hapus jadwal ujian: " + selected.getJudul() + "?");
+                "Hapus jadwal ujian: " + terpilih.getJudul() + "?");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                int courseId = selected.getIdMataKuliah();
-                manajerBasisData.hapusJadwalUjian(selected.getId());
-                loadExams(courseId);
-                showInfo("Jadwal ujian berhasil dihapus!");
+                int idMataKuliah = terpilih.getIdMataKuliah();
+                daoJadwalUjian.hapus(terpilih.getId());
+                muatUjian(idMataKuliah);
+                tampilkanInfo("Jadwal ujian berhasil dihapus!");
             } catch (SQLException e) {
-                showError("Gagal menghapus ujian: " + e.getMessage());
+                tampilkanKesalahan("Gagal menghapus ujian: " + e.getMessage());
             }
         }
     }
 
-    private void showError(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", message);
+    private void tampilkanKesalahan(String pesan) {
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", pesan);
         alert.showAndWait();
     }
 
-    private void showWarning(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.WARNING, "Peringatan", message);
+    private void tampilkanPeringatan(String pesan) {
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.WARNING, "Peringatan", pesan);
         alert.showAndWait();
     }
 
-    private void showInfo(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", message);
+    private void tampilkanInfo(String pesan) {
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", pesan);
         alert.showAndWait();
     }
 }

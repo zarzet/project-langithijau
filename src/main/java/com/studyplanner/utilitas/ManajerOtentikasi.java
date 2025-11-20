@@ -32,6 +32,7 @@ public class ManajerOtentikasi {
     private static ManajerOtentikasi instance;
     private Oauth2 oauth2Service;
     private Userinfo currentUser;
+    private java.util.Map<String, Object> currentLocalUser;
 
     private ManajerOtentikasi() {}
 
@@ -42,7 +43,7 @@ public class ManajerOtentikasi {
         return instance;
     }
 
-    public Userinfo login() throws IOException, GeneralSecurityException {
+    public Userinfo loginGoogle() throws IOException, GeneralSecurityException {
         // 1. Bangun Flow
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GoogleAuthorizationCodeFlow flow = buatFlow(httpTransport);
@@ -108,6 +109,7 @@ public class ManajerOtentikasi {
                 deleteDirectory(tokens);
             }
             currentUser = null;
+            currentLocalUser = null;
             oauth2Service = null;
             PencatatLog.info("Logout berhasil.");
         } catch (Exception e) {
@@ -119,8 +121,35 @@ public class ManajerOtentikasi {
         return currentUser;
     }
 
+    public java.util.Map<String, Object> getCurrentLocalUser() {
+        return currentLocalUser;
+    }
+
+    public void setCurrentLocalUser(java.util.Map<String, Object> user) {
+        this.currentLocalUser = user;
+        this.currentUser = null; // Clear Google user jika ada
+    }
+
     public boolean isLoggedIn() {
-        return currentUser != null;
+        return currentUser != null || currentLocalUser != null;
+    }
+
+    public String getCurrentUserName() {
+        if (currentUser != null) {
+            return currentUser.getName();
+        } else if (currentLocalUser != null) {
+            return (String) currentLocalUser.get("nama");
+        }
+        return null;
+    }
+
+    public String getCurrentUserProvider() {
+        if (currentUser != null) {
+            return "google";
+        } else if (currentLocalUser != null) {
+            return (String) currentLocalUser.get("provider");
+        }
+        return null;
     }
 
     private void deleteDirectory(File directory) {

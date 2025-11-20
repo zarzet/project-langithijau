@@ -4,8 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
-import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
@@ -208,5 +206,61 @@ public class PembuatIkon {
      */
     public static Node ikonTugas() {
         return buat(Material2OutlinedAL.ASSIGNMENT, 20);
+    }
+
+    /**
+     * Ikon untuk tampilan/appearance
+     */
+    public static Node ikonTampilan() {
+        return buat(Material2OutlinedMZ.PALETTE, 20);
+    }
+
+    /**
+     * Ikon untuk pembelajaran
+     */
+    public static Node ikonPembelajaran() {
+        return buat(Material2OutlinedMZ.SCHOOL, 20);
+    }
+
+    /**
+     * Ikon untuk backup/storage
+     */
+    public static Node ikonBackup() {
+        return buat(Material2OutlinedMZ.STORAGE, 20);
+    }
+
+    /**
+     * Ikon untuk tentang
+     */
+    public static Node ikonTentang() {
+        return buat(Material2OutlinedAL.INFO, 20);
+    }
+
+    /**
+     * Ikon untuk notifikasi
+     */
+    public static Node ikonNotifikasi() {
+        return buat(Material2OutlinedMZ.NOTIFICATIONS, 20);
+    }
+
+    /**
+     * Ikon untuk durasi/waktu
+     */
+    public static Node ikonDurasi() {
+        return buat(Material2OutlinedMZ.SCHEDULE, 20);
+    }
+
+    /**
+     * Ikon untuk ekspor
+     */
+    public static Node ikonEkspor() {
+        return buat(Material2OutlinedAL.GET_APP, 20);
+    }
+
+    /**
+     * Ikon untuk copyright
+     */
+    public static Node ikonCopyright() {
+        return buat(Material2OutlinedAL.COPYRIGHT, 16);
     }
 }

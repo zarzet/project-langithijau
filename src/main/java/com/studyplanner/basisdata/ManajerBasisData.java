@@ -30,6 +30,20 @@ public class ManajerBasisData {
     }
 
     private void buatTabel() throws SQLException {
+        String buatTabelUsers = """
+                    CREATE TABLE IF NOT EXISTS users (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        username TEXT UNIQUE,
+                        password TEXT,
+                        email TEXT,
+                        google_id TEXT UNIQUE,
+                        nama TEXT NOT NULL,
+                        foto_profil TEXT,
+                        provider TEXT NOT NULL,
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """;
+
         String buatTabelMataKuliah = """
                     CREATE TABLE IF NOT EXISTS mata_kuliah (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,6 +108,7 @@ public class ManajerBasisData {
                 """;
 
         try (Statement stmt = koneksi.createStatement()) {
+            stmt.execute(buatTabelUsers);
             stmt.execute(buatTabelMataKuliah);
             stmt.execute(buatTabelTopik);
             stmt.execute(buatTabelJadwalUjian);
@@ -106,47 +121,6 @@ public class ManajerBasisData {
     }
 
     // ==================== OPERASI MATA KULIAH ====================
-
-    public int tambahMataKuliah(MataKuliah mataKuliah) throws SQLException {
-        String sql = "INSERT INTO mata_kuliah (nama, kode, deskripsi) VALUES (?, ?, ?)";
-        catatKueri(sql);
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(
-                        sql,
-                        Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, mataKuliah.getNama());
-            pstmt.setString(2, mataKuliah.getKode());
-            pstmt.setString(3, mataKuliah.getDeskripsi());
-            pstmt.executeUpdate();
-
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
-    public void perbaruiMataKuliah(MataKuliah mataKuliah) throws SQLException {
-        String sql = "UPDATE mata_kuliah SET nama = ?, kode = ?, deskripsi = ? WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setString(1, mataKuliah.getNama());
-            pstmt.setString(2, mataKuliah.getKode());
-            pstmt.setString(3, mataKuliah.getDeskripsi());
-            pstmt.setInt(4, mataKuliah.getId());
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void hapusMataKuliah(int idMataKuliah) throws SQLException {
-        String sql = "DELETE FROM mata_kuliah WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idMataKuliah);
-            pstmt.executeUpdate();
-        }
-    }
 
     public List<MataKuliah> ambilSemuaMataKuliah() throws SQLException {
         List<MataKuliah> daftarMataKuliah = new ArrayList<>();
@@ -168,127 +142,7 @@ public class ManajerBasisData {
         return daftarMataKuliah;
     }
 
-    public MataKuliah ambilMataKuliahBerdasarkanId(int id) throws SQLException {
-        String sql = "SELECT * FROM mata_kuliah WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                MataKuliah mataKuliah = new MataKuliah();
-                mataKuliah.setId(rs.getInt("id"));
-                mataKuliah.setNama(rs.getString("nama"));
-                mataKuliah.setKode(rs.getString("kode"));
-                mataKuliah.setDeskripsi(rs.getString("deskripsi"));
-                return mataKuliah;
-            }
-        }
-        return null;
-    }
-
     // ==================== OPERASI TOPIK ====================
-
-    public int tambahTopik(Topik topik) throws SQLException {
-        String sql = """
-                    INSERT INTO topik (id_mata_kuliah, nama, deskripsi, prioritas, tingkat_kesulitan,
-                                       tanggal_belajar_pertama, tanggal_ulasan_terakhir, jumlah_ulasan,
-                                       faktor_kemudahan, interval, dikuasai)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
-        catatKueri(sql);
-
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(
-                        sql,
-                        Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, topik.getIdMataKuliah());
-            pstmt.setString(2, topik.getNama());
-            pstmt.setString(3, topik.getDeskripsi());
-            pstmt.setInt(4, topik.getPrioritas());
-            pstmt.setInt(5, topik.getTingkatKesulitan());
-            pstmt.setObject(6, topik.getTanggalBelajarPertama());
-            pstmt.setObject(7, topik.getTanggalUlasanTerakhir());
-            pstmt.setInt(8, topik.getJumlahUlasan());
-            pstmt.setDouble(9, topik.getFaktorKemudahan());
-            pstmt.setInt(10, topik.getInterval());
-            pstmt.setBoolean(11, topik.isDikuasai());
-            pstmt.executeUpdate();
-
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
-    public void perbaruiTopik(Topik topik) throws SQLException {
-        String sql = """
-                    UPDATE topik SET id_mata_kuliah = ?, nama = ?, deskripsi = ?,
-                                    prioritas = ?, tingkat_kesulitan = ?,
-                                    tanggal_belajar_pertama = ?, tanggal_ulasan_terakhir = ?,
-                                    jumlah_ulasan = ?, faktor_kemudahan = ?,
-                                    interval = ?, dikuasai = ?
-                    WHERE id = ?
-                """;
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, topik.getIdMataKuliah());
-            pstmt.setString(2, topik.getNama());
-            pstmt.setString(3, topik.getDeskripsi());
-            pstmt.setInt(4, topik.getPrioritas());
-            pstmt.setInt(5, topik.getTingkatKesulitan());
-            pstmt.setObject(6, topik.getTanggalBelajarPertama());
-            pstmt.setObject(7, topik.getTanggalUlasanTerakhir());
-            pstmt.setInt(8, topik.getJumlahUlasan());
-            pstmt.setDouble(9, topik.getFaktorKemudahan());
-            pstmt.setInt(10, topik.getInterval());
-            pstmt.setBoolean(11, topik.isDikuasai());
-            pstmt.setInt(12, topik.getId());
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void hapusTopik(int idTopik) throws SQLException {
-        String sql = "DELETE FROM topik WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idTopik);
-            pstmt.executeUpdate();
-        }
-    }
-
-    public List<Topik> ambilTopikBerdasarkanMataKuliah(int idMataKuliah) throws SQLException {
-        List<Topik> daftarTopik = new ArrayList<>();
-        String sql = "SELECT * FROM topik WHERE id_mata_kuliah = ? ORDER BY prioritas DESC, nama";
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idMataKuliah);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                daftarTopik.add(ekstrakTopikDariResultSet(rs));
-            }
-        }
-        return daftarTopik;
-    }
-
-    public Topik ambilTopikBerdasarkanId(int id) throws SQLException {
-        String sql = "SELECT * FROM topik WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return ekstrakTopikDariResultSet(rs);
-            }
-        }
-        return null;
-    }
 
     public List<Topik> ambilSemuaTopik() throws SQLException {
         List<Topik> daftarTopik = new ArrayList<>();
@@ -333,68 +187,6 @@ public class ManajerBasisData {
     }
 
     // ==================== OPERASI JADWAL UJIAN ====================
-
-    public int tambahJadwalUjian(JadwalUjian ujian) throws SQLException {
-        String sql = """
-                    INSERT INTO jadwal_ujian (id_mata_kuliah, tipe_ujian, judul, tanggal_ujian,
-                                               waktu_ujian, lokasi, catatan, selesai)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
-        catatKueri(sql);
-
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(
-                        sql,
-                        Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, ujian.getIdMataKuliah());
-            pstmt.setString(2, ujian.getTipeUjian());
-            pstmt.setString(3, ujian.getJudul());
-            pstmt.setObject(4, ujian.getTanggalUjian());
-            pstmt.setObject(5, ujian.getWaktuUjian());
-            pstmt.setString(6, ujian.getLokasi());
-            pstmt.setString(7, ujian.getCatatan());
-            pstmt.setBoolean(8, ujian.isSelesai());
-            pstmt.executeUpdate();
-
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
-    public void perbaruiJadwalUjian(JadwalUjian ujian) throws SQLException {
-        String sql = """
-                    UPDATE jadwal_ujian SET id_mata_kuliah = ?, tipe_ujian = ?, judul = ?,
-                                             tanggal_ujian = ?, waktu_ujian = ?, lokasi = ?,
-                                             catatan = ?, selesai = ?
-                    WHERE id = ?
-                """;
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, ujian.getIdMataKuliah());
-            pstmt.setString(2, ujian.getTipeUjian());
-            pstmt.setString(3, ujian.getJudul());
-            pstmt.setObject(4, ujian.getTanggalUjian());
-            pstmt.setObject(5, ujian.getWaktuUjian());
-            pstmt.setString(6, ujian.getLokasi());
-            pstmt.setString(7, ujian.getCatatan());
-            pstmt.setBoolean(8, ujian.isSelesai());
-            pstmt.setInt(9, ujian.getId());
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void hapusJadwalUjian(int idUjian) throws SQLException {
-        String sql = "DELETE FROM jadwal_ujian WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idUjian);
-            pstmt.executeUpdate();
-        }
-    }
 
     public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
         List<JadwalUjian> daftarUjian = new ArrayList<>();
@@ -493,43 +285,6 @@ public class ManajerBasisData {
             }
         }
         return -1;
-    }
-
-    public void perbaruiSesiBelajar(SesiBelajar sesi) throws SQLException {
-        String sql = """
-                    UPDATE sesi_belajar SET id_topik = ?, id_mata_kuliah = ?, tanggal_jadwal = ?,
-                                             tipe_sesi = ?, selesai = ?, selesai_pada = ?,
-                                             rating_performa = ?, catatan = ?, durasi_menit = ?
-                    WHERE id = ?
-                """;
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, sesi.getIdTopik());
-            pstmt.setInt(2, sesi.getIdMataKuliah());
-            pstmt.setObject(3, sesi.getTanggalJadwal());
-            pstmt.setString(4, sesi.getTipeSesi());
-            pstmt.setBoolean(5, sesi.isSelesai());
-            pstmt.setObject(6, sesi.getSelesaiPada());
-            pstmt.setObject(
-                    7,
-                    sesi.getRatingPerforma() > 0
-                            ? sesi.getRatingPerforma()
-                            : null);
-            pstmt.setString(8, sesi.getCatatan());
-            pstmt.setInt(9, sesi.getDurasiMenit());
-            pstmt.setInt(10, sesi.getId());
-            pstmt.executeUpdate();
-        }
-    }
-
-    public void hapusSesiBelajar(int idSesi) throws SQLException {
-        String sql = "DELETE FROM sesi_belajar WHERE id = ?";
-        catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idSesi);
-            pstmt.executeUpdate();
-        }
     }
 
     public List<SesiBelajar> ambilSesiBerdasarkanTanggal(LocalDate tanggal)
@@ -756,6 +511,85 @@ public class ManajerBasisData {
         }
     }
 
+    // ==================== OPERASI USER ====================
+
+    public int tambahUser(String username, String password, String email, String nama, String provider) throws SQLException {
+        String sql = "INSERT INTO users (username, password, email, nama, provider) VALUES (?, ?, ?, ?, ?)";
+        catatKueri(sql);
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, email);
+            pstmt.setString(4, nama);
+            pstmt.setString(5, provider);
+            pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    public int tambahUserGoogle(String googleId, String email, String nama, String fotoProfil) throws SQLException {
+        String sql = "INSERT INTO users (google_id, email, nama, foto_profil, provider) VALUES (?, ?, ?, ?, 'google')";
+        catatKueri(sql);
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, googleId);
+            pstmt.setString(2, email);
+            pstmt.setString(3, nama);
+            pstmt.setString(4, fotoProfil);
+            pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return -1;
+    }
+
+    public java.util.Map<String, Object> cariUserByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        catatKueri(sql);
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                java.util.Map<String, Object> user = new java.util.HashMap<>();
+                user.put("id", rs.getInt("id"));
+                user.put("username", rs.getString("username"));
+                user.put("password", rs.getString("password"));
+                user.put("email", rs.getString("email"));
+                user.put("nama", rs.getString("nama"));
+                user.put("provider", rs.getString("provider"));
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public java.util.Map<String, Object> cariUserByGoogleId(String googleId) throws SQLException {
+        String sql = "SELECT * FROM users WHERE google_id = ?";
+        catatKueri(sql);
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setString(1, googleId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                java.util.Map<String, Object> user = new java.util.HashMap<>();
+                user.put("id", rs.getInt("id"));
+                user.put("google_id", rs.getString("google_id"));
+                user.put("email", rs.getString("email"));
+                user.put("nama", rs.getString("nama"));
+                user.put("foto_profil", rs.getString("foto_profil"));
+                user.put("provider", rs.getString("provider"));
+                return user;
+            }
+        }
+        return null;
+    }
+
     // ==================== HELPER INSPEKTUR BASIS DATA ====================
 
     public List<String> ambilDaftarTabel() throws SQLException {
@@ -799,5 +633,20 @@ public class ManajerBasisData {
         try (Statement stmt = koneksi.createStatement()) {
             stmt.executeUpdate(sql);
         }
+    }
+
+    // ==================== AKSES KONEKSI UNTUK DAO ====================
+
+    /**
+     * Memberikan akses ke Connection untuk DAO classes.
+     * Digunakan oleh DAO pattern untuk menjalankan query.
+     * Method ini membuat koneksi baru setiap kali dipanggil
+     * sehingga aman untuk digunakan dengan try-with-resources.
+     *
+     * @return Connection object baru
+     * @throws SQLException jika gagal membuat koneksi
+     */
+    public Connection bukaKoneksi() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
     }
 }

@@ -18,8 +18,9 @@ public class AplikasiUtama extends Application {
 
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
         auth.cobaPulihkanSesi();
-        
-        String fxmlFile = auth.isLoggedIn() ? "/fxml/MainView.fxml" : "/fxml/LoginView.fxml";
+
+        boolean isLoggedIn = auth.isLoggedIn();
+        String fxmlFile = isLoggedIn ? "/fxml/MainView.fxml" : "/fxml/LoginView.fxml";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Parent root = loader.load();

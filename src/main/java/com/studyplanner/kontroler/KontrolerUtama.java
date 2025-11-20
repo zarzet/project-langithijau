@@ -13,6 +13,7 @@ import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
 import com.studyplanner.tampilan.WidgetWaktuBelajarHariIni;
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.dao.*;
 import com.studyplanner.model.*;
 import java.io.IOException;
 import java.net.URL;
@@ -33,6 +34,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -140,6 +142,10 @@ public class KontrolerUtama implements Initializable {
     private VBox upcomingTasksWidgetContainer;
 
     private ManajerBasisData manajerBasisData;
+    private DAOMataKuliah daoMataKuliah;
+    private DAOTopik daoTopik;
+    private DAOJadwalUjian daoJadwalUjian;
+    private DAOSesiBelajar daoSesiBelajar;
     private boolean isDarkMode = false;
     private PembuatJadwal pembuatJadwal;
     private WidgetRuntutanBelajar streakWidget;
@@ -153,6 +159,13 @@ public class KontrolerUtama implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
+
+        // Inisialisasi DAOs
+        daoMataKuliah = new DAOMataKuliah(manajerBasisData);
+        daoTopik = new DAOTopik(manajerBasisData);
+        daoJadwalUjian = new DAOJadwalUjian(manajerBasisData);
+        daoSesiBelajar = new DAOSesiBelajar(manajerBasisData);
+
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
         siapkanUI();
@@ -356,7 +369,7 @@ public class KontrolerUtama implements Initializable {
             return;
         }
 
-        List<SesiBelajar> upcomingSessions = manajerBasisData.ambilSesiMendatang(4);
+        List<SesiBelajar> upcomingSessions = daoSesiBelajar.ambilSesiMendatang(4);
         upcomingTasksWidget.aturSesi(upcomingSessions);
     }
 
@@ -366,7 +379,7 @@ public class KontrolerUtama implements Initializable {
         }
 
         try {
-            List<SesiBelajar> sessions = manajerBasisData.ambilSesiMendatang(12);
+            List<SesiBelajar> sessions = daoSesiBelajar.ambilSesiMendatang(12);
 
             Dialog<Void> dialog = PembuatDialogMD3.buatDialog("Detail Upcoming Tasks", null);
             dialog
@@ -405,7 +418,7 @@ public class KontrolerUtama implements Initializable {
 
     private void loadTodayTasks() throws SQLException {
         todayTasksContainer.getChildren().clear();
-        List<SesiBelajar> sessions = manajerBasisData.ambilSesiHariIni();
+        List<SesiBelajar> sessions = daoSesiBelajar.ambilSesiHariIni();
 
         if (sessions.isEmpty()) {
             Label emptyLabel = new Label(
@@ -479,7 +492,7 @@ public class KontrolerUtama implements Initializable {
             } else {
                 session.setSelesaiPada(null);
                 session.setRatingPerforma(0);
-                manajerBasisData.perbaruiSesiBelajar(session);
+                daoSesiBelajar.perbarui(session);
             }
 
             loadDashboardData();
@@ -528,10 +541,10 @@ public class KontrolerUtama implements Initializable {
                 .ifPresent(rating -> {
                     try {
                         session.setRatingPerforma(rating);
-                        manajerBasisData.perbaruiSesiBelajar(session);
+                        daoSesiBelajar.perbarui(session);
 
                         // Update topic based on spaced repetition algorithm
-                        Topik topic = manajerBasisData.ambilTopikBerdasarkanId(session.getIdTopik());
+                        Topik topic = daoTopik.ambilBerdasarkanId(session.getIdTopik());
                         if (topic != null) {
                             if (topic.getTanggalBelajarPertama() == null) {
                                 topic.setTanggalBelajarPertama(LocalDate.now());
@@ -541,7 +554,7 @@ public class KontrolerUtama implements Initializable {
                                     topic,
                                     rating);
 
-                            manajerBasisData.perbaruiTopik(topic);
+                            daoTopik.perbarui(topic);
 
                             showInfo(
                                     "Sesi berhasil diselesaikan!\nReview berikutnya: " +
@@ -566,7 +579,7 @@ public class KontrolerUtama implements Initializable {
 
     private void loadUpcomingExams() throws SQLException {
         upcomingExamsContainer.getChildren().clear();
-        List<JadwalUjian> exams = manajerBasisData.ambilUjianMendatang();
+        List<JadwalUjian> exams = daoJadwalUjian.ambilUjianMendatang();
 
         if (exams.isEmpty()) {
             Label emptyLabel = new Label("Belum ada ujian yang dijadwalkan.");
@@ -586,7 +599,7 @@ public class KontrolerUtama implements Initializable {
         Label titleLabel = new Label(exam.getJudul());
         titleLabel.getStyleClass().add("exam-title");
 
-        MataKuliah course = manajerBasisData.ambilMataKuliahBerdasarkanId(exam.getIdMataKuliah());
+        MataKuliah course = daoMataKuliah.ambilBerdasarkanId(exam.getIdMataKuliah());
         Label courseLabel = new Label(course != null ? course.getKode() : "");
         courseLabel.getStyleClass().add("exam-course");
 
@@ -719,31 +732,191 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void tampilkanPengaturan() {
-        Dialog<Void> dialog = PembuatDialogMD3.buatDialog("Pengaturan", "Pengaturan Aplikasi");
-        
-        VBox content = new VBox(15);
-        content.setPadding(new Insets(20));
-        content.setStyle("-fx-min-width: 400px;");
-        
-        Label infoLabel = new Label("Fitur pengaturan akan segera hadir!");
-        infoLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
-        
-        // Dark mode toggle
-        HBox darkModeBox = new HBox(10);
-        darkModeBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        Label darkModeLabel = new Label("Mode Gelap:");
-        darkModeLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold;");
+        try {
+            Stage stage = new Stage();
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+            VBox root = new VBox();
+            root.getStyleClass().add("settings-window");
+
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setFitToWidth(true);
+            scrollPane.setStyle("-fx-background-color: transparent;");
+
+            VBox settingsContent = new VBox(32);
+            settingsContent.setPadding(new Insets(24));
+
+        // ===== TAMPILAN =====
+        VBox appearanceSection = createSettingsSection("Tampilan", PembuatIkon.ikonTampilan());
+
+        // Dark Mode
+        HBox darkModeRow = createSettingRow(
+            "Mode Gelap",
+            "Ubah tema aplikasi menjadi gelap untuk kenyamanan mata di malam hari"
+        );
         CheckBox darkModeCheck = new CheckBox();
         darkModeCheck.setSelected(isDarkMode);
-        darkModeCheck.setOnAction(_ -> alihkanModaGelap());
-        darkModeBox.getChildren().addAll(darkModeLabel, darkModeCheck);
-        
-        content.getChildren().addAll(infoLabel, new Separator(), darkModeBox);
-        
-        dialog.getDialogPane().setContent(content);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        
-        dialog.showAndWait();
+        darkModeCheck.setOnAction(_ -> {
+            alihkanModaGelap();
+            // Update window appearance
+            if (isDarkMode) {
+                root.getStyleClass().add("dark-mode");
+            } else {
+                root.getStyleClass().remove("dark-mode");
+            }
+            // Re-apply window decoration untuk update title bar
+            DekoratorJendelaKustom.dekorasi(stage, "Pengaturan", isDarkMode);
+        });
+        darkModeRow.getChildren().add(darkModeCheck);
+
+        appearanceSection.getChildren().add(darkModeRow);
+
+        // ===== PEMBELAJARAN =====
+        VBox studySection = createSettingsSection("Pembelajaran", PembuatIkon.ikonPembelajaran());
+
+        // Default study duration
+        HBox durationRow = createSettingRow(
+            "Durasi Belajar Default",
+            "Durasi standar untuk sesi belajar baru (dalam menit)"
+        );
+        ComboBox<String> durationCombo = new ComboBox<>();
+        durationCombo.getItems().addAll("30 menit", "45 menit", "60 menit", "90 menit", "120 menit");
+        durationCombo.setValue("60 menit");
+        durationCombo.setStyle("-fx-pref-width: 140px;");
+        durationRow.getChildren().add(durationCombo);
+
+        // Study reminder
+        HBox reminderRow = createSettingRow(
+            "Pengingat Belajar",
+            "Tampilkan notifikasi untuk mengingatkan jadwal belajar"
+        );
+        CheckBox reminderCheck = new CheckBox();
+        reminderCheck.setSelected(true);
+        reminderRow.getChildren().add(reminderCheck);
+
+        studySection.getChildren().addAll(durationRow, reminderRow);
+
+        // ===== DATA =====
+        VBox dataSection = createSettingsSection("Data & Backup", PembuatIkon.ikonBackup());
+
+        // Auto backup
+        HBox backupRow = createSettingRow(
+            "Backup Otomatis",
+            "Backup database secara otomatis setiap hari"
+        );
+        CheckBox backupCheck = new CheckBox();
+        backupCheck.setSelected(false);
+        backupRow.getChildren().add(backupCheck);
+
+        // Export data button
+        HBox exportRow = createSettingRow(
+            "Ekspor Data",
+            "Ekspor semua data Anda ke file JSON"
+        );
+        Button exportBtn = new Button("Ekspor");
+        exportBtn.getStyleClass().add("btn-secondary");
+        exportBtn.setStyle("-fx-pref-width: 100px;");
+        exportRow.getChildren().add(exportBtn);
+
+        dataSection.getChildren().addAll(backupRow, exportRow);
+
+        // ===== TENTANG =====
+        VBox aboutSection = createSettingsSection("Tentang", PembuatIkon.ikonTentang());
+
+        VBox aboutContent = new VBox(8);
+        aboutContent.getStyleClass().add("settings-about-box");
+
+        Label appName = new Label("Perencana Belajar Adaptif");
+        appName.getStyleClass().add("settings-about-title");
+
+        Label version = new Label("Versi 1.0.0");
+        version.getStyleClass().add("settings-about-version");
+
+        Label description = new Label("Aplikasi manajemen pembelajaran dengan sistem spaced repetition");
+        description.setWrapText(true);
+        description.getStyleClass().add("settings-about-description");
+
+        HBox copyrightBox = new HBox(6);
+        copyrightBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        copyrightBox.getChildren().add(PembuatIkon.ikonCopyright());
+        Label copyright = new Label("2025 - Dibuat dengan JavaFX 25");
+        copyright.getStyleClass().add("settings-about-copyright");
+        copyrightBox.getChildren().add(copyright);
+
+        aboutContent.getChildren().addAll(appName, version, description, copyrightBox);
+        aboutSection.getChildren().add(aboutContent);
+
+        // Add all sections
+        settingsContent.getChildren().addAll(
+            appearanceSection,
+            studySection,
+            dataSection,
+            aboutSection
+        );
+
+            scrollPane.setContent(settingsContent);
+            root.getChildren().add(scrollPane);
+            VBox.setVgrow(scrollPane, javafx.scene.layout.Priority.ALWAYS);
+
+            Scene scene = new Scene(root, 700, 600);
+            scene.getStylesheets().add(
+                getClass().getResource("/css/style.css").toExternalForm()
+            );
+
+            if (isDarkMode) {
+                root.getStyleClass().add("dark-mode");
+            }
+
+            stage.setScene(scene);
+
+            // Terapkan custom window decoration seperti window utama
+            DekoratorJendelaKustom.dekorasi(stage, "Pengaturan", isDarkMode);
+
+            stage.showAndWait();
+        } catch (Exception e) {
+            showError("Gagal membuka pengaturan: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private VBox createSettingsSection(String title, Node icon) {
+        VBox section = new VBox(16);
+
+        HBox titleBox = new HBox(10);
+        titleBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        titleBox.setPadding(new Insets(0, 0, 8, 0));
+
+        if (icon != null) {
+            titleBox.getChildren().add(icon);
+        }
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("settings-section-title");
+
+        titleBox.getChildren().add(titleLabel);
+        section.getChildren().add(titleBox);
+        return section;
+    }
+
+    private HBox createSettingRow(String title, String description) {
+        HBox row = new HBox(16);
+        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        row.getStyleClass().add("settings-row");
+
+        VBox textBox = new VBox(4);
+        HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
+
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("settings-row-title");
+
+        Label descLabel = new Label(description);
+        descLabel.setWrapText(true);
+        descLabel.getStyleClass().add("settings-row-description");
+
+        textBox.getChildren().addAll(titleLabel, descLabel);
+        row.getChildren().add(textBox);
+
+        return row;
     }
 
     private void keluar() {

@@ -1,6 +1,7 @@
 package com.studyplanner.kontroler;
 
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.dao.DAOSesiBelajar;
 import com.studyplanner.model.SesiBelajar;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import java.net.URL;
@@ -13,12 +14,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class KontrolerTampilanJadwal implements Initializable {
@@ -51,115 +50,116 @@ public class KontrolerTampilanJadwal implements Initializable {
     private Label sessionCountLabel;
 
     private ManajerBasisData manajerBasisData;
-    private LocalDate currentWeekStart;
+    private DAOSesiBelajar daoSesiBelajar;
+    private LocalDate awalMingguSaatIni;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
+        daoSesiBelajar = new DAOSesiBelajar(manajerBasisData);
 
-        LocalDate today = LocalDate.now();
-        datePicker.setValue(today);
-        currentWeekStart = today.minusDays(today.getDayOfWeek().getValue() - 1);
+        LocalDate hariIni = LocalDate.now();
+        datePicker.setValue(hariIni);
+        awalMingguSaatIni = hariIni.minusDays(hariIni.getDayOfWeek().getValue() - 1);
 
         // Setup event handlers
         datePicker.setOnAction(_ -> {
-            loadSchedule();
-            updateWeekCalendar();
+            muatJadwal();
+            perbaruiKalenderMinggu();
         });
 
         if (prevWeekBtn != null) {
-            prevWeekBtn.setOnAction(_ -> navigateWeek(-7));
+            prevWeekBtn.setOnAction(_ -> navigasiMinggu(-7));
         }
 
         if (nextWeekBtn != null) {
-            nextWeekBtn.setOnAction(_ -> navigateWeek(7));
+            nextWeekBtn.setOnAction(_ -> navigasiMinggu(7));
         }
 
         if (todayBtn != null) {
             todayBtn.setOnAction(_ -> {
                 datePicker.setValue(LocalDate.now());
-                currentWeekStart = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
-                updateWeekCalendar();
-                loadSchedule();
+                awalMingguSaatIni = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
+                perbaruiKalenderMinggu();
+                muatJadwal();
             });
         }
 
-        updateWeekCalendar();
-        loadSchedule();
+        perbaruiKalenderMinggu();
+        muatJadwal();
     }
 
-    private void navigateWeek(int days) {
-        currentWeekStart = currentWeekStart.plusDays(days);
-        datePicker.setValue(currentWeekStart);
-        updateWeekCalendar();
-        loadSchedule();
+    private void navigasiMinggu(int hari) {
+        awalMingguSaatIni = awalMingguSaatIni.plusDays(hari);
+        datePicker.setValue(awalMingguSaatIni);
+        perbaruiKalenderMinggu();
+        muatJadwal();
     }
 
-    private void updateWeekCalendar() {
+    private void perbaruiKalenderMinggu() {
         if (weekCalendar == null) return;
 
         weekCalendar.getChildren().clear();
-        LocalDate selectedDate = datePicker.getValue();
+        LocalDate tanggalTerpilih = datePicker.getValue();
 
         for (int i = 0; i < 7; i++) {
-            LocalDate date = currentWeekStart.plusDays(i);
-            VBox dayCard = createDayCard(date, date.equals(selectedDate));
-            weekCalendar.getChildren().add(dayCard);
+            LocalDate tanggal = awalMingguSaatIni.plusDays(i);
+            VBox kartuHari = buatKartuHari(tanggal, tanggal.equals(tanggalTerpilih));
+            weekCalendar.getChildren().add(kartuHari);
         }
     }
 
-    private VBox createDayCard(LocalDate date, boolean isSelected) {
-        VBox card = new VBox(8);
-        card.setAlignment(Pos.CENTER);
-        card.setPrefWidth(80);
-        card.setPrefHeight(80);
+    private VBox buatKartuHari(LocalDate tanggal, boolean dipilih) {
+        VBox kartu = new VBox(8);
+        kartu.setAlignment(Pos.CENTER);
+        kartu.setPrefWidth(80);
+        kartu.setPrefHeight(80);
 
         // Use CSS classes instead of inline styles
-        card.getStyleClass().addAll("week-day-card");
-        if (isSelected) {
-            card.getStyleClass().add("selected");
+        kartu.getStyleClass().addAll("week-day-card");
+        if (dipilih) {
+            kartu.getStyleClass().add("selected");
         }
 
-        String dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.of("id", "ID"));
-        Label dayLabel = new Label(dayName);
-        dayLabel.getStyleClass().add("day-name-label");
+        String namaHari = tanggal.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.of("id", "ID"));
+        Label labelHari = new Label(namaHari);
+        labelHari.getStyleClass().add("day-name-label");
 
-        Label dateLabel = new Label(String.valueOf(date.getDayOfMonth()));
-        dateLabel.getStyleClass().add("day-number-label");
+        Label labelTanggal = new Label(String.valueOf(tanggal.getDayOfMonth()));
+        labelTanggal.getStyleClass().add("day-number-label");
 
         // Check if today
-        if (date.equals(LocalDate.now())) {
-            Label todayDot = new Label("•");
-            todayDot.getStyleClass().add("today-indicator");
-            card.getChildren().add(todayDot);
+        if (tanggal.equals(LocalDate.now())) {
+            Label titikHariIni = new Label("•");
+            titikHariIni.getStyleClass().add("today-indicator");
+            kartu.getChildren().add(titikHariIni);
         }
 
-        card.getChildren().addAll(dayLabel, dateLabel);
+        kartu.getChildren().addAll(labelHari, labelTanggal);
 
         // Click handler
-        card.setOnMouseClicked(_ -> {
-            datePicker.setValue(date);
-            loadSchedule();
-            updateWeekCalendar();
+        kartu.setOnMouseClicked(_ -> {
+            datePicker.setValue(tanggal);
+            muatJadwal();
+            perbaruiKalenderMinggu();
         });
 
-        return card;
+        return kartu;
     }
 
-    private void loadSchedule() {
-        LocalDate selectedDate = datePicker.getValue();
+    private void muatJadwal() {
+        LocalDate tanggalTerpilih = datePicker.getValue();
         scheduleContainer.getChildren().clear();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
                 "EEEE, dd MMMM yyyy", Locale.of("id", "ID"));
-        selectedDateLabel.setText(selectedDate.format(formatter));
+        selectedDateLabel.setText(tanggalTerpilih.format(formatter));
 
         try {
-            List<SesiBelajar> sessions = manajerBasisData.ambilSesiBerdasarkanTanggal(
-                    selectedDate);
-            sessionCountLabel.setText(sessions.size() + " sesi belajar");
+            List<SesiBelajar> daftarSesi = daoSesiBelajar.ambilBerdasarkanTanggal(tanggalTerpilih);
+            sessionCountLabel.setText(daftarSesi.size() + " sesi belajar");
 
-            if (sessions.isEmpty()) {
+            if (daftarSesi.isEmpty()) {
                 // Show empty state
                 if (emptyState != null) {
                     emptyState.setVisible(true);
@@ -177,80 +177,80 @@ public class KontrolerTampilanJadwal implements Initializable {
                 scheduleContainer.setManaged(true);
 
                 // Add schedule cards
-                for (SesiBelajar session : sessions) {
+                for (SesiBelajar sesi : daftarSesi) {
                     scheduleContainer
                             .getChildren()
-                            .add(createScheduleCard(session));
+                            .add(buatKartuJadwal(sesi));
                 }
             }
         } catch (SQLException e) {
-            showError("Kesalahan memuat jadwal: " + e.getMessage());
+            tampilkanKesalahan("Kesalahan memuat jadwal: " + e.getMessage());
         }
     }
 
-    private VBox createScheduleCard(SesiBelajar session) {
-        VBox card = new VBox(12);
-        card.getStyleClass().add("schedule-card");
-        if (session.isSelesai()) {
-            card.getStyleClass().add("completed");
+    private VBox buatKartuJadwal(SesiBelajar sesi) {
+        VBox kartu = new VBox(12);
+        kartu.getStyleClass().add("schedule-card");
+        if (sesi.isSelesai()) {
+            kartu.getStyleClass().add("completed");
         }
 
         // Header with title and status
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        VBox titleBox = new VBox(4);
-        HBox.setHgrow(titleBox, Priority.ALWAYS);
+        VBox kotakJudul = new VBox(4);
+        HBox.setHgrow(kotakJudul, Priority.ALWAYS);
 
-        Label titleLabel = new Label(session.getNamaTopik());
-        titleLabel.getStyleClass().add("schedule-title");
+        Label labelJudul = new Label(sesi.getNamaTopik());
+        labelJudul.getStyleClass().add("schedule-title");
 
-        Label courseLabel = new Label(session.getNamaMataKuliah());
-        courseLabel.getStyleClass().add("schedule-course");
+        Label labelMataKuliah = new Label(sesi.getNamaMataKuliah());
+        labelMataKuliah.getStyleClass().add("schedule-course");
 
-        titleBox.getChildren().addAll(titleLabel, courseLabel);
+        kotakJudul.getChildren().addAll(labelJudul, labelMataKuliah);
 
         // Status badge
-        Label statusBadge = new Label(session.isSelesai() ? "✓ Selesai" : "○ Belum");
-        statusBadge.getStyleClass().add("status-badge");
-        if (session.isSelesai()) {
-            statusBadge.getStyleClass().add("completed");
+        Label badgeStatus = new Label(sesi.isSelesai() ? "✓ Selesai" : "○ Belum");
+        badgeStatus.getStyleClass().add("status-badge");
+        if (sesi.isSelesai()) {
+            badgeStatus.getStyleClass().add("completed");
         } else {
-            statusBadge.getStyleClass().add("pending");
+            badgeStatus.getStyleClass().add("pending");
         }
 
-        header.getChildren().addAll(titleBox, statusBadge);
+        header.getChildren().addAll(kotakJudul, badgeStatus);
 
         // Meta info row
-        HBox metaRow = new HBox(16);
-        metaRow.setAlignment(Pos.CENTER_LEFT);
+        HBox barisMeta = new HBox(16);
+        barisMeta.setAlignment(Pos.CENTER_LEFT);
 
         // Type badge
-        Label typeLabel = new Label(getSessionTypeLabel(session.getTipeSesi()));
-        typeLabel.getStyleClass().addAll("task-type", getBadgeClass(session.getTipeSesi()));
+        Label labelTipe = new Label(dapatkanLabelTipeSesi(sesi.getTipeSesi()));
+        labelTipe.getStyleClass().addAll("task-type", dapatkanKelasBadge(sesi.getTipeSesi()));
 
         // Duration
-        Label durationLabel = new Label("Durasi: " + session.getDurasiMenit() + " menit");
-        durationLabel.getStyleClass().add("schedule-duration");
+        Label labelDurasi = new Label("Durasi: " + sesi.getDurasiMenit() + " menit");
+        labelDurasi.getStyleClass().add("schedule-duration");
 
-        metaRow.getChildren().addAll(typeLabel, durationLabel);
+        barisMeta.getChildren().addAll(labelTipe, labelDurasi);
 
-        card.getChildren().addAll(header, metaRow);
+        kartu.getChildren().addAll(header, barisMeta);
 
-        return card;
+        return kartu;
     }
 
-    private String getSessionTypeLabel(String type) {
-        return switch (type) {
+    private String dapatkanLabelTipeSesi(String tipe) {
+        return switch (tipe) {
             case "INITIAL_STUDY" -> "Belajar Pertama";
             case "REVIEW" -> "Review";
             case "PRACTICE" -> "Latihan";
-            default -> type;
+            default -> tipe;
         };
     }
 
-    private String getBadgeClass(String type) {
-        return switch (type) {
+    private String dapatkanKelasBadge(String tipe) {
+        return switch (tipe) {
             case "INITIAL_STUDY" -> "badge-initial_study";
             case "REVIEW" -> "badge-review";
             case "PRACTICE" -> "badge-practice";
@@ -258,8 +258,8 @@ public class KontrolerTampilanJadwal implements Initializable {
         };
     }
 
-    private void showError(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", message);
+    private void tampilkanKesalahan(String pesan) {
+        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", pesan);
         alert.showAndWait();
     }
 }

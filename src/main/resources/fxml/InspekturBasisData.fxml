@@ -6,61 +6,120 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.studyplanner.kontroler.KontrolerInspekturBasisData"
-            prefWidth="900" prefHeight="600">
-    
+            styleClass="inspektur-root"
+            prefWidth="1100" prefHeight="700">
+
+    <!-- Header -->
     <top>
-        <VBox styleClass="header">
+        <VBox styleClass="inspektur-header" spacing="16">
             <padding>
-                <Insets top="15" right="20" bottom="15" left="20"/>
+                <Insets top="24" right="32" bottom="24" left="32"/>
             </padding>
-            <Label text="Inspektur Basis Data" styleClass="app-title"/>
-            <Label text="Visualisasi dan Pemantauan Aktivitas Database" styleClass="text-muted"/>
+
+            <!-- Title Row -->
+            <HBox fx:id="headerIconBox" alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="4">
+                    <Label text="Inspektur Basis Data" styleClass="inspektur-title"/>
+                    <Label text="Visualisasi dan pemantauan aktivitas database real-time" styleClass="inspektur-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <!-- Stats Cards -->
+            <HBox spacing="16" styleClass="stats-container">
+                <VBox fx:id="statCard1" styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Total Tabel" styleClass="stat-label"/>
+                    <Label fx:id="totalTablesLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+
+                <VBox fx:id="statCard2" styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Log Queries" styleClass="stat-label"/>
+                    <Label fx:id="totalQueriesLabel" text="0" styleClass="stat-value"/>
+                </VBox>
+
+                <VBox fx:id="statCard3" styleClass="stat-card" spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Status" styleClass="stat-label"/>
+                    <Label text="Connected" styleClass="stat-value" style="-fx-text-fill: #28a745;"/>
+                </VBox>
+            </HBox>
         </VBox>
     </top>
 
+    <!-- Main Content -->
     <center>
-        <TabPane>
+        <TabPane styleClass="inspektur-tab-pane">
+
             <!-- Tab 1: Live Log Monitor -->
-            <Tab text="Log Aktivitas (Live)" closable="false">
-                <VBox spacing="10">
+            <Tab fx:id="logTab" text="Log Aktivitas" closable="false" styleClass="inspektur-tab">
+                <VBox spacing="16" styleClass="tab-content-card">
                     <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
                     </padding>
-                    
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Log Kueri Real-time:" styleClass="section-title"/>
+
+                    <!-- Header Actions -->
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="Log Kueri Real-time" styleClass="section-title-modern"/>
                         <Region HBox.hgrow="ALWAYS"/>
-                        <Button fx:id="clearLogBtn" text="Bersihkan Log" styleClass="btn-secondary"/>
+                        <Button fx:id="clearLogBtn" text="Bersihkan Log" styleClass="btn-secondary-modern"/>
                     </HBox>
-                    
-                    <TextArea fx:id="logArea" VBox.vgrow="ALWAYS" editable="false" 
-                              style="-fx-font-family: 'Consolas', monospace;"/>
-                    <Label text="*Menampilkan semua kueri SQL yang dijalankan oleh aplikasi." styleClass="text-small"/>
+
+                    <!-- Log Area -->
+                    <TextArea fx:id="logArea" VBox.vgrow="ALWAYS" editable="false"
+                              styleClass="log-area-modern"
+                              wrapText="true"/>
+
+                    <!-- Info Footer -->
+                    <HBox fx:id="infoFooter" spacing="8" alignment="CENTER_LEFT" styleClass="info-footer">
+                        <Label text="Menampilkan semua kueri SQL yang dijalankan oleh aplikasi" styleClass="info-text"/>
+                    </HBox>
                 </VBox>
             </Tab>
 
             <!-- Tab 2: Tabel & Data -->
-            <Tab text="Penjelajah Tabel" closable="false">
-                <SplitPane dividerPositions="0.25">
+            <Tab fx:id="tableTab" text="Penjelajah Tabel" closable="false" styleClass="inspektur-tab">
+                <SplitPane dividerPositions="0.25" styleClass="split-pane-modern">
+
                     <!-- Sidebar: List of Tables -->
-                    <VBox spacing="10">
+                    <VBox spacing="16" styleClass="sidebar-panel">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
+                            <Insets top="24" right="16" bottom="24" left="16"/>
                         </padding>
-                        <Label text="Tabel:" styleClass="section-title"/>
-                        <ListView fx:id="tableList" VBox.vgrow="ALWAYS"/>
-                        <Button fx:id="refreshTablesBtn" text="Segarkan" maxWidth="Infinity"/>
+
+                        <!-- Search Box -->
+                        <VBox spacing="8">
+                            <Label text="Cari Tabel" styleClass="sidebar-label"/>
+                            <TextField fx:id="searchTableField" promptText="Ketik nama tabel..." styleClass="search-field"/>
+                        </VBox>
+
+                        <!-- Table List -->
+                        <VBox spacing="8" VBox.vgrow="ALWAYS">
+                            <Label text="Daftar Tabel" styleClass="sidebar-label"/>
+                            <ListView fx:id="tableList" VBox.vgrow="ALWAYS" styleClass="table-list-modern"/>
+                        </VBox>
+
+                        <!-- Refresh Button -->
+                        <Button fx:id="refreshTablesBtn" text="Segarkan" maxWidth="Infinity" styleClass="btn-refresh-modern"/>
                     </VBox>
-                    
+
                     <!-- Main: Data View -->
-                    <VBox spacing="10">
+                    <VBox spacing="16" styleClass="main-panel">
                         <padding>
-                            <Insets top="10" right="10" bottom="10" left="10"/>
+                            <Insets top="24" right="24" bottom="24" left="24"/>
                         </padding>
-                        <Label fx:id="selectedTableLabel" text="Pilih tabel untuk melihat data" styleClass="section-title"/>
-                        <TableView fx:id="dataTableView" VBox.vgrow="ALWAYS">
+
+                        <!-- Table Header -->
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Label fx:id="selectedTableLabel" text="Pilih tabel untuk melihat data" styleClass="section-title-modern"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="rowCountLabel" text="" styleClass="row-count-label"/>
+                        </HBox>
+
+                        <!-- Data Table -->
+                        <TableView fx:id="dataTableView" VBox.vgrow="ALWAYS" styleClass="data-table-modern">
                             <placeholder>
-                                <Label text="Tidak ada data untuk ditampilkan"/>
+                                <VBox fx:id="dataPlaceholder" spacing="12" alignment="CENTER">
+                                    <Label text="Tidak ada data untuk ditampilkan" styleClass="placeholder-text"/>
+                                    <Label text="Pilih tabel di sidebar untuk melihat datanya" styleClass="placeholder-hint"/>
+                                </VBox>
                             </placeholder>
                         </TableView>
                     </VBox>
@@ -68,24 +127,47 @@
             </Tab>
 
             <!-- Tab 3: SQL Editor -->
-            <Tab text="Eksekusi SQL" closable="false">
-                <VBox spacing="10">
+            <Tab fx:id="sqlTab" text="Eksekusi SQL" closable="false" styleClass="inspektur-tab">
+                <VBox spacing="16" styleClass="tab-content-card">
                     <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
                     </padding>
-                    
-                    <Label text="Kueri SQL:" styleClass="section-title"/>
-                    <TextArea fx:id="queryInput" prefHeight="150" 
-                              promptText="SELECT * FROM ..." 
-                              style="-fx-font-family: 'Consolas', monospace;"/>
-                    
-                    <HBox spacing="10">
-                        <Button fx:id="executeBtn" text="Jalankan (Execute)" styleClass="btn-primary"/>
-                        <Label fx:id="statusLabel" text=""/>
+
+                    <!-- Query Editor Section -->
+                    <VBox spacing="12">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Kueri SQL" styleClass="section-title-modern"/>
+                            <Label text="(Ctrl+Enter untuk eksekusi)" styleClass="shortcut-hint"/>
+                        </HBox>
+
+                        <TextArea fx:id="queryInput" prefHeight="180"
+                                  promptText="SELECT * FROM ..."
+                                  styleClass="query-input-modern"/>
+                    </VBox>
+
+                    <!-- Actions -->
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button fx:id="executeBtn" text="Jalankan Query" styleClass="btn-execute-modern"/>
+                        <Label fx:id="statusLabel" text="" styleClass="status-label-modern"/>
                     </HBox>
-                    
-                    <Label text="Hasil:" styleClass="section-title"/>
-                    <TableView fx:id="resultTableView" VBox.vgrow="ALWAYS"/>
+
+                    <!-- Results Section -->
+                    <VBox spacing="12" VBox.vgrow="ALWAYS">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Hasil Query" styleClass="section-title-modern"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="resultCountLabel" text="" styleClass="row-count-label"/>
+                        </HBox>
+
+                        <TableView fx:id="resultTableView" VBox.vgrow="ALWAYS" styleClass="data-table-modern">
+                            <placeholder>
+                                <VBox fx:id="resultPlaceholder" spacing="12" alignment="CENTER">
+                                    <Label text="Belum ada hasil query" styleClass="placeholder-text"/>
+                                    <Label text="Tulis query SQL di atas dan tekan 'Jalankan Query'" styleClass="placeholder-hint"/>
+                                </VBox>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
                 </VBox>
             </Tab>
         </TabPane>

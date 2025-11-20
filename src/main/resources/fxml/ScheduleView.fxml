@@ -16,9 +16,9 @@
                 <Label text="Jadwal Belajar" styleClass="schedule-page-title"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 <HBox spacing="12" alignment="CENTER">
-                    <Button fx:id="prevWeekBtn" text="‹" styleClass="nav-arrow-btn"/>
+                    <Button fx:id="prevWeekBtn" text="◀" styleClass="nav-arrow-btn" style="-fx-font-size: 18px;"/>
                     <DatePicker fx:id="datePicker" styleClass="date-picker-modern"/>
-                    <Button fx:id="nextWeekBtn" text="›" styleClass="nav-arrow-btn"/>
+                    <Button fx:id="nextWeekBtn" text="▶" styleClass="nav-arrow-btn" style="-fx-font-size: 18px;"/>
                     <Button fx:id="todayBtn" text="Hari Ini" styleClass="btn-primary"/>
                 </HBox>
             </HBox>
