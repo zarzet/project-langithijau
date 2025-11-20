@@ -1,12 +1,10 @@
-/* ==================== MATERIAL DESIGN 3 - PERENCANA BELAJAR ADAPTIF ==================== */
-
-/* ==================== FONT ==================== */
+/* FONT */
 @font-face {
     font-family: 'Google Sans';
     src: url('../fonts/GoogleSansFlex.ttf');
 }
 
-/* ==================== GLOBAL RESET & BASE ==================== */
+/* GLOBAL RESET & BASE */
 .root {
     -fx-font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -fx-font-size: 14px;
@@ -19,7 +17,7 @@
     -fx-faint-focus-color: transparent;
 }
 
-/* ==================== TYPOGRAPHY ==================== */
+/* TYPOGRAPHY */
 .label {
     -fx-text-fill: #191c20;
 }
@@ -33,7 +31,7 @@
     -fx-text-fill: #72777f;
 }
 
-/* ==================== HEADER ==================== */
+/* HEADER */
 .header {
     -fx-background-color: #f2f3fa;
     -fx-border-color: transparent transparent #c2c7cf transparent;
@@ -47,7 +45,7 @@
     -fx-text-fill: #191c20;
 }
 
-/* ==================== SIDEBAR ==================== */
+/* SIDEBAR */
 .sidebar {
     -fx-background-color: #f2f3fa;
     -fx-border-color: transparent #dde0e8 transparent transparent;
@@ -156,7 +154,7 @@
     -fx-border-color: #00538b;
 }
 
-/* ==================== MD3 BUTTONS ==================== */
+/* MD3 BUTTONS */
 .button {
     -fx-background-radius: 28;
     -fx-cursor: hand;
@@ -257,8 +255,7 @@
     -fx-background-color: rgba(0, 100, 149, 0.12);
 }
 
-/* ==================== IKONLI ICONS ==================== */
-/* Icon inherit colors from parent */
+/* IKONLI ICONS */
 .ikonli-font-icon {
     -fx-icon-color: inherit;
     -fx-fill: inherit;
@@ -344,7 +341,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
 }
 
-/* ==================== MENU BUTTON ==================== */
+/* MENU BUTTON */
 .menu-button {
     -fx-background-color: #ecedf4;
     -fx-background-radius: 28;
@@ -389,7 +386,7 @@
     -fx-font-size: 14px;
 }
 
-/* ==================== MD3 CARDS ==================== */
+/* MD3 CARDS */
 .card {
     -fx-background-color: #f2f3fa;
     -fx-background-radius: 16;
@@ -605,7 +602,7 @@
     -fx-text-fill: #72777f;
 }
 
-/* ==================== LABELS & TEXT ==================== */
+/* LABELS & TEXT */
 .section-title {
     -fx-font-size: 22px;
     -fx-font-weight: 500;
@@ -683,7 +680,7 @@
     -fx-font-weight: 500;
 }
 
-/* ==================== BADGES ==================== */
+/* BADGES */
 .badge-initial_study {
     -fx-background-color: #c9e6ff;
     -fx-text-fill: #001e30;
@@ -699,7 +696,7 @@
     -fx-text-fill: #1e1835;
 }
 
-/* ==================== PROGRESS BAR ==================== */
+/* PROGRESS BAR */
 .progress-bar {
     -fx-background-color: #e1e2e9;
     -fx-background-radius: 4;
@@ -718,7 +715,7 @@
     -fx-padding: 0;
 }
 
-/* ==================== TABLE VIEW ==================== */
+/* TABLE VIEW */
 .table-view {
     -fx-background-color: #ffffff;
     -fx-background-radius: 12;
@@ -763,7 +760,7 @@
     -fx-text-fill: #001e30;
 }
 
-/* ==================== SCROLLPANE ==================== */
+/* SCROLLPANE */
 .scroll-pane {
     -fx-background-color: #f8f9ff;
     -fx-border-width: 0;
@@ -873,7 +870,7 @@
     -fx-background-color: #72777f;
 }
 
-/* ==================== CHECKBOX ==================== */
+/* CHECKBOX */
 .check-box {
     -fx-cursor: hand;
     -fx-text-fill: #191c20;
@@ -901,7 +898,7 @@
     -fx-background-color: #ffffff;
 }
 
-/* ==================== TEXTFIELD & TEXTAREA ==================== */
+/* TEXTFIELD & TEXTAREA */
 .text-field,
 .text-area {
     -fx-background-color: #e1e2e9;
@@ -924,7 +921,7 @@
     -fx-border-width: 2;
 }
 
-/* ==================== COMBOBOX ==================== */
+/* COMBOBOX */
 .combo-box {
     -fx-background-color: #e1e2e9;
     -fx-border-color: #72777f;
@@ -953,7 +950,7 @@
     -fx-background-color: #dfe0e7;
 }
 
-/* ==================== DATEPICKER ==================== */
+/* DATEPICKER */
 .date-picker {
     -fx-background-color: #e1e2e9;
     -fx-border-color: #72777f;
@@ -1017,7 +1014,7 @@
     -fx-text-fill: #72777f;
 }
 
-/* ==================== SEPARATOR ==================== */
+/* SEPARATOR */
 .separator {
     -fx-background-color: #c2c7cf;
 }
@@ -1026,7 +1023,7 @@
     -fx-border-color: #c2c7cf;
 }
 
-/* ==================== SPLITPANE ==================== */
+/* SPLITPANE */
 .split-pane-custom {
     -fx-background-color: #f8f9ff;
 }
@@ -1040,9 +1037,7 @@
     -fx-background-color: #72777f;
 }
 
-/* ==================== WIDGETS ==================== */
-
-/* Study Streak Widget */
+/* WIDGETS */
 .streak-widget {
     -fx-background-color: #f2f3fa;
     -fx-background-radius: 16;
@@ -1208,7 +1203,7 @@
     -fx-font-weight: 500;
 }
 
-/* ==================== SETTINGS DIALOG ==================== */
+/* SETTINGS DIALOG */
 
 .settings-dialog .dialog-pane {
     -fx-background-color: #f8f9ff;
@@ -1281,7 +1276,7 @@
     -fx-text-fill: #72777f;
 }
 
-/* ==================== DARK MODE ==================== */
+/* DARK MODE */
 
 .root.dark-mode {
     -fx-background-color: #0f1419;
@@ -2003,8 +1998,7 @@
     -fx-text-fill: #8dcdff;
 }
 
-/* ==================== DARK MODE IKONLI ICONS ==================== */
-/* Sidebar button icons - dark mode */
+/* DARK MODE IKONLI ICONS */
 .dark-mode .sidebar-btn .ikonli-font-icon {
     -fx-icon-color: #c2c7cf;
 }
@@ -2069,9 +2063,7 @@
     -fx-icon-color: #e1e2e9;
 }
 
-/* ==================== LOGIN SCREEN MD3 ==================== */
-
-/* Root Background */
+/* LOGIN SCREEN MD3 */
 .login-root {
     -fx-background-color: #fafbff;
 }
@@ -2398,9 +2390,7 @@
     -fx-text-fill: #72777f;
 }
 
-/* ==================== DATABASE INSPECTOR MD3 ==================== */
-
-/* Root */
+/* DATABASE INSPECTOR MD3 */
 .inspektur-root {
     -fx-background-color: #f8f9ff;
 }
@@ -3045,7 +3035,7 @@
     -fx-text-fill: #8c9199;
 }
 
-/* ==================== ANIMATIONS ==================== */
+/* ANIMATIONS */
 .button,
 .task-card,
 .check-box .box,

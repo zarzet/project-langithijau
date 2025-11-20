@@ -75,7 +75,6 @@ public class KontrolerLogin {
     public void initialize() {
         manajerBasisData = new ManajerBasisData();
 
-        // Google Login Button
         googleLoginBtn.setOnAction(_ -> handleGoogleLogin());
 
         try {
@@ -90,10 +89,8 @@ public class KontrolerLogin {
         } catch (Exception e) {
         }
 
-        // Username/Password Login Button
         loginBtn.setOnAction(_ -> handleUsernameLogin());
 
-        // Show Register Form (Label click)
         showRegisterBtn.setOnMouseClicked(_ -> {
             loginForm.setVisible(false);
             loginForm.setManaged(false);
@@ -101,10 +98,8 @@ public class KontrolerLogin {
             registerForm.setManaged(true);
         });
 
-        // Register Button
         registerBtn.setOnAction(_ -> handleRegister());
 
-        // Back to Login Label (Label click)
         backToLoginBtn.setOnMouseClicked(_ -> {
             registerForm.setVisible(false);
             registerForm.setManaged(false);
@@ -134,7 +129,6 @@ public class KontrolerLogin {
 
                 Platform.runLater(() -> {
                     if (user != null) {
-                        // Simpan atau update user di database
                         try {
                             Map<String, Object> existingUser = manajerBasisData.cariUserByGoogleId(user.getId());
                             if (existingUser == null) {
@@ -184,7 +178,6 @@ public class KontrolerLogin {
                         String hashedPassword = hashPassword(password);
 
                         if (storedPassword.equals(hashedPassword)) {
-                            // Login sukses
                             ManajerOtentikasi.getInstance().setCurrentLocalUser(user);
                             PencatatLog.info("Login Berhasil: " + username);
                             bukaAplikasiUtama();
@@ -214,7 +207,6 @@ public class KontrolerLogin {
         String password = passwordRegField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        // Validasi
         if (nama.isEmpty() || username.isEmpty() || password.isEmpty()) {
             showError("Nama, username, dan password harus diisi!");
             return;
@@ -240,7 +232,6 @@ public class KontrolerLogin {
 
         new Thread(() -> {
             try {
-                // Cek apakah username sudah ada
                 Map<String, Object> existingUser = manajerBasisData.cariUserByUsername(username);
 
                 Platform.runLater(() -> {
@@ -249,30 +240,25 @@ public class KontrolerLogin {
                         resetRegisterButton();
                     } else {
                         try {
-                            // Hash password
                             String hashedPassword = hashPassword(password);
 
-                            // Tambah user baru
                             int userId = manajerBasisData.tambahUser(username, hashedPassword,
                                     email.isEmpty() ? null : email, nama, "local");
 
                             if (userId > 0) {
                                 showInfo("Pendaftaran berhasil! Silakan login.");
 
-                                // Kembali ke form login
                                 registerForm.setVisible(false);
                                 registerForm.setManaged(false);
                                 loginForm.setVisible(true);
                                 loginForm.setManaged(true);
 
-                                // Clear register fields
                                 namaRegField.clear();
                                 usernameRegField.clear();
                                 emailRegField.clear();
                                 passwordRegField.clear();
                                 confirmPasswordField.clear();
 
-                                // Set username di login form
                                 usernameField.setText(username);
                                 passwordField.clear();
 

@@ -157,7 +157,6 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     }
 
     private void aturTombol() {
-        // Setup ikon untuk buttons
         addCourseBtn.setGraphic(PembuatIkon.ikonTambah());
         editCourseBtn.setGraphic(PembuatIkon.ikonEdit());
         deleteCourseBtn.setGraphic(PembuatIkon.ikonHapus());
@@ -170,7 +169,6 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         editExamBtn.setGraphic(PembuatIkon.ikonEdit());
         deleteExamBtn.setGraphic(PembuatIkon.ikonHapus());
 
-        // Setup action handlers
         addCourseBtn.setOnAction(_ -> tambahMataKuliah());
         editCourseBtn.setOnAction(_ -> editMataKuliah());
         deleteCourseBtn.setOnAction(_ -> hapusMataKuliah());

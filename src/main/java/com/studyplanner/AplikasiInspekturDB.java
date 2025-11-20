@@ -16,7 +16,6 @@ public class AplikasiInspekturDB extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/InspekturBasisData.fxml"));
         Parent root = loader.load();
 
-        // Inisialisasi ManajerBasisData khusus untuk inspektur
         ManajerBasisData manajerBasisData = new ManajerBasisData();
 
         KontrolerInspekturBasisData controller = loader.getController();
@@ -27,7 +26,6 @@ public class AplikasiInspekturDB extends Application {
 
         stage.setScene(scene);
         
-        // Gunakan dekorator kustom jika diinginkan, atau window standar
         DekoratorJendelaKustom.dekorasi(stage, "Inspektur Basis Data (Standalone)", false);
         
         stage.setOnCloseRequest(e -> {

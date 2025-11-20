@@ -43,7 +43,6 @@ public class WidgetTugasMendatang extends VBox {
         labelKosong.getStyleClass().add("achievement-detail");
         labelKosong.setWrapText(true);
 
-        // Wrap listContainer in ScrollPane
         scrollPane = new ScrollPane(wadahDaftar);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);

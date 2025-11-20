@@ -62,7 +62,6 @@ public class KontrolerTampilanJadwal implements Initializable {
         datePicker.setValue(hariIni);
         awalMingguSaatIni = hariIni.minusDays(hariIni.getDayOfWeek().getValue() - 1);
 
-        // Setup event handlers
         datePicker.setOnAction(_ -> {
             muatJadwal();
             perbaruiKalenderMinggu();
@@ -115,7 +114,6 @@ public class KontrolerTampilanJadwal implements Initializable {
         kartu.setPrefWidth(80);
         kartu.setPrefHeight(80);
 
-        // Use CSS classes instead of inline styles
         kartu.getStyleClass().addAll("week-day-card");
         if (dipilih) {
             kartu.getStyleClass().add("selected");
@@ -128,7 +126,6 @@ public class KontrolerTampilanJadwal implements Initializable {
         Label labelTanggal = new Label(String.valueOf(tanggal.getDayOfMonth()));
         labelTanggal.getStyleClass().add("day-number-label");
 
-        // Check if today
         if (tanggal.equals(LocalDate.now())) {
             Label titikHariIni = new Label("•");
             titikHariIni.getStyleClass().add("today-indicator");
@@ -137,7 +134,6 @@ public class KontrolerTampilanJadwal implements Initializable {
 
         kartu.getChildren().addAll(labelHari, labelTanggal);
 
-        // Click handler
         kartu.setOnMouseClicked(_ -> {
             datePicker.setValue(tanggal);
             muatJadwal();
@@ -160,7 +156,6 @@ public class KontrolerTampilanJadwal implements Initializable {
             sessionCountLabel.setText(daftarSesi.size() + " sesi belajar");
 
             if (daftarSesi.isEmpty()) {
-                // Show empty state
                 if (emptyState != null) {
                     emptyState.setVisible(true);
                     emptyState.setManaged(true);
@@ -168,7 +163,6 @@ public class KontrolerTampilanJadwal implements Initializable {
                 scheduleContainer.setVisible(false);
                 scheduleContainer.setManaged(false);
             } else {
-                // Hide empty state
                 if (emptyState != null) {
                     emptyState.setVisible(false);
                     emptyState.setManaged(false);
@@ -176,7 +170,6 @@ public class KontrolerTampilanJadwal implements Initializable {
                 scheduleContainer.setVisible(true);
                 scheduleContainer.setManaged(true);
 
-                // Add schedule cards
                 for (SesiBelajar sesi : daftarSesi) {
                     scheduleContainer
                             .getChildren()
@@ -195,7 +188,6 @@ public class KontrolerTampilanJadwal implements Initializable {
             kartu.getStyleClass().add("completed");
         }
 
-        // Header with title and status
         HBox header = new HBox(12);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -210,7 +202,6 @@ public class KontrolerTampilanJadwal implements Initializable {
 
         kotakJudul.getChildren().addAll(labelJudul, labelMataKuliah);
 
-        // Status badge
         Label badgeStatus = new Label(sesi.isSelesai() ? "✓ Selesai" : "○ Belum");
         badgeStatus.getStyleClass().add("status-badge");
         if (sesi.isSelesai()) {
@@ -221,15 +212,12 @@ public class KontrolerTampilanJadwal implements Initializable {
 
         header.getChildren().addAll(kotakJudul, badgeStatus);
 
-        // Meta info row
         HBox barisMeta = new HBox(16);
         barisMeta.setAlignment(Pos.CENTER_LEFT);
 
-        // Type badge
         Label labelTipe = new Label(dapatkanLabelTipeSesi(sesi.getTipeSesi()));
         labelTipe.getStyleClass().addAll("task-type", dapatkanKelasBadge(sesi.getTipeSesi()));
 
-        // Duration
         Label labelDurasi = new Label("Durasi: " + sesi.getDurasiMenit() + " menit");
         labelDurasi.getStyleClass().add("schedule-duration");
 

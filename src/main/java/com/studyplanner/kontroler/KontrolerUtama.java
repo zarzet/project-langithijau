@@ -160,7 +160,6 @@ public class KontrolerUtama implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
 
-        // Inisialisasi DAOs
         daoMataKuliah = new DAOMataKuliah(manajerBasisData);
         daoTopik = new DAOTopik(manajerBasisData);
         daoJadwalUjian = new DAOJadwalUjian(manajerBasisData);
@@ -178,7 +177,6 @@ public class KontrolerUtama implements Initializable {
                 "EEEE, dd MMMM yyyy", Locale.of("id", "ID"));
         dateLabel.setText(LocalDate.now().format(formatter));
 
-        // Animasi masuk untuk UI elements
         terapkanAnimasiMasuk();
 
         if (streakContainer != null) {
@@ -223,7 +221,6 @@ public class KontrolerUtama implements Initializable {
                     .setAll(upcomingTasksWidget);
         }
 
-        // Setup ikon untuk button
         manageCourseBtn.setGraphic(PembuatIkon.ikonMataKuliah());
         manageCourseBtn.setGraphicTextGap(8);
         manageCourseBtn.setOnAction(_ -> bukaManajemenMataKuliah());
@@ -247,13 +244,11 @@ public class KontrolerUtama implements Initializable {
             Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
             welcomeLabel.setText("Selamat Datang, " + user.getGivenName() + "!");
 
-            // Setup user menu with profile picture
             if (userMenuBtn != null) {
                 aturFotoProfilPengguna(user);
             }
         }
         
-        // Setup menu item handlers dengan ikon
         if (profileMenuItem != null) {
             profileMenuItem.setGraphic(PembuatIkon.ikonProfil());
             profileMenuItem.setOnAction(_ -> tampilkanProfil());
@@ -267,7 +262,6 @@ public class KontrolerUtama implements Initializable {
             logoutMenuItem.setOnAction(_ -> keluar());
         }
 
-        // Setup toggle sidebar button dengan ikon
         if (toggleSidebarBtn != null) {
             toggleSidebarBtn.setGraphic(PembuatIkon.ikonMenu());
             toggleSidebarBtn.setText("");
@@ -317,7 +311,6 @@ public class KontrolerUtama implements Initializable {
                         .remove("dark-mode");
             }
 
-            // Update custom window title bar untuk dark mode
             javafx.stage.Stage stage = (javafx.stage.Stage) manageCourseBtn.getScene().getWindow();
             if (stage != null) {
                 DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", isDarkMode);
@@ -543,7 +536,6 @@ public class KontrolerUtama implements Initializable {
                         session.setRatingPerforma(rating);
                         daoSesiBelajar.perbarui(session);
 
-                        // Update topic based on spaced repetition algorithm
                         Topik topic = daoTopik.ambilBerdasarkanId(session.getIdTopik());
                         if (topic != null) {
                             if (topic.getTanggalBelajarPertama() == null) {
@@ -713,7 +705,6 @@ public class KontrolerUtama implements Initializable {
         content.setPadding(new Insets(20));
         content.setStyle("-fx-min-width: 400px;");
         
-        // Info pengguna
         Label nameLabel = new Label("Nama: " + user.getName());
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         
@@ -746,10 +737,8 @@ public class KontrolerUtama implements Initializable {
             VBox settingsContent = new VBox(32);
             settingsContent.setPadding(new Insets(24));
 
-        // ===== TAMPILAN =====
         VBox appearanceSection = createSettingsSection("Tampilan", PembuatIkon.ikonTampilan());
 
-        // Dark Mode
         HBox darkModeRow = createSettingRow(
             "Mode Gelap",
             "Ubah tema aplikasi menjadi gelap untuk kenyamanan mata di malam hari"
@@ -758,23 +747,19 @@ public class KontrolerUtama implements Initializable {
         darkModeCheck.setSelected(isDarkMode);
         darkModeCheck.setOnAction(_ -> {
             alihkanModaGelap();
-            // Update window appearance
             if (isDarkMode) {
                 root.getStyleClass().add("dark-mode");
             } else {
                 root.getStyleClass().remove("dark-mode");
             }
-            // Re-apply window decoration untuk update title bar
             DekoratorJendelaKustom.dekorasi(stage, "Pengaturan", isDarkMode);
         });
         darkModeRow.getChildren().add(darkModeCheck);
 
         appearanceSection.getChildren().add(darkModeRow);
 
-        // ===== PEMBELAJARAN =====
         VBox studySection = createSettingsSection("Pembelajaran", PembuatIkon.ikonPembelajaran());
 
-        // Default study duration
         HBox durationRow = createSettingRow(
             "Durasi Belajar Default",
             "Durasi standar untuk sesi belajar baru (dalam menit)"
@@ -785,7 +770,6 @@ public class KontrolerUtama implements Initializable {
         durationCombo.setStyle("-fx-pref-width: 140px;");
         durationRow.getChildren().add(durationCombo);
 
-        // Study reminder
         HBox reminderRow = createSettingRow(
             "Pengingat Belajar",
             "Tampilkan notifikasi untuk mengingatkan jadwal belajar"
@@ -796,10 +780,8 @@ public class KontrolerUtama implements Initializable {
 
         studySection.getChildren().addAll(durationRow, reminderRow);
 
-        // ===== DATA =====
         VBox dataSection = createSettingsSection("Data & Backup", PembuatIkon.ikonBackup());
 
-        // Auto backup
         HBox backupRow = createSettingRow(
             "Backup Otomatis",
             "Backup database secara otomatis setiap hari"
@@ -808,7 +790,6 @@ public class KontrolerUtama implements Initializable {
         backupCheck.setSelected(false);
         backupRow.getChildren().add(backupCheck);
 
-        // Export data button
         HBox exportRow = createSettingRow(
             "Ekspor Data",
             "Ekspor semua data Anda ke file JSON"
@@ -820,7 +801,6 @@ public class KontrolerUtama implements Initializable {
 
         dataSection.getChildren().addAll(backupRow, exportRow);
 
-        // ===== TENTANG =====
         VBox aboutSection = createSettingsSection("Tentang", PembuatIkon.ikonTentang());
 
         VBox aboutContent = new VBox(8);
@@ -846,7 +826,6 @@ public class KontrolerUtama implements Initializable {
         aboutContent.getChildren().addAll(appName, version, description, copyrightBox);
         aboutSection.getChildren().add(aboutContent);
 
-        // Add all sections
         settingsContent.getChildren().addAll(
             appearanceSection,
             studySection,
@@ -869,7 +848,6 @@ public class KontrolerUtama implements Initializable {
 
             stage.setScene(scene);
 
-            // Terapkan custom window decoration seperti window utama
             DekoratorJendelaKustom.dekorasi(stage, "Pengaturan", isDarkMode);
 
             stage.showAndWait();
@@ -931,7 +909,6 @@ public class KontrolerUtama implements Initializable {
                 try {
                     ManajerOtentikasi.getInstance().logout();
                     
-                    // Kembali ke login screen
                     Stage stage = (Stage) welcomeLabel.getScene().getWindow();
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginView.fxml"));
                     Parent root = loader.load();
@@ -955,28 +932,23 @@ public class KontrolerUtama implements Initializable {
 
     private void aturFotoProfilPengguna(Userinfo user) {
         try {
-            // Buat ImageView untuk foto profil
             ImageView imageView = new ImageView();
             imageView.setFitWidth(32);
             imageView.setFitHeight(32);
             imageView.setPreserveRatio(true);
 
-            // Buat circle clip untuk foto bulat
             Circle clip = new Circle(16, 16, 16);
             imageView.setClip(clip);
 
-            // Load foto dari URL Google
             String photoUrl = user.getPicture();
             if (photoUrl != null && !photoUrl.isEmpty()) {
-                Image image = new Image(photoUrl, true); // true = background loading
+                Image image = new Image(photoUrl, true);
                 imageView.setImage(image);
 
-                // Set graphic dan text
                 userMenuBtn.setGraphic(imageView);
                 userMenuBtn.setText(user.getGivenName());
                 userMenuBtn.setGraphicTextGap(8);
             } else {
-                // Jika tidak ada foto, tampilkan inisial
                 Label inisial = new Label(ambilInisial(user.getName()));
                 inisial.setStyle(
                     "-fx-background-color: #006495;" +
@@ -995,7 +967,6 @@ public class KontrolerUtama implements Initializable {
                 userMenuBtn.setGraphicTextGap(8);
             }
         } catch (Exception e) {
-            // Jika gagal load foto, tetap tampilkan nama
             userMenuBtn.setText(user.getGivenName());
             e.printStackTrace();
         }
@@ -1014,7 +985,6 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void terapkanAnimasiMasuk() {
-        // Animasi slide-in untuk sidebar
         if (sidebar != null) {
             sidebar.setOpacity(0);
             sidebar.setTranslateX(-50);
@@ -1031,7 +1001,6 @@ public class KontrolerUtama implements Initializable {
             sidebarAnim.play();
         }
 
-        // Animasi fade-in untuk welcome section
         if (welcomeLabel != null && welcomeLabel.getParent() != null) {
             FadeTransition fadeWelcome = new FadeTransition(Duration.millis(600), welcomeLabel.getParent());
             fadeWelcome.setFromValue(0.0);
@@ -1040,7 +1009,6 @@ public class KontrolerUtama implements Initializable {
             fadeWelcome.play();
         }
 
-        // Animasi slide-in untuk stat cards
         if (statsGrid != null) {
             statsGrid.setOpacity(0);
             statsGrid.setTranslateY(30);
@@ -1058,7 +1026,6 @@ public class KontrolerUtama implements Initializable {
             statsAnim.play();
         }
 
-        // Animasi staggered untuk activity widgets
         if (activitySection != null) {
             activitySection.setOpacity(0);
             FadeTransition fadeActivity = new FadeTransition(Duration.millis(600), activitySection);
@@ -1068,7 +1035,6 @@ public class KontrolerUtama implements Initializable {
             fadeActivity.play();
         }
 
-        // Animasi slide-in untuk main content grid
         if (mainContentGrid != null) {
             mainContentGrid.setOpacity(0);
             mainContentGrid.setTranslateY(30);
@@ -1086,7 +1052,6 @@ public class KontrolerUtama implements Initializable {
             contentAnim.play();
         }
 
-        // Animasi hover untuk sidebar buttons - subtle scale
         terapkanAnimasiHoverSidebarButton(manageCourseBtn);
         terapkanAnimasiHoverSidebarButton(viewScheduleBtn);
         terapkanAnimasiHoverSidebarButton(generateScheduleBtn);
@@ -1126,7 +1091,6 @@ public class KontrolerUtama implements Initializable {
         isSidebarVisible = !isSidebarVisible;
 
         if (isSidebarVisible) {
-            // Show sidebar
             sidebar.setManaged(true);
             sidebar.setVisible(true);
             sidebar.setTranslateX(-240);
@@ -1142,7 +1106,6 @@ public class KontrolerUtama implements Initializable {
             ParallelTransition showAnim = new ParallelTransition(slideIn, fadeIn);
             showAnim.play();
         } else {
-            // Hide sidebar
             TranslateTransition slideOut = new TranslateTransition(Duration.millis(300), sidebar);
             slideOut.setFromX(0);
             slideOut.setToX(-240);

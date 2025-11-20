@@ -48,8 +48,6 @@ public class PembuatIkon {
         return icon;
     }
 
-    // ==================== Ikon Aplikasi ====================
-
     /**
      * Ikon untuk "Kelola Mata Kuliah"
      */

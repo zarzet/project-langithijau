@@ -510,14 +510,12 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
         sesi.setCatatan(rs.getString("catatan"));
         sesi.setDurasiMenit(rs.getInt("durasi_menit"));
 
-        // Set display fields if available from JOIN
         try {
             String namaTopik = rs.getString("nama_topik");
             if (namaTopik != null) {
                 sesi.setNamaTopik(namaTopik);
             }
         } catch (SQLException ignored) {
-            // Column not present in this query
         }
 
         try {
@@ -526,7 +524,6 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
                 sesi.setNamaMataKuliah(namaMataKuliah);
             }
         } catch (SQLException ignored) {
-            // Column not present in this query
         }
 
         return sesi;

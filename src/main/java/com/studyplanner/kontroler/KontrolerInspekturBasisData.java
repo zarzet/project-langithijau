@@ -25,27 +25,22 @@ import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 public class KontrolerInspekturBasisData implements Initializable {
 
-    // Header
     @FXML private HBox headerIconBox;
     @FXML private VBox statCard1;
     @FXML private VBox statCard2;
     @FXML private VBox statCard3;
 
-    // Header Stats
     @FXML private Label totalTablesLabel;
     @FXML private Label totalQueriesLabel;
 
-    // Tabs
     @FXML private Tab logTab;
     @FXML private Tab tableTab;
     @FXML private Tab sqlTab;
 
-    // Log Tab
     @FXML private Button clearLogBtn;
     @FXML private TextArea logArea;
     @FXML private HBox infoFooter;
 
-    // Tables Tab
     @FXML private TextField searchTableField;
     @FXML private ListView<String> tableList;
     @FXML private Button refreshTablesBtn;
@@ -54,7 +49,6 @@ public class KontrolerInspekturBasisData implements Initializable {
     @FXML private TableView<Map<String, Object>> dataTableView;
     @FXML private VBox dataPlaceholder;
 
-    // Query Tab
     @FXML private TextArea queryInput;
     @FXML private Button executeBtn;
     @FXML private Label statusLabel;
@@ -68,14 +62,11 @@ public class KontrolerInspekturBasisData implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Setup ikon Material Design 2
         setupIkon();
 
-        // Inisialisasi statistik
         totalTablesLabel.setText("0");
         totalQueriesLabel.setText("0");
 
-        // Setup Log
         PencatatQuery.getInstance().tambahPendengar(this::tambahLog);
         clearLogBtn.setOnAction(e -> {
             logArea.clear();
@@ -83,7 +74,6 @@ public class KontrolerInspekturBasisData implements Initializable {
             perbaruiLabelJumlahKueri();
         });
 
-        // Setup Tabel
         refreshTablesBtn.setOnAction(e -> muatDaftarTabel());
         tableList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -91,18 +81,15 @@ public class KontrolerInspekturBasisData implements Initializable {
             }
         });
 
-        // Setup Filter Pencarian
         if (searchTableField != null) {
             searchTableField.textProperty().addListener((observable, oldValue, newValue) -> {
                 saringTabel(newValue);
             });
         }
 
-        // Setup Eksekutor Kueri
         executeBtn.setOnAction(e -> jalankanKueri());
         queryInput.setOnKeyPressed(this::tanganiInputKeyKueri);
 
-        // Auto scroll log
         logArea.textProperty().addListener((observable, oldValue, newValue) -> {
             logArea.setScrollTop(Double.MAX_VALUE);
         });
@@ -113,17 +100,12 @@ public class KontrolerInspekturBasisData implements Initializable {
         muatDaftarTabel();
     }
 
-    /**
-     * Setup semua ikon Material Design 2
-     */
     private void setupIkon() {
-        // Header icon - Database
         FontIcon headerIcon = new FontIcon(FontAwesomeSolid.DATABASE);
         headerIcon.setIconSize(32);
         headerIcon.getStyleClass().add("header-icon");
         headerIconBox.getChildren().add(0, headerIcon);
 
-        // Stats card icons
         HBox statIcon1 = new HBox(8);
         statIcon1.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         FontIcon icon1 = PembuatIkon.buat(Material2OutlinedMZ.TABLE_CHART, 20);
@@ -151,12 +133,10 @@ public class KontrolerInspekturBasisData implements Initializable {
         statIcon3.getChildren().addAll(icon3, label3);
         statCard3.getChildren().set(0, statIcon3);
 
-        // Tab icons
         logTab.setGraphic(PembuatIkon.buat(Material2OutlinedAL.LIST_ALT, 18));
         tableTab.setGraphic(PembuatIkon.buat(Material2OutlinedMZ.TABLE_VIEW, 18));
         sqlTab.setGraphic(PembuatIkon.buat(Material2OutlinedAL.CODE, 18));
 
-        // Button icons
         HBox clearBtnContent = new HBox(8);
         clearBtnContent.setAlignment(javafx.geometry.Pos.CENTER);
         clearBtnContent.getChildren().addAll(
@@ -184,10 +164,8 @@ public class KontrolerInspekturBasisData implements Initializable {
         executeBtn.setGraphic(executeBtnContent);
         executeBtn.setText("");
 
-        // Info footer icon
         infoFooter.getChildren().add(0, PembuatIkon.buat(Material2OutlinedAL.INFO, 14));
 
-        // Placeholder icons
         if (dataPlaceholder != null) {
             dataPlaceholder.getChildren().add(0, PembuatIkon.buat(Material2OutlinedAL.INBOX, 48));
         }
@@ -214,12 +192,10 @@ public class KontrolerInspekturBasisData implements Initializable {
             semuaTabel = manajerBasisData.ambilDaftarTabel();
             tableList.setItems(FXCollections.observableArrayList(semuaTabel));
 
-            // Perbarui statistik total tabel
             if (totalTablesLabel != null) {
                 totalTablesLabel.setText(String.valueOf(semuaTabel.size()));
             }
 
-            // Terapkan filter pencarian saat ini jika ada
             if (searchTableField != null && !searchTableField.getText().isEmpty()) {
                 saringTabel(searchTableField.getText());
             }
@@ -270,7 +246,6 @@ public class KontrolerInspekturBasisData implements Initializable {
                 manajerBasisData.jalankanQueryUpdate(sql);
                 statusLabel.setText("Pembaruan Berhasil: " + java.time.LocalTime.now());
                 statusLabel.setStyle("-fx-text-fill: #10b981;");
-                // Segarkan daftar tabel jika ada CREATE/DROP
                 muatDaftarTabel();
             }
         } catch (SQLException e) {
@@ -298,7 +273,6 @@ public class KontrolerInspekturBasisData implements Initializable {
 
             tabelTarget.setItems(FXCollections.observableArrayList(barisBaris));
 
-            // Perbarui label jumlah baris
             if (apakahTabelData && rowCountLabel != null) {
                 rowCountLabel.setText(barisBaris.size() + " baris");
             } else if (!apakahTabelData && resultCountLabel != null) {

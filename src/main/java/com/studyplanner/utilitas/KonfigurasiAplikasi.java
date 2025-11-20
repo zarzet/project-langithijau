@@ -48,7 +48,6 @@ public class KonfigurasiAplikasi {
         return (config != null && config.app != null) ? config.app.language : "id";
     }
 
-    // Struktur Data JSON
     private static class ConfigData {
         LoggingConfig logging = new LoggingConfig();
         AppConfig app = new AppConfig();

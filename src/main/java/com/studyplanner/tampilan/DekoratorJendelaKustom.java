@@ -27,7 +27,6 @@ public class DekoratorJendelaKustom {
         try {
             stage.initStyle(StageStyle.UNDECORATED);
         } catch (IllegalStateException e) {
-            // Sudah diinisialisasi, abaikan
         }
 
         Scene scene = stage.getScene();
@@ -40,7 +39,6 @@ public class DekoratorJendelaKustom {
             lebar = scene.getWidth();
             tinggi = scene.getHeight();
 
-            // Jika sudah ada dekorasi (BorderPane dengan custom-window), ambil content aslinya
             if (originalRoot instanceof BorderPane) {
                 BorderPane bp = (BorderPane) originalRoot;
                 if (bp.getStyleClass().contains("custom-window") && bp.getCenter() instanceof javafx.scene.Parent) {
@@ -57,7 +55,6 @@ public class DekoratorJendelaKustom {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("custom-window");
 
-        // MD3 Surface colors
         String bgColor = modeGelap ? "#0f1419" : "#f8f9ff";
         root.setStyle("-fx-background-color: " + bgColor + ";");
 
@@ -97,10 +94,9 @@ public class DekoratorJendelaKustom {
         titleBar.setPadding(new Insets(0, 0, 0, 20));
         titleBar.setSpacing(0);
 
-        // MD3 Title bar colors
-        String warnaLatar = modeGelap ? "#171c21" : "#f2f3fa"; // surface-container-low
-        String warnaTeks = modeGelap ? "#e1e2e9" : "#191c20"; // on-surface
-        String warnaBorder = modeGelap ? "#42474e" : "#c2c7cf"; // outline-variant
+        String warnaLatar = modeGelap ? "#171c21" : "#f2f3fa";
+        String warnaTeks = modeGelap ? "#e1e2e9" : "#191c20";
+        String warnaBorder = modeGelap ? "#42474e" : "#c2c7cf";
 
         titleBar.setStyle(
                 "-fx-background-color: " +
@@ -136,8 +132,7 @@ public class DekoratorJendelaKustom {
                 "-fx-font-size: 14px; -fx-translate-y: -1;";
         tombolMaximize.setStyle(gayaMax);
 
-        // MD3 Hover untuk maximize button
-        String maxHoverBg = modeGelap ? "#1b2025" : "#ecedf4"; // surface-container
+        String maxHoverBg = modeGelap ? "#1b2025" : "#ecedf4";
         tombolMaximize.setOnMouseEntered(e -> tombolMaximize.setStyle(
                 gayaMax + "-fx-background-color: " + maxHoverBg + ";"));
         tombolMaximize.setOnMouseExited(e -> tombolMaximize.setStyle(gayaMax));
@@ -157,9 +152,8 @@ public class DekoratorJendelaKustom {
     private Button buatTombolJendela(String teks, boolean modeGelap) {
         Button tombol = new Button(teks);
 
-        // MD3 Button colors
-        String warnaTeksTombol = modeGelap ? "#c2c7cf" : "#42474e"; // on-surface-variant
-        String hoverBg = modeGelap ? "#1b2025" : "#ecedf4"; // surface-container
+        String warnaTeksTombol = modeGelap ? "#c2c7cf" : "#42474e";
+        String hoverBg = modeGelap ? "#1b2025" : "#ecedf4";
 
         tombol.setMinSize(46, TINGGI_TITLE_BAR);
         tombol.setPrefSize(46, TINGGI_TITLE_BAR);
@@ -190,9 +184,8 @@ public class DekoratorJendelaKustom {
     private Button buatTombolTutup(boolean modeGelap) {
         Button tombol = new Button("×");
 
-        // MD3 Close button - Error colors
-        String warnaTeksBtn = modeGelap ? "#ffb4ab" : "#ba1a1a"; // error
-        String hoverBg = modeGelap ? "#93000a" : "#ba1a1a"; // error-container / error
+        String warnaTeksBtn = modeGelap ? "#ffb4ab" : "#ba1a1a";
+        String hoverBg = modeGelap ? "#93000a" : "#ba1a1a";
 
         tombol.setMinSize(46, TINGGI_TITLE_BAR);
         tombol.setPrefSize(46, TINGGI_TITLE_BAR);

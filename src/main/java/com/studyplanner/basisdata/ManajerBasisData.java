@@ -120,8 +120,6 @@ public class ManajerBasisData {
         PencatatQuery.getInstance().catat(sql);
     }
 
-    // ==================== OPERASI MATA KULIAH ====================
-
     public List<MataKuliah> ambilSemuaMataKuliah() throws SQLException {
         List<MataKuliah> daftarMataKuliah = new ArrayList<>();
         String sql = "SELECT * FROM mata_kuliah ORDER BY kode";
@@ -141,8 +139,6 @@ public class ManajerBasisData {
         }
         return daftarMataKuliah;
     }
-
-    // ==================== OPERASI TOPIK ====================
 
     public List<Topik> ambilSemuaTopik() throws SQLException {
         List<Topik> daftarTopik = new ArrayList<>();
@@ -185,8 +181,6 @@ public class ManajerBasisData {
 
         return topik;
     }
-
-    // ==================== OPERASI JADWAL UJIAN ====================
 
     public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
         List<JadwalUjian> daftarUjian = new ArrayList<>();
@@ -248,8 +242,6 @@ public class ManajerBasisData {
 
         return ujian;
     }
-
-    // ==================== OPERASI SESI BELAJAR ====================
 
     public int tambahSesiBelajar(SesiBelajar sesi) throws SQLException {
         String sql = """
@@ -511,8 +503,6 @@ public class ManajerBasisData {
         }
     }
 
-    // ==================== OPERASI USER ====================
-
     public int tambahUser(String username, String password, String email, String nama, String provider) throws SQLException {
         String sql = "INSERT INTO users (username, password, email, nama, provider) VALUES (?, ?, ?, ?, ?)";
         catatKueri(sql);
@@ -590,8 +580,6 @@ public class ManajerBasisData {
         return null;
     }
 
-    // ==================== HELPER INSPEKTUR BASIS DATA ====================
-
     public List<String> ambilDaftarTabel() throws SQLException {
         List<String> tables = new ArrayList<>();
         DatabaseMetaData md = koneksi.getMetaData();
@@ -606,7 +594,6 @@ public class ManajerBasisData {
         return tables;
     }
 
-    // Mengembalikan list of maps (column name -> value)
     public List<java.util.Map<String, Object>> jalankanQuerySelect(String sql) throws SQLException {
         catatKueri("[MANUAL] " + sql);
         List<java.util.Map<String, Object>> results = new ArrayList<>();
@@ -635,16 +622,10 @@ public class ManajerBasisData {
         }
     }
 
-    // ==================== AKSES KONEKSI UNTUK DAO ====================
-
     /**
      * Memberikan akses ke Connection untuk DAO classes.
-     * Digunakan oleh DAO pattern untuk menjalankan query.
      * Method ini membuat koneksi baru setiap kali dipanggil
      * sehingga aman untuk digunakan dengan try-with-resources.
-     *
-     * @return Connection object baru
-     * @throws SQLException jika gagal membuat koneksi
      */
     public Connection bukaKoneksi() throws SQLException {
         return DriverManager.getConnection(DB_URL);
