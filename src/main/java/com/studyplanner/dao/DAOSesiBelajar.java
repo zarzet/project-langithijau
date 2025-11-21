@@ -16,6 +16,14 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
     private final ManajerBasisData manajerDB;
 
+    /** Query SELECT dasar dengan JOIN untuk mengambil nama topik dan mata kuliah */
+    private static final String SELECT_SESI_DENGAN_JOIN = """
+            SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
+            FROM sesi_belajar s
+            LEFT JOIN topik t ON s.id_topik = t.id
+            LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
+            """;
+
     public DAOSesiBelajar(ManajerBasisData manajerDB) {
         this.manajerDB = manajerDB;
     }
@@ -56,13 +64,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
     @Override
     public SesiBelajar ambilBerdasarkanId(Integer id) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.id = ?
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "WHERE s.id = ?";
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -86,14 +88,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilBerdasarkanTanggal(LocalDate tanggal) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.tanggal_jadwal = ?
-                ORDER BY s.tipe_sesi, mk.kode
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "WHERE s.tanggal_jadwal = ? ORDER BY s.tipe_sesi, mk.kode";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -127,15 +122,9 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilSesiMendatang() throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.tanggal_jadwal > DATE('now')
-                AND s.selesai = 0
-                ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.tanggal_jadwal > DATE('now') AND s.selesai = 0 " +
+                "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -158,16 +147,9 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilSesiMendatang(int batas) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.tanggal_jadwal > DATE('now')
-                AND s.selesai = 0
-                ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi
-                LIMIT ?
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.tanggal_jadwal > DATE('now') AND s.selesai = 0 " +
+                "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi LIMIT ?";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -193,14 +175,8 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilBerdasarkanRentangTanggal(LocalDate tanggalMulai, LocalDate tanggalAkhir) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.tanggal_jadwal BETWEEN ? AND ?
-                ORDER BY s.tanggal_jadwal, s.tipe_sesi
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.tanggal_jadwal BETWEEN ? AND ? ORDER BY s.tanggal_jadwal, s.tipe_sesi";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -226,14 +202,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilBerdasarkanTopikId(int topikId) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.id_topik = ?
-                ORDER BY s.tanggal_jadwal DESC
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "WHERE s.id_topik = ? ORDER BY s.tanggal_jadwal DESC";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -258,14 +227,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilBerdasarkanMataKuliahId(int mataKuliahId) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.id_mata_kuliah = ?
-                ORDER BY s.tanggal_jadwal DESC
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "WHERE s.id_mata_kuliah = ? ORDER BY s.tanggal_jadwal DESC";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -290,14 +252,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<SesiBelajar> ambilBerdasarkanStatus(boolean selesai) throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                WHERE s.selesai = ?
-                ORDER BY s.tanggal_jadwal DESC
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "WHERE s.selesai = ? ORDER BY s.tanggal_jadwal DESC";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
@@ -316,13 +271,7 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
     @Override
     public List<SesiBelajar> ambilSemua() throws SQLException {
-        String sql = """
-                SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
-                FROM sesi_belajar s
-                LEFT JOIN topik t ON s.id_topik = t.id
-                LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
-                ORDER BY s.tanggal_jadwal DESC
-                """;
+        String sql = SELECT_SESI_DENGAN_JOIN + "ORDER BY s.tanggal_jadwal DESC";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();

@@ -1,14 +1,15 @@
 package com.studyplanner.kontroler;
 
 import com.studyplanner.basisdata.ManajerBasisData;
-import com.studyplanner.dao.DAOMataKuliah;
-import com.studyplanner.dao.DAOTopik;
-import com.studyplanner.dao.DAOJadwalUjian;
+import com.studyplanner.layanan.LayananMataKuliah;
+import com.studyplanner.layanan.LayananTopik;
+import com.studyplanner.layanan.LayananJadwalUjian;
 import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.model.Topik;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PembuatIkon;
+import com.studyplanner.utilitas.UtilUI;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -88,9 +89,9 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private Button deleteExamBtn;
 
     private ManajerBasisData manajerBasisData;
-    private DAOMataKuliah daoMataKuliah;
-    private DAOTopik daoTopik;
-    private DAOJadwalUjian daoJadwalUjian;
+    private LayananMataKuliah layananMataKuliah;
+    private LayananTopik layananTopik;
+    private LayananJadwalUjian layananJadwalUjian;
     private KontrolerUtama kontrolerUtama;
     private ObservableList<MataKuliah> daftarMataKuliah;
     private ObservableList<Topik> daftarTopik;
@@ -99,7 +100,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
-        inisialisasiDAO();
+        inisialisasiLayanan();
 
         aturTabel();
         aturTombol();
@@ -110,14 +111,14 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         this.kontrolerUtama = kontroler;
         if (this.kontrolerUtama != null) {
             this.manajerBasisData = this.kontrolerUtama.getManajerBasisData();
-            inisialisasiDAO();
+            inisialisasiLayanan();
         }
     }
 
-    private void inisialisasiDAO() {
-        this.daoMataKuliah = new DAOMataKuliah(manajerBasisData);
-        this.daoTopik = new DAOTopik(manajerBasisData);
-        this.daoJadwalUjian = new DAOJadwalUjian(manajerBasisData);
+    private void inisialisasiLayanan() {
+        this.layananMataKuliah = new LayananMataKuliah(manajerBasisData);
+        this.layananTopik = new LayananTopik(manajerBasisData);
+        this.layananJadwalUjian = new LayananJadwalUjian(manajerBasisData);
     }
 
     private void aturTabel() {
@@ -184,31 +185,31 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
     private void muatMataKuliah() {
         try {
-            List<MataKuliah> daftarMK = daoMataKuliah.ambilSemua();
+            List<MataKuliah> daftarMK = layananMataKuliah.ambilSemua();
             daftarMataKuliah = FXCollections.observableArrayList(daftarMK);
             tabelMataKuliah.setItems(daftarMataKuliah);
         } catch (SQLException e) {
-            tampilkanKesalahan("Gagal memuat daftar mata kuliah: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat daftar mata kuliah: " + e.getMessage());
         }
     }
 
     private void muatTopik(int idMataKuliah) {
         try {
-            List<Topik> daftarTop = daoTopik.ambilBerdasarkanMataKuliahId(idMataKuliah);
+            List<Topik> daftarTop = layananTopik.ambilBerdasarkanMataKuliah(idMataKuliah);
             daftarTopik = FXCollections.observableArrayList(daftarTop);
             tabelTopik.setItems(daftarTopik);
         } catch (SQLException e) {
-            tampilkanKesalahan("Gagal memuat topik: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat topik: " + e.getMessage());
         }
     }
 
     private void muatUjian(int idMataKuliah) {
         try {
-            List<JadwalUjian> daftarUj = daoJadwalUjian.ambilBerdasarkanMataKuliahId(idMataKuliah);
+            List<JadwalUjian> daftarUj = layananJadwalUjian.ambilBerdasarkanMataKuliah(idMataKuliah);
             daftarUjian = FXCollections.observableArrayList(daftarUj);
             tabelUjian.setItems(daftarUjian);
         } catch (SQLException e) {
-            tampilkanKesalahan("Gagal memuat ujian: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat ujian: " + e.getMessage());
         }
     }
 
@@ -255,11 +256,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<MataKuliah> result = dialog.showAndWait();
         result.ifPresent(mataKuliah -> {
             try {
-                daoMataKuliah.simpan(mataKuliah);
+                layananMataKuliah.daftarkan(mataKuliah);
                 muatMataKuliah();
-                tampilkanInfo("Mata kuliah berhasil ditambahkan!");
+                UtilUI.tampilkanInfo("Mata kuliah berhasil ditambahkan!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menambahkan mata kuliah: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menambahkan mata kuliah: " + e.getMessage());
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -267,7 +270,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void editMataKuliah() {
         MataKuliah terpilih = tabelMataKuliah.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih mata kuliah yang akan diedit!");
+            UtilUI.tampilkanPeringatan("Pilih mata kuliah yang akan diedit!");
             return;
         }
 
@@ -309,11 +312,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<MataKuliah> result = dialog.showAndWait();
         result.ifPresent(mataKuliah -> {
             try {
-                daoMataKuliah.perbarui(mataKuliah);
+                layananMataKuliah.perbarui(mataKuliah);
                 muatMataKuliah();
-                tampilkanInfo("Mata kuliah berhasil diupdate!");
+                UtilUI.tampilkanInfo("Mata kuliah berhasil diupdate!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal memperbarui mata kuliah: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal memperbarui mata kuliah: " + e.getMessage());
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -321,7 +326,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void hapusMataKuliah() {
         MataKuliah terpilih = tabelMataKuliah.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih mata kuliah yang akan dihapus!");
+            UtilUI.tampilkanPeringatan("Pilih mata kuliah yang akan dihapus!");
             return;
         }
 
@@ -334,13 +339,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                daoMataKuliah.hapus(terpilih.getId());
+                layananMataKuliah.hapus(terpilih.getId());
                 muatMataKuliah();
                 tabelTopik.getItems().clear();
                 tabelUjian.getItems().clear();
-                tampilkanInfo("Mata kuliah berhasil dihapus!");
+                UtilUI.tampilkanInfo("Mata kuliah berhasil dihapus!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menghapus mata kuliah: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menghapus mata kuliah: " + e.getMessage());
             }
         }
     }
@@ -350,7 +355,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 .getSelectionModel()
                 .getSelectedItem();
         if (mkTerpilih == null) {
-            tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
+            UtilUI.tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
@@ -401,11 +406,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<Topik> result = dialog.showAndWait();
         result.ifPresent(topik -> {
             try {
-                daoTopik.simpan(topik);
+                layananTopik.tambah(topik);
                 muatTopik(mkTerpilih.getId());
-                tampilkanInfo("Topik berhasil ditambahkan!");
+                UtilUI.tampilkanInfo("Topik berhasil ditambahkan!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menambahkan topik: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menambahkan topik: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -413,7 +420,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void editTopik() {
         Topik terpilih = tabelTopik.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih topik yang akan diedit!");
+            UtilUI.tampilkanPeringatan("Pilih topik yang akan diedit!");
             return;
         }
 
@@ -465,11 +472,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<Topik> result = dialog.showAndWait();
         result.ifPresent(topik -> {
             try {
-                daoTopik.perbarui(topik);
+                layananTopik.perbarui(topik);
                 muatTopik(topik.getIdMataKuliah());
-                tampilkanInfo("Topik berhasil diupdate!");
+                UtilUI.tampilkanInfo("Topik berhasil diupdate!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal memperbarui topik: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal memperbarui topik: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -477,7 +486,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void hapusTopik() {
         Topik terpilih = tabelTopik.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih topik yang akan dihapus!");
+            UtilUI.tampilkanPeringatan("Pilih topik yang akan dihapus!");
             return;
         }
 
@@ -490,11 +499,11 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 int idMataKuliah = terpilih.getIdMataKuliah();
-                daoTopik.hapus(terpilih.getId());
+                layananTopik.hapus(terpilih.getId());
                 muatTopik(idMataKuliah);
-                tampilkanInfo("Topik berhasil dihapus!");
+                UtilUI.tampilkanInfo("Topik berhasil dihapus!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menghapus topik: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menghapus topik: " + e.getMessage());
             }
         }
     }
@@ -504,7 +513,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
                 .getSelectionModel()
                 .getSelectedItem();
         if (mkTerpilih == null) {
-            tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
+            UtilUI.tampilkanPeringatan("Pilih mata kuliah terlebih dahulu!");
             return;
         }
 
@@ -552,11 +561,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<JadwalUjian> result = dialog.showAndWait();
         result.ifPresent(ujian -> {
             try {
-                daoJadwalUjian.simpan(ujian);
+                layananJadwalUjian.tambah(ujian);
                 muatUjian(mkTerpilih.getId());
-                tampilkanInfo("Jadwal ujian berhasil ditambahkan!");
+                UtilUI.tampilkanInfo("Jadwal ujian berhasil ditambahkan!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menambahkan ujian: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menambahkan ujian: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -564,7 +575,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void editUjian() {
         JadwalUjian terpilih = tabelUjian.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih ujian yang akan diedit!");
+            UtilUI.tampilkanPeringatan("Pilih ujian yang akan diedit!");
             return;
         }
 
@@ -607,11 +618,13 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         Optional<JadwalUjian> result = dialog.showAndWait();
         result.ifPresent(ujian -> {
             try {
-                daoJadwalUjian.perbarui(ujian);
+                layananJadwalUjian.perbarui(ujian);
                 muatUjian(ujian.getIdMataKuliah());
-                tampilkanInfo("Jadwal ujian berhasil diupdate!");
+                UtilUI.tampilkanInfo("Jadwal ujian berhasil diupdate!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal memperbarui ujian: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal memperbarui ujian: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                UtilUI.tampilkanKesalahan(e.getMessage());
             }
         });
     }
@@ -619,7 +632,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     private void hapusUjian() {
         JadwalUjian terpilih = tabelUjian.getSelectionModel().getSelectedItem();
         if (terpilih == null) {
-            tampilkanPeringatan("Pilih ujian yang akan dihapus!");
+            UtilUI.tampilkanPeringatan("Pilih ujian yang akan dihapus!");
             return;
         }
 
@@ -632,27 +645,12 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 int idMataKuliah = terpilih.getIdMataKuliah();
-                daoJadwalUjian.hapus(terpilih.getId());
+                layananJadwalUjian.hapus(terpilih.getId());
                 muatUjian(idMataKuliah);
-                tampilkanInfo("Jadwal ujian berhasil dihapus!");
+                UtilUI.tampilkanInfo("Jadwal ujian berhasil dihapus!");
             } catch (SQLException e) {
-                tampilkanKesalahan("Gagal menghapus ujian: " + e.getMessage());
+                UtilUI.tampilkanKesalahan("Gagal menghapus ujian: " + e.getMessage());
             }
         }
-    }
-
-    private void tampilkanKesalahan(String pesan) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", pesan);
-        alert.showAndWait();
-    }
-
-    private void tampilkanPeringatan(String pesan) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.WARNING, "Peringatan", pesan);
-        alert.showAndWait();
-    }
-
-    private void tampilkanInfo(String pesan) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", pesan);
-        alert.showAndWait();
     }
 }

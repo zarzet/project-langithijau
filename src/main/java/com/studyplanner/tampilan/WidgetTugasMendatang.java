@@ -1,11 +1,10 @@
 package com.studyplanner.tampilan;
 
 import com.studyplanner.model.SesiBelajar;
+import com.studyplanner.utilitas.UtilUI;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -14,11 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class WidgetTugasMendatang extends VBox {
-
-    private static final Locale ID_LOCALE = Locale.of("id", "ID");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
-            "EEEE, dd MMM",
-            ID_LOCALE);
 
     private final VBox wadahDaftar;
     private final Label labelKosong;
@@ -82,12 +76,12 @@ public class WidgetTugasMendatang extends VBox {
         footer.setAlignment(Pos.CENTER_LEFT);
 
         Label labelTipe = new Label(
-                dapatkanLabelTipeSesi(sesi.getTipeSesi()));
+                UtilUI.dapatkanLabelTipeSesi(sesi.getTipeSesi()));
         labelTipe
                 .getStyleClass()
                 .addAll(
                         "task-type",
-                        "badge-" + sesi.getTipeSesi().toLowerCase());
+                        UtilUI.dapatkanKelasBadge(sesi.getTipeSesi()));
 
         Label labelTanggal = new Label(formatTanggalRelatif(sesi.getTanggalJadwal()));
         labelTanggal.getStyleClass().add("upcoming-task-date");
@@ -113,20 +107,8 @@ public class WidgetTugasMendatang extends VBox {
         if (tanggal.isBefore(hariIni.plusDays(7))) {
             return tanggal
                     .getDayOfWeek()
-                    .getDisplayName(TextStyle.SHORT, ID_LOCALE);
+                    .getDisplayName(TextStyle.SHORT, UtilUI.LOCALE_ID);
         }
-        return DATE_FORMATTER.format(tanggal);
-    }
-
-    private String dapatkanLabelTipeSesi(String tipe) {
-        if (tipe == null)
-            return "-";
-
-        return switch (tipe) {
-            case "INITIAL_STUDY" -> "Belajar Baru";
-            case "REVIEW" -> "Review";
-            case "PRACTICE" -> "Latihan";
-            default -> tipe;
-        };
+        return UtilUI.FORMAT_TANGGAL_PENDEK.format(tanggal);
     }
 }

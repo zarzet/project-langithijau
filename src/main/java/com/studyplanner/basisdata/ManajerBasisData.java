@@ -120,263 +120,6 @@ public class ManajerBasisData {
         PencatatQuery.getInstance().catat(sql);
     }
 
-    public List<MataKuliah> ambilSemuaMataKuliah() throws SQLException {
-        List<MataKuliah> daftarMataKuliah = new ArrayList<>();
-        String sql = "SELECT * FROM mata_kuliah ORDER BY kode";
-        catatKueri(sql);
-
-        try (
-                Statement stmt = koneksi.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                MataKuliah mataKuliah = new MataKuliah();
-                mataKuliah.setId(rs.getInt("id"));
-                mataKuliah.setNama(rs.getString("nama"));
-                mataKuliah.setKode(rs.getString("kode"));
-                mataKuliah.setDeskripsi(rs.getString("deskripsi"));
-                daftarMataKuliah.add(mataKuliah);
-            }
-        }
-        return daftarMataKuliah;
-    }
-
-    public List<Topik> ambilSemuaTopik() throws SQLException {
-        List<Topik> daftarTopik = new ArrayList<>();
-        String sql = "SELECT * FROM topik ORDER BY prioritas DESC, nama";
-        catatKueri(sql);
-
-        try (
-                Statement stmt = koneksi.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                daftarTopik.add(ekstrakTopikDariResultSet(rs));
-            }
-        }
-        return daftarTopik;
-    }
-
-    private Topik ekstrakTopikDariResultSet(ResultSet rs) throws SQLException {
-        Topik topik = new Topik();
-        topik.setId(rs.getInt("id"));
-        topik.setIdMataKuliah(rs.getInt("id_mata_kuliah"));
-        topik.setNama(rs.getString("nama"));
-        topik.setDeskripsi(rs.getString("deskripsi"));
-        topik.setPrioritas(rs.getInt("prioritas"));
-        topik.setTingkatKesulitan(rs.getInt("tingkat_kesulitan"));
-
-        String tanggalBelajarPertama = rs.getString("tanggal_belajar_pertama");
-        if (tanggalBelajarPertama != null) {
-            topik.setTanggalBelajarPertama(LocalDate.parse(tanggalBelajarPertama));
-        }
-
-        String tanggalUlasanTerakhir = rs.getString("tanggal_ulasan_terakhir");
-        if (tanggalUlasanTerakhir != null) {
-            topik.setTanggalUlasanTerakhir(LocalDate.parse(tanggalUlasanTerakhir));
-        }
-
-        topik.setJumlahUlasan(rs.getInt("jumlah_ulasan"));
-        topik.setFaktorKemudahan(rs.getDouble("faktor_kemudahan"));
-        topik.setInterval(rs.getInt("interval"));
-        topik.setDikuasai(rs.getBoolean("dikuasai"));
-
-        return topik;
-    }
-
-    public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
-        List<JadwalUjian> daftarUjian = new ArrayList<>();
-        String sql = """
-                    SELECT * FROM jadwal_ujian
-                    WHERE tanggal_ujian >= date('now') AND selesai = 0
-                    ORDER BY tanggal_ujian ASC
-                """;
-        catatKueri(sql);
-
-        try (
-                Statement stmt = koneksi.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                daftarUjian.add(ekstrakUjianDariResultSet(rs));
-            }
-        }
-        return daftarUjian;
-    }
-
-    public List<JadwalUjian> ambilUjianBerdasarkanMataKuliah(int idMataKuliah)
-            throws SQLException {
-        List<JadwalUjian> daftarUjian = new ArrayList<>();
-        String sql = "SELECT * FROM jadwal_ujian WHERE id_mata_kuliah = ? ORDER BY tanggal_ujian";
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, idMataKuliah);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                daftarUjian.add(ekstrakUjianDariResultSet(rs));
-            }
-        }
-        return daftarUjian;
-    }
-
-    private JadwalUjian ekstrakUjianDariResultSet(ResultSet rs)
-            throws SQLException {
-        JadwalUjian ujian = new JadwalUjian();
-        ujian.setId(rs.getInt("id"));
-        ujian.setIdMataKuliah(rs.getInt("id_mata_kuliah"));
-        ujian.setTipeUjian(rs.getString("tipe_ujian"));
-        ujian.setJudul(rs.getString("judul"));
-
-        String tanggalUjian = rs.getString("tanggal_ujian");
-        if (tanggalUjian != null) {
-            ujian.setTanggalUjian(LocalDate.parse(tanggalUjian));
-        }
-
-        String waktuUjian = rs.getString("waktu_ujian");
-        if (waktuUjian != null) {
-            ujian.setWaktuUjian(LocalTime.parse(waktuUjian));
-        }
-
-        ujian.setLokasi(rs.getString("lokasi"));
-        ujian.setCatatan(rs.getString("catatan"));
-        ujian.setSelesai(rs.getBoolean("selesai"));
-
-        return ujian;
-    }
-
-    public int tambahSesiBelajar(SesiBelajar sesi) throws SQLException {
-        String sql = """
-                    INSERT INTO sesi_belajar (id_topik, id_mata_kuliah, tanggal_jadwal,
-                                               tipe_sesi, selesai, selesai_pada,
-                                               rating_performa, catatan, durasi_menit)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """;
-        catatKueri(sql);
-
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(
-                        sql,
-                        Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, sesi.getIdTopik());
-            pstmt.setInt(2, sesi.getIdMataKuliah());
-            pstmt.setObject(3, sesi.getTanggalJadwal());
-            pstmt.setString(4, sesi.getTipeSesi());
-            pstmt.setBoolean(5, sesi.isSelesai());
-            pstmt.setObject(6, sesi.getSelesaiPada());
-            pstmt.setObject(
-                    7,
-                    sesi.getRatingPerforma() > 0
-                            ? sesi.getRatingPerforma()
-                            : null);
-            pstmt.setString(8, sesi.getCatatan());
-            pstmt.setInt(9, sesi.getDurasiMenit());
-            pstmt.executeUpdate();
-
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        }
-        return -1;
-    }
-
-    public List<SesiBelajar> ambilSesiBerdasarkanTanggal(LocalDate tanggal)
-            throws SQLException {
-        List<SesiBelajar> daftarSesi = new ArrayList<>();
-        String sql = """
-                    SELECT s.*, t.nama as nama_topik, c.nama as nama_mata_kuliah, c.kode as kode_mata_kuliah
-                    FROM sesi_belajar s
-                    JOIN topik t ON s.id_topik = t.id
-                    JOIN mata_kuliah c ON s.id_mata_kuliah = c.id
-                    WHERE s.tanggal_jadwal = ?
-                    ORDER BY s.tipe_sesi, c.kode
-                """;
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setObject(1, tanggal);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                SesiBelajar sesi = ekstrakSesiDariResultSet(rs);
-                sesi.setNamaTopik(rs.getString("nama_topik"));
-                sesi.setNamaMataKuliah(
-                        rs.getString("kode_mata_kuliah") +
-                                " - " +
-                                rs.getString("nama_mata_kuliah"));
-                daftarSesi.add(sesi);
-            }
-        }
-        return daftarSesi;
-    }
-
-    public List<SesiBelajar> ambilSesiHariIni() throws SQLException {
-        return ambilSesiBerdasarkanTanggal(LocalDate.now());
-    }
-
-    public List<SesiBelajar> ambilSesiMendatang(int batas)
-            throws SQLException {
-        List<SesiBelajar> daftarSesi = new ArrayList<>();
-        String sql = """
-                    SELECT s.*, t.nama as nama_topik, c.nama as nama_mata_kuliah, c.kode as kode_mata_kuliah
-                    FROM sesi_belajar s
-                    JOIN topik t ON s.id_topik = t.id
-                    JOIN mata_kuliah c ON s.id_mata_kuliah = c.id
-                    WHERE s.tanggal_jadwal > DATE('now')
-                    AND s.selesai = 0
-                    ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi
-                    LIMIT ?
-                """;
-        catatKueri(sql);
-
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
-            pstmt.setInt(1, batas);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                SesiBelajar sesi = ekstrakSesiDariResultSet(rs);
-                sesi.setNamaTopik(rs.getString("nama_topik"));
-                sesi.setNamaMataKuliah(
-                        rs.getString("kode_mata_kuliah") +
-                                " - " +
-                                rs.getString("nama_mata_kuliah"));
-                daftarSesi.add(sesi);
-            }
-        }
-
-        return daftarSesi;
-    }
-
-    private SesiBelajar ekstrakSesiDariResultSet(ResultSet rs)
-            throws SQLException {
-        SesiBelajar sesi = new SesiBelajar();
-        sesi.setId(rs.getInt("id"));
-        sesi.setIdTopik(rs.getInt("id_topik"));
-        sesi.setIdMataKuliah(rs.getInt("id_mata_kuliah"));
-
-        String tanggalJadwal = rs.getString("tanggal_jadwal");
-        if (tanggalJadwal != null) {
-            sesi.setTanggalJadwal(LocalDate.parse(tanggalJadwal));
-        }
-
-        sesi.setTipeSesi(rs.getString("tipe_sesi"));
-        sesi.setSelesai(rs.getBoolean("selesai"));
-
-        String selesaiPada = rs.getString("selesai_pada");
-        if (selesaiPada != null) {
-            sesi.setSelesaiPada(LocalDateTime.parse(selesaiPada));
-        }
-
-        int rating = rs.getInt("rating_performa");
-        if (!rs.wasNull()) {
-            sesi.setRatingPerforma(rating);
-        }
-
-        sesi.setCatatan(rs.getString("catatan"));
-        sesi.setDurasiMenit(rs.getInt("durasi_menit"));
-
-        return sesi;
-    }
-
     public int ambilRuntutanBelajar() throws SQLException {
         String sql = """
                     WITH RECURSIVE tanggal AS (
@@ -490,6 +233,33 @@ public class ManajerBasisData {
             }
         }
         return daftarTopik;
+    }
+
+    private Topik ekstrakTopikDariResultSet(ResultSet rs) throws SQLException {
+        Topik topik = new Topik();
+        topik.setId(rs.getInt("id"));
+        topik.setIdMataKuliah(rs.getInt("id_mata_kuliah"));
+        topik.setNama(rs.getString("nama"));
+        topik.setDeskripsi(rs.getString("deskripsi"));
+        topik.setPrioritas(rs.getInt("prioritas"));
+        topik.setTingkatKesulitan(rs.getInt("tingkat_kesulitan"));
+
+        String tanggalBelajarPertama = rs.getString("tanggal_belajar_pertama");
+        if (tanggalBelajarPertama != null) {
+            topik.setTanggalBelajarPertama(LocalDate.parse(tanggalBelajarPertama));
+        }
+
+        String tanggalUlasanTerakhir = rs.getString("tanggal_ulasan_terakhir");
+        if (tanggalUlasanTerakhir != null) {
+            topik.setTanggalUlasanTerakhir(LocalDate.parse(tanggalUlasanTerakhir));
+        }
+
+        topik.setJumlahUlasan(rs.getInt("jumlah_ulasan"));
+        topik.setFaktorKemudahan(rs.getDouble("faktor_kemudahan"));
+        topik.setInterval(rs.getInt("interval"));
+        topik.setDikuasai(rs.getBoolean("dikuasai"));
+
+        return topik;
     }
 
     public void tutup() {

@@ -3,6 +3,7 @@ package com.studyplanner.kontroler;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PembuatIkon;
+import com.studyplanner.utilitas.UtilUI;
 import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.algoritma.PembuatJadwal;
 import com.studyplanner.algoritma.PengulanganBerjarak;
@@ -13,7 +14,10 @@ import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
 import com.studyplanner.tampilan.WidgetWaktuBelajarHariIni;
 import com.studyplanner.basisdata.ManajerBasisData;
-import com.studyplanner.dao.*;
+import com.studyplanner.layanan.LayananMataKuliah;
+import com.studyplanner.layanan.LayananTopik;
+import com.studyplanner.layanan.LayananJadwalUjian;
+import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.model.*;
 import java.io.IOException;
 import java.net.URL;
@@ -142,10 +146,10 @@ public class KontrolerUtama implements Initializable {
     private VBox upcomingTasksWidgetContainer;
 
     private ManajerBasisData manajerBasisData;
-    private DAOMataKuliah daoMataKuliah;
-    private DAOTopik daoTopik;
-    private DAOJadwalUjian daoJadwalUjian;
-    private DAOSesiBelajar daoSesiBelajar;
+    private LayananMataKuliah layananMataKuliah;
+    private LayananTopik layananTopik;
+    private LayananJadwalUjian layananJadwalUjian;
+    private LayananSesiBelajar layananSesiBelajar;
     private boolean isDarkMode = false;
     private PembuatJadwal pembuatJadwal;
     private WidgetRuntutanBelajar streakWidget;
@@ -160,10 +164,10 @@ public class KontrolerUtama implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
 
-        daoMataKuliah = new DAOMataKuliah(manajerBasisData);
-        daoTopik = new DAOTopik(manajerBasisData);
-        daoJadwalUjian = new DAOJadwalUjian(manajerBasisData);
-        daoSesiBelajar = new DAOSesiBelajar(manajerBasisData);
+        layananMataKuliah = new LayananMataKuliah(manajerBasisData);
+        layananTopik = new LayananTopik(manajerBasisData);
+        layananJadwalUjian = new LayananJadwalUjian(manajerBasisData);
+        layananSesiBelajar = new LayananSesiBelajar(manajerBasisData);
 
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
@@ -352,7 +356,7 @@ public class KontrolerUtama implements Initializable {
                 nextReviewWidget.segarkan();
             }
         } catch (SQLException e) {
-            showError("Gagal memuat data dashboard: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat data dashboard: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -362,7 +366,7 @@ public class KontrolerUtama implements Initializable {
             return;
         }
 
-        List<SesiBelajar> upcomingSessions = daoSesiBelajar.ambilSesiMendatang(4);
+        List<SesiBelajar> upcomingSessions = layananSesiBelajar.ambilSesiMendatang(4);
         upcomingTasksWidget.aturSesi(upcomingSessions);
     }
 
@@ -372,7 +376,7 @@ public class KontrolerUtama implements Initializable {
         }
 
         try {
-            List<SesiBelajar> sessions = daoSesiBelajar.ambilSesiMendatang(12);
+            List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiMendatang(12);
 
             Dialog<Void> dialog = PembuatDialogMD3.buatDialog("Detail Upcoming Tasks", null);
             dialog
@@ -405,13 +409,13 @@ public class KontrolerUtama implements Initializable {
             dialog.getDialogPane().setContent(content);
             dialog.showAndWait();
         } catch (SQLException e) {
-            showError("Gagal memuat detail upcoming tasks: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat detail upcoming tasks: " + e.getMessage());
         }
     }
 
     private void loadTodayTasks() throws SQLException {
         todayTasksContainer.getChildren().clear();
-        List<SesiBelajar> sessions = daoSesiBelajar.ambilSesiHariIni();
+        List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiHariIni();
 
         if (sessions.isEmpty()) {
             Label emptyLabel = new Label(
@@ -449,11 +453,11 @@ public class KontrolerUtama implements Initializable {
         courseLabel.getStyleClass().add("task-course");
 
         Label typeLabel = new Label(
-                getSessionTypeLabel(session.getTipeSesi()));
+                UtilUI.dapatkanLabelTipeSesi(session.getTipeSesi()));
         typeLabel.getStyleClass().add("task-type");
         typeLabel
                 .getStyleClass()
-                .add("badge-" + session.getTipeSesi().toLowerCase());
+                .add(UtilUI.dapatkanKelasBadge(session.getTipeSesi()));
 
         Label durationLabel = new Label(
                 session.getDurasiMenit() + " menit");
@@ -467,15 +471,6 @@ public class KontrolerUtama implements Initializable {
         return card;
     }
 
-    private String getSessionTypeLabel(String type) {
-        return switch (type) {
-            case "INITIAL_STUDY" -> "Belajar Pertama";
-            case "REVIEW" -> "Review";
-            case "PRACTICE" -> "Latihan";
-            default -> type;
-        };
-    }
-
     private void markTaskComplete(SesiBelajar session, boolean completed) {
         try {
             session.setSelesai(completed);
@@ -485,12 +480,12 @@ public class KontrolerUtama implements Initializable {
             } else {
                 session.setSelesaiPada(null);
                 session.setRatingPerforma(0);
-                daoSesiBelajar.perbarui(session);
+                layananSesiBelajar.perbarui(session);
             }
 
             loadDashboardData();
         } catch (SQLException e) {
-            showError("Gagal memperbarui tugas: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memperbarui tugas: " + e.getMessage());
         }
     }
 
@@ -534,9 +529,9 @@ public class KontrolerUtama implements Initializable {
                 .ifPresent(rating -> {
                     try {
                         session.setRatingPerforma(rating);
-                        daoSesiBelajar.perbarui(session);
+                        layananSesiBelajar.perbarui(session);
 
-                        Topik topic = daoTopik.ambilBerdasarkanId(session.getIdTopik());
+                        Topik topic = layananTopik.ambilBerdasarkanId(session.getIdTopik());
                         if (topic != null) {
                             if (topic.getTanggalBelajarPertama() == null) {
                                 topic.setTanggalBelajarPertama(LocalDate.now());
@@ -546,14 +541,14 @@ public class KontrolerUtama implements Initializable {
                                     topic,
                                     rating);
 
-                            daoTopik.perbarui(topic);
+                            layananTopik.perbarui(topic);
 
-                            showInfo(
+                            UtilUI.tampilkanInfo(
                                     "Sesi berhasil diselesaikan!\nReview berikutnya: " +
                                             nextReview);
                         }
                     } catch (SQLException e) {
-                        showError("Gagal menyimpan rating: " + e.getMessage());
+                        UtilUI.tampilkanKesalahan("Gagal menyimpan rating: " + e.getMessage());
                     }
                 });
     }
@@ -571,7 +566,7 @@ public class KontrolerUtama implements Initializable {
 
     private void loadUpcomingExams() throws SQLException {
         upcomingExamsContainer.getChildren().clear();
-        List<JadwalUjian> exams = daoJadwalUjian.ambilUjianMendatang();
+        List<JadwalUjian> exams = layananJadwalUjian.ambilUjianMendatang();
 
         if (exams.isEmpty()) {
             Label emptyLabel = new Label("Belum ada ujian yang dijadwalkan.");
@@ -591,7 +586,7 @@ public class KontrolerUtama implements Initializable {
         Label titleLabel = new Label(exam.getJudul());
         titleLabel.getStyleClass().add("exam-title");
 
-        MataKuliah course = daoMataKuliah.ambilBerdasarkanId(exam.getIdMataKuliah());
+        MataKuliah course = layananMataKuliah.ambilBerdasarkanId(exam.getIdMataKuliah());
         Label courseLabel = new Label(course != null ? course.getKode() : "");
         courseLabel.getStyleClass().add("exam-course");
 
@@ -639,7 +634,7 @@ public class KontrolerUtama implements Initializable {
 
             loadDashboardData();
         } catch (IOException e) {
-            showError("Gagal membuka manajemen mata kuliah: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal membuka manajemen mata kuliah: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -665,7 +660,7 @@ public class KontrolerUtama implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
         } catch (IOException e) {
-            showError("Gagal membuka tampilan jadwal: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal membuka tampilan jadwal: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -673,23 +668,13 @@ public class KontrolerUtama implements Initializable {
     private void buatJadwalBaru() {
         try {
             pembuatJadwal.buatDanSimpanJadwal(7);
-            showInfo(
+            UtilUI.tampilkanInfo(
                     "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!");
             loadDashboardData();
         } catch (SQLException e) {
-            showError("Gagal membuat jadwal: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal membuat jadwal: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private void showError(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", message);
-        alert.showAndWait();
-    }
-
-    private void showInfo(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", message);
-        alert.showAndWait();
     }
 
     private void tampilkanProfil() {
@@ -852,7 +837,7 @@ public class KontrolerUtama implements Initializable {
 
             stage.showAndWait();
         } catch (Exception e) {
-            showError("Gagal membuka pengaturan: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal membuka pengaturan: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -919,7 +904,7 @@ public class KontrolerUtama implements Initializable {
                     stage.setScene(scene);
                     DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", false);
                 } catch (Exception e) {
-                    showError("Gagal logout: " + e.getMessage());
+                    UtilUI.tampilkanKesalahan("Gagal logout: " + e.getMessage());
                     e.printStackTrace();
                 }
             }

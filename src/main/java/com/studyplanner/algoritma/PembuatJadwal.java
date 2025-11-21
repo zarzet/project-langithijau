@@ -2,26 +2,36 @@ package com.studyplanner.algoritma;
 
 import com.studyplanner.model.*;
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.layanan.LayananMataKuliah;
+import com.studyplanner.layanan.LayananTopik;
+import com.studyplanner.layanan.LayananJadwalUjian;
+import com.studyplanner.layanan.LayananSesiBelajar;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PembuatJadwal {
-    private ManajerBasisData manajerBasisData;
+    private final LayananMataKuliah layananMataKuliah;
+    private final LayananTopik layananTopik;
+    private final LayananJadwalUjian layananJadwalUjian;
+    private final LayananSesiBelajar layananSesiBelajar;
     private static final int MAX_SESI_PER_HARI = 6;
     private static final int MIN_SESI_PER_HARI = 3;
 
     public PembuatJadwal(ManajerBasisData manajerBasisData) {
-        this.manajerBasisData = manajerBasisData;
+        this.layananMataKuliah = new LayananMataKuliah(manajerBasisData);
+        this.layananTopik = new LayananTopik(manajerBasisData);
+        this.layananJadwalUjian = new LayananJadwalUjian(manajerBasisData);
+        this.layananSesiBelajar = new LayananSesiBelajar(manajerBasisData);
     }
 
     public Map<LocalDate, List<SesiBelajar>> buatJadwal(int hariKeDepan) throws SQLException {
         Map<LocalDate, List<SesiBelajar>> jadwal = new LinkedHashMap<>();
 
-        List<MataKuliah> daftarMataKuliah = manajerBasisData.ambilSemuaMataKuliah();
-        List<Topik> semuaTopik = manajerBasisData.ambilSemuaTopik();
-        List<JadwalUjian> ujianMendatang = manajerBasisData.ambilUjianMendatang();
+        List<MataKuliah> daftarMataKuliah = layananMataKuliah.ambilSemua();
+        List<Topik> semuaTopik = layananTopik.ambilSemua();
+        List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang();
 
         Map<Integer, JadwalUjian> ujianPerMataKuliah = new HashMap<>();
         for (JadwalUjian ujian : ujianMendatang) {
@@ -127,13 +137,13 @@ public class PembuatJadwal {
 
         for (Map.Entry<LocalDate, List<SesiBelajar>> entry : jadwal.entrySet()) {
             for (SesiBelajar sesi : entry.getValue()) {
-                List<SesiBelajar> sesiAda = manajerBasisData.ambilSesiBerdasarkanTanggal(entry.getKey());
+                List<SesiBelajar> sesiAda = layananSesiBelajar.ambilBerdasarkanTanggal(entry.getKey());
                 boolean ada = sesiAda.stream()
                         .anyMatch(s -> s.getIdTopik() == sesi.getIdTopik()
                                 && s.getTipeSesi().equals(sesi.getTipeSesi()));
 
                 if (!ada) {
-                    manajerBasisData.tambahSesiBelajar(sesi);
+                    layananSesiBelajar.tambah(sesi);
                 }
             }
         }
@@ -150,8 +160,8 @@ public class PembuatJadwal {
     }
 
     public KemajuanBelajar ambilKemajuanBelajar() throws SQLException {
-        List<Topik> semuaTopik = manajerBasisData.ambilSemuaTopik();
-        List<SesiBelajar> sesiHariIni = manajerBasisData.ambilSesiHariIni();
+        List<Topik> semuaTopik = layananTopik.ambilSemua();
+        List<SesiBelajar> sesiHariIni = layananSesiBelajar.ambilSesiHariIni();
 
         int totalTopik = semuaTopik.size();
         int topikDikuasai = (int) semuaTopik.stream().filter(Topik::isDikuasai).count();

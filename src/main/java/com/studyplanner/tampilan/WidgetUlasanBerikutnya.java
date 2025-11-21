@@ -2,9 +2,9 @@ package com.studyplanner.tampilan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.Topik;
+import com.studyplanner.utilitas.UtilUI;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -85,9 +85,7 @@ public class WidgetUlasanBerikutnya extends VBox {
                 LocalDate tanggalUlasanBerikutnya = topik
                         .getTanggalUlasanTerakhir()
                         .plusDays(topik.getInterval());
-                long hariMenuju = ChronoUnit.DAYS.between(
-                        LocalDate.now(),
-                        tanggalUlasanBerikutnya);
+                long hariMenuju = UtilUI.hitungHariMenuju(tanggalUlasanBerikutnya);
 
                 if (hariMenuju < 0) {
                     labelJatuhTempo.setText(

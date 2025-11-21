@@ -6,6 +6,7 @@ import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PencatatLog;
+import com.studyplanner.utilitas.UtilUI;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -161,7 +162,7 @@ public class KontrolerLogin {
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            showError("Username dan password harus diisi!");
+            UtilUI.tampilkanKesalahan("Username dan password harus diisi!");
             return;
         }
 
@@ -182,17 +183,17 @@ public class KontrolerLogin {
                             PencatatLog.info("Login Berhasil: " + username);
                             bukaAplikasiUtama();
                         } else {
-                            showError("Password salah!");
+                            UtilUI.tampilkanKesalahan("Password salah!");
                             resetLoginButton();
                         }
                     } else {
-                        showError("Username tidak ditemukan!");
+                        UtilUI.tampilkanKesalahan("Username tidak ditemukan!");
                         resetLoginButton();
                     }
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    showError("Gagal login: " + e.getMessage());
+                    UtilUI.tampilkanKesalahan("Gagal login: " + e.getMessage());
                     resetLoginButton();
                 });
                 e.printStackTrace();
@@ -208,22 +209,22 @@ public class KontrolerLogin {
         String confirmPassword = confirmPasswordField.getText();
 
         if (nama.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            showError("Nama, username, dan password harus diisi!");
+            UtilUI.tampilkanKesalahan("Nama, username, dan password harus diisi!");
             return;
         }
 
         if (username.length() < 3) {
-            showError("Username minimal 3 karakter!");
+            UtilUI.tampilkanKesalahan("Username minimal 3 karakter!");
             return;
         }
 
         if (password.length() < 6) {
-            showError("Password minimal 6 karakter!");
+            UtilUI.tampilkanKesalahan("Password minimal 6 karakter!");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            showError("Password dan konfirmasi password tidak sama!");
+            UtilUI.tampilkanKesalahan("Password dan konfirmasi password tidak sama!");
             return;
         }
 
@@ -236,7 +237,7 @@ public class KontrolerLogin {
 
                 Platform.runLater(() -> {
                     if (existingUser != null) {
-                        showError("Username sudah digunakan! Pilih username lain.");
+                        UtilUI.tampilkanKesalahan("Username sudah digunakan! Pilih username lain.");
                         resetRegisterButton();
                     } else {
                         try {
@@ -246,7 +247,7 @@ public class KontrolerLogin {
                                     email.isEmpty() ? null : email, nama, "local");
 
                             if (userId > 0) {
-                                showInfo("Pendaftaran berhasil! Silakan login.");
+                                UtilUI.tampilkanInfo("Pendaftaran berhasil! Silakan login.");
 
                                 registerForm.setVisible(false);
                                 registerForm.setManaged(false);
@@ -264,11 +265,11 @@ public class KontrolerLogin {
 
                                 resetRegisterButton();
                             } else {
-                                showError("Gagal mendaftar! Coba lagi.");
+                                UtilUI.tampilkanKesalahan("Gagal mendaftar! Coba lagi.");
                                 resetRegisterButton();
                             }
                         } catch (Exception e) {
-                            showError("Gagal mendaftar: " + e.getMessage());
+                            UtilUI.tampilkanKesalahan("Gagal mendaftar: " + e.getMessage());
                             resetRegisterButton();
                             e.printStackTrace();
                         }
@@ -276,7 +277,7 @@ public class KontrolerLogin {
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
-                    showError("Gagal mendaftar: " + e.getMessage());
+                    UtilUI.tampilkanKesalahan("Gagal mendaftar: " + e.getMessage());
                     resetRegisterButton();
                 });
                 e.printStackTrace();
@@ -333,25 +334,5 @@ public class KontrolerLogin {
             PencatatLog.error("Gagal membuka MainView: " + e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    private void showError(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(
-                Alert.AlertType.ERROR,
-                "Error",
-                message,
-                null
-        );
-        alert.showAndWait();
-    }
-
-    private void showInfo(String message) {
-        Alert alert = PembuatDialogMD3.buatAlert(
-                Alert.AlertType.INFORMATION,
-                "Informasi",
-                message,
-                null
-        );
-        alert.showAndWait();
     }
 }

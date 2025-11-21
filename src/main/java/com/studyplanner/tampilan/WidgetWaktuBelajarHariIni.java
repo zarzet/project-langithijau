@@ -1,6 +1,7 @@
 package com.studyplanner.tampilan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.utilitas.UtilUI;
 import java.sql.SQLException;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -96,10 +97,7 @@ public class WidgetWaktuBelajarHariIni extends VBox {
 
         labelWaktu.setText(formatWaktu(totalMenit));
 
-        double progres = Math.min(
-                (double) totalMenit / TARGET_HARIAN_MENIT,
-                1.0);
-        progressBar.setProgress(progres);
+        progressBar.setProgress(UtilUI.hitungProgres(totalMenit, TARGET_HARIAN_MENIT));
 
         perbaruiPerbandingan(totalMenit, menitDasarKemarin);
     }

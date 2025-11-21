@@ -1,9 +1,9 @@
 package com.studyplanner.kontroler;
 
 import com.studyplanner.basisdata.ManajerBasisData;
-import com.studyplanner.dao.DAOSesiBelajar;
+import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.model.SesiBelajar;
-import com.studyplanner.utilitas.PembuatDialogMD3;
+import com.studyplanner.utilitas.UtilUI;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -50,13 +50,13 @@ public class KontrolerTampilanJadwal implements Initializable {
     private Label sessionCountLabel;
 
     private ManajerBasisData manajerBasisData;
-    private DAOSesiBelajar daoSesiBelajar;
+    private LayananSesiBelajar layananSesiBelajar;
     private LocalDate awalMingguSaatIni;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         manajerBasisData = new ManajerBasisData();
-        daoSesiBelajar = new DAOSesiBelajar(manajerBasisData);
+        layananSesiBelajar = new LayananSesiBelajar(manajerBasisData);
 
         LocalDate hariIni = LocalDate.now();
         datePicker.setValue(hariIni);
@@ -152,7 +152,7 @@ public class KontrolerTampilanJadwal implements Initializable {
         selectedDateLabel.setText(tanggalTerpilih.format(formatter));
 
         try {
-            List<SesiBelajar> daftarSesi = daoSesiBelajar.ambilBerdasarkanTanggal(tanggalTerpilih);
+            List<SesiBelajar> daftarSesi = layananSesiBelajar.ambilBerdasarkanTanggal(tanggalTerpilih);
             sessionCountLabel.setText(daftarSesi.size() + " sesi belajar");
 
             if (daftarSesi.isEmpty()) {
@@ -177,7 +177,7 @@ public class KontrolerTampilanJadwal implements Initializable {
                 }
             }
         } catch (SQLException e) {
-            tampilkanKesalahan("Kesalahan memuat jadwal: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Kesalahan memuat jadwal: " + e.getMessage());
         }
     }
 
@@ -215,8 +215,8 @@ public class KontrolerTampilanJadwal implements Initializable {
         HBox barisMeta = new HBox(16);
         barisMeta.setAlignment(Pos.CENTER_LEFT);
 
-        Label labelTipe = new Label(dapatkanLabelTipeSesi(sesi.getTipeSesi()));
-        labelTipe.getStyleClass().addAll("task-type", dapatkanKelasBadge(sesi.getTipeSesi()));
+        Label labelTipe = new Label(UtilUI.dapatkanLabelTipeSesi(sesi.getTipeSesi()));
+        labelTipe.getStyleClass().addAll("task-type", UtilUI.dapatkanKelasBadge(sesi.getTipeSesi()));
 
         Label labelDurasi = new Label("Durasi: " + sesi.getDurasiMenit() + " menit");
         labelDurasi.getStyleClass().add("schedule-duration");
@@ -226,28 +226,5 @@ public class KontrolerTampilanJadwal implements Initializable {
         kartu.getChildren().addAll(header, barisMeta);
 
         return kartu;
-    }
-
-    private String dapatkanLabelTipeSesi(String tipe) {
-        return switch (tipe) {
-            case "INITIAL_STUDY" -> "Belajar Pertama";
-            case "REVIEW" -> "Review";
-            case "PRACTICE" -> "Latihan";
-            default -> tipe;
-        };
-    }
-
-    private String dapatkanKelasBadge(String tipe) {
-        return switch (tipe) {
-            case "INITIAL_STUDY" -> "badge-initial_study";
-            case "REVIEW" -> "badge-review";
-            case "PRACTICE" -> "badge-practice";
-            default -> "badge-initial_study";
-        };
-    }
-
-    private void tampilkanKesalahan(String pesan) {
-        Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.ERROR, "Kesalahan", pesan);
-        alert.showAndWait();
     }
 }

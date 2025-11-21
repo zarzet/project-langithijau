@@ -1,5 +1,6 @@
 package com.studyplanner.tampilan;
 
+import com.studyplanner.utilitas.UtilUI;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -158,8 +159,7 @@ public class WidgetPelacakPencapaian extends VBox {
             return;
         }
 
-        double progres = Math.min((double) selesai / total, 1.0);
-        progresTugas.setProgress(progres);
+        progresTugas.setProgress(UtilUI.hitungProgres(selesai, total));
         labelNilaiTugas.setText(selesai + "/" + total + " selesai");
 
         int sisa = Math.max(total - selesai, 0);
@@ -178,8 +178,7 @@ public class WidgetPelacakPencapaian extends VBox {
             return;
         }
 
-        double progres = Math.min((double) selesai / total, 1.0);
-        progresReview.setProgress(progres);
+        progresReview.setProgress(UtilUI.hitungProgres(selesai, total));
         labelNilaiReview.setText(selesai + "/" + total + " review selesai");
 
         int sisa = Math.max(total - selesai, 0);
@@ -191,10 +190,7 @@ public class WidgetPelacakPencapaian extends VBox {
     }
 
     private void perbaruiBagianFokus(int menit) {
-        double progres = Math.min(
-                (double) menit / TARGET_FOKUS_MENIT,
-                1.0);
-        progresFokus.setProgress(progres);
+        progresFokus.setProgress(UtilUI.hitungProgres(menit, TARGET_FOKUS_MENIT));
         labelNilaiFokus.setText(menit + "/" + TARGET_FOKUS_MENIT + " menit");
 
         int sisa = Math.max(TARGET_FOKUS_MENIT - menit, 0);
