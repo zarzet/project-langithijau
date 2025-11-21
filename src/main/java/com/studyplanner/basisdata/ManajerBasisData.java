@@ -3,8 +3,6 @@ package com.studyplanner.basisdata;
 import com.studyplanner.model.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +65,10 @@ public class ManajerBasisData {
                         jumlah_ulasan INTEGER DEFAULT 0,
                         faktor_kemudahan REAL DEFAULT 2.5,
                         interval INTEGER DEFAULT 1,
+                        stabilitas_fsrs REAL DEFAULT 0,
+                        kesulitan_fsrs REAL DEFAULT 0,
+                        retensi_diinginkan REAL DEFAULT 0.9,
+                        peluruhan_fsrs REAL DEFAULT 0.1542,
                         dikuasai BOOLEAN DEFAULT 0,
                         dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (id_mata_kuliah) REFERENCES mata_kuliah(id) ON DELETE CASCADE
@@ -107,13 +109,31 @@ public class ManajerBasisData {
                     )
                 """;
 
+        String buatTabelFsrsModel = """
+                    CREATE TABLE IF NOT EXISTS fsrs_model (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        nama_model TEXT DEFAULT 'default',
+                        bobot TEXT NOT NULL,
+                        loss REAL DEFAULT 0,
+                        akurasi REAL DEFAULT 0,
+                        catatan TEXT,
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """;
+
         try (Statement stmt = koneksi.createStatement()) {
             stmt.execute(buatTabelUsers);
             stmt.execute(buatTabelMataKuliah);
             stmt.execute(buatTabelTopik);
             stmt.execute(buatTabelJadwalUjian);
             stmt.execute(buatTabelSesiBelajar);
+            stmt.execute(buatTabelFsrsModel);
         }
+
+        tambahKolomJikaBelumAda("topik", "stabilitas_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda("topik", "kesulitan_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda("topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
+        tambahKolomJikaBelumAda("topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
     }
 
     private void catatKueri(String sql) {
@@ -258,6 +278,14 @@ public class ManajerBasisData {
         topik.setFaktorKemudahan(rs.getDouble("faktor_kemudahan"));
         topik.setInterval(rs.getInt("interval"));
         topik.setDikuasai(rs.getBoolean("dikuasai"));
+        try {
+            topik.setStabilitasFsrs(rs.getDouble("stabilitas_fsrs"));
+            topik.setKesulitanFsrs(rs.getDouble("kesulitan_fsrs"));
+            topik.setRetensiDiinginkan(rs.getDouble("retensi_diinginkan"));
+            topik.setPeluruhanFsrs(rs.getDouble("peluruhan_fsrs"));
+        } catch (SQLException e) {
+            // Kolom baru FSRS mungkin belum ada pada basis data lama; diabaikan untuk kompatibilitas.
+        }
 
         return topik;
     }
@@ -390,6 +418,75 @@ public class ManajerBasisData {
         try (Statement stmt = koneksi.createStatement()) {
             stmt.executeUpdate(sql);
         }
+    }
+
+    private void tambahKolomJikaBelumAda(String namaTabel, String namaKolom, String definisi)
+            throws SQLException {
+        String sqlCek = "PRAGMA table_info(" + namaTabel + ")";
+        boolean sudahAda = false;
+        try (Statement stmt = koneksi.createStatement(); ResultSet rs = stmt.executeQuery(sqlCek)) {
+            while (rs.next()) {
+                if (namaKolom.equalsIgnoreCase(rs.getString("name"))) {
+                    sudahAda = true;
+                    break;
+                }
+            }
+        }
+
+        if (!sudahAda) {
+            try (Statement stmt = koneksi.createStatement()) {
+                stmt.execute("ALTER TABLE " + namaTabel + " ADD COLUMN " + namaKolom + " " + definisi);
+            }
+        }
+    }
+
+    public void simpanModelFSRS(double[] bobot, double loss, double akurasi, String catatan) throws SQLException {
+        String sql = "INSERT INTO fsrs_model (nama_model, bobot, loss, akurasi, catatan) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setString(1, "default");
+            pstmt.setString(2, serializeBobot(bobot));
+            pstmt.setDouble(3, loss);
+            pstmt.setDouble(4, akurasi);
+            pstmt.setString(5, catatan);
+            pstmt.executeUpdate();
+        }
+    }
+
+    public com.studyplanner.model.ModelFSRS ambilModelFSRSTerbaru() throws SQLException {
+        String sql = "SELECT * FROM fsrs_model ORDER BY dibuat_pada DESC LIMIT 1";
+        try (PreparedStatement pstmt = koneksi.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                com.studyplanner.model.ModelFSRS model = new com.studyplanner.model.ModelFSRS();
+                model.setNama(rs.getString("nama_model"));
+                model.setBobot(deserializeBobot(rs.getString("bobot")));
+                model.setLoss(rs.getDouble("loss"));
+                model.setAkurasi(rs.getDouble("akurasi"));
+                model.setCatatan(rs.getString("catatan"));
+                model.setDibuatPada(rs.getString("dibuat_pada"));
+                return model;
+            }
+        }
+        return null;
+    }
+
+    private String serializeBobot(double[] bobot) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bobot.length; i++) {
+            if (i > 0) sb.append(",");
+            sb.append(bobot[i]);
+        }
+        return sb.toString();
+    }
+
+    private double[] deserializeBobot(String data) {
+        if (data == null || data.isEmpty()) return null;
+        String[] parts = data.split(",");
+        double[] arr = new double[parts.length];
+        for (int i = 0; i < parts.length; i++) {
+            arr[i] = Double.parseDouble(parts[i]);
+        }
+        return arr;
     }
 
     /**

@@ -170,6 +170,26 @@
                     </VBox>
                 </VBox>
             </Tab>
+
+            <!-- Tab 4: FSRS Trainer -->
+            <Tab text="FSRS" closable="false" styleClass="inspektur-tab">
+                <VBox spacing="16" styleClass="tab-content-card">
+                    <padding>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
+                    </padding>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="Pelatihan FSRS" styleClass="section-title-modern"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="latihFsrsBtn" text="Latih & Simpan" styleClass="btn-execute-modern"/>
+                    </HBox>
+                    <VBox spacing="8">
+                        <Label fx:id="fsrsInfoLabel" text="Belum ada model FSRS tersimpan" styleClass="status-label-modern"/>
+                        <Label fx:id="fsrsLossLabel" text="Loss: -" styleClass="row-count-label"/>
+                        <Label fx:id="fsrsAkurasiLabel" text="Akurasi: -" styleClass="row-count-label"/>
+                        <Label text="Latihan diambil dari riwayat sesi belajar selesai dengan rating 1-5." styleClass="placeholder-hint"/>
+                    </VBox>
+                </VBox>
+            </Tab>
         </TabPane>
     </center>
 

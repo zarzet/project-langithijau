@@ -1,7 +1,11 @@
 package com.studyplanner.kontroler;
 
+import com.studyplanner.algoritma.fsrs.HasilPelatihanFSRS;
+import com.studyplanner.algoritma.fsrs.PelatihFSRSKonfigurasi;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.basisdata.PencatatQuery;
+import com.studyplanner.layanan.LayananPelatihanFSRS;
+import com.studyplanner.model.ModelFSRS;
 import com.studyplanner.utilitas.PembuatIkon;
 import java.net.URL;
 import java.sql.SQLException;
@@ -55,10 +59,15 @@ public class KontrolerInspekturBasisData implements Initializable {
     @FXML private Label resultCountLabel;
     @FXML private TableView<Map<String, Object>> resultTableView;
     @FXML private VBox resultPlaceholder;
+    @FXML private Button latihFsrsBtn;
+    @FXML private Label fsrsInfoLabel;
+    @FXML private Label fsrsLossLabel;
+    @FXML private Label fsrsAkurasiLabel;
 
     private ManajerBasisData manajerBasisData;
     private List<String> semuaTabel;
     private int jumlahKueriLog = 0;
+    private LayananPelatihanFSRS layananPelatihanFSRS;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,6 +98,9 @@ public class KontrolerInspekturBasisData implements Initializable {
 
         executeBtn.setOnAction(e -> jalankanKueri());
         queryInput.setOnKeyPressed(this::tanganiInputKeyKueri);
+        if (latihFsrsBtn != null) {
+            latihFsrsBtn.setOnAction(e -> latihFsrs());
+        }
 
         logArea.textProperty().addListener((observable, oldValue, newValue) -> {
             logArea.setScrollTop(Double.MAX_VALUE);
@@ -97,7 +109,9 @@ public class KontrolerInspekturBasisData implements Initializable {
 
     public void setManajerBasisData(ManajerBasisData mb) {
         this.manajerBasisData = mb;
+        this.layananPelatihanFSRS = new LayananPelatihanFSRS(mb);
         muatDaftarTabel();
+        muatModelFsrsTersimpan();
     }
 
     private void setupIkon() {
@@ -183,6 +197,28 @@ public class KontrolerInspekturBasisData implements Initializable {
     private void perbaruiLabelJumlahKueri() {
         if (totalQueriesLabel != null) {
             totalQueriesLabel.setText(String.valueOf(jumlahKueriLog));
+        }
+    }
+
+    private void muatModelFsrsTersimpan() {
+        if (manajerBasisData == null) return;
+        try {
+            ModelFSRS model = manajerBasisData.ambilModelFSRSTerbaru();
+            if (model != null && model.getBobot() != null) {
+                if (fsrsInfoLabel != null) {
+                    fsrsInfoLabel.setText("Bobot tersimpan (" + model.getNama() + ") pada " + model.getDibuatPada());
+                }
+                if (fsrsLossLabel != null) {
+                    fsrsLossLabel.setText(String.format("Loss: %.4f", model.getLoss()));
+                }
+                if (fsrsAkurasiLabel != null) {
+                    fsrsAkurasiLabel.setText(String.format("Akurasi: %.2f%%", model.getAkurasi() * 100.0));
+                }
+            } else {
+                if (fsrsInfoLabel != null) fsrsInfoLabel.setText("Belum ada model FSRS tersimpan");
+            }
+        } catch (SQLException e) {
+            if (fsrsInfoLabel != null) fsrsInfoLabel.setText("Gagal muat model FSRS: " + e.getMessage());
         }
     }
 
@@ -284,6 +320,28 @@ public class KontrolerInspekturBasisData implements Initializable {
                 statusLabel.setText("Kesalahan Query: " + e.getMessage());
                 statusLabel.setStyle("-fx-text-fill: #ba1a1a;");
             }
+        }
+    }
+
+    private void latihFsrs() {
+        if (layananPelatihanFSRS == null) {
+            if (fsrsInfoLabel != null) fsrsInfoLabel.setText("Layanan FSRS belum siap");
+            return;
+        }
+        try {
+            PelatihFSRSKonfigurasi konfigurasi = PelatihFSRSKonfigurasi.bawaan();
+            HasilPelatihanFSRS hasil = layananPelatihanFSRS.latihDanSimpan(konfigurasi);
+            if (fsrsInfoLabel != null) {
+                fsrsInfoLabel.setText("Model baru disimpan (" + hasil.getBobotTerbaik().length + " bobot)");
+            }
+            if (fsrsLossLabel != null) {
+                fsrsLossLabel.setText(String.format("Loss: %.4f", hasil.getLossRataRata()));
+            }
+            if (fsrsAkurasiLabel != null) {
+                fsrsAkurasiLabel.setText(String.format("Akurasi: %.2f%%", hasil.getAccuracy() * 100.0));
+            }
+        } catch (Exception e) {
+            if (fsrsInfoLabel != null) fsrsInfoLabel.setText("Gagal melatih FSRS: " + e.getMessage());
         }
     }
 }

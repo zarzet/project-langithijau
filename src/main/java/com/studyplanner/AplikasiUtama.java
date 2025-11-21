@@ -1,8 +1,11 @@
 package com.studyplanner;
 
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
+import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.layanan.LayananPelatihanFSRS;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,6 +38,9 @@ public class AplikasiUtama extends Application {
         DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", false);
 
         stage.show();
+
+        // Latihan FSRS otomatis di background (non-blocking UI).
+        Platform.runLater(this::latihFsrsOtomatis);
     }
 
     public static Stage getPrimaryStage() {
@@ -43,5 +49,24 @@ public class AplikasiUtama extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void latihFsrsOtomatis() {
+        new Thread(() -> {
+            try {
+                ManajerBasisData manajerBasisData = new ManajerBasisData();
+                LayananPelatihanFSRS layananPelatihanFSRS = new LayananPelatihanFSRS(manajerBasisData);
+                LayananPelatihanFSRS.HasilLatihOtomatis hasil = layananPelatihanFSRS.latihJikaPerlu();
+
+                if (hasil.dilakukan()) {
+                    System.out.println("[FSRS] Latihan otomatis selesai. Loss=" + hasil.loss() +
+                            ", Akurasi=" + (hasil.akurasi() * 100.0) + "%, data=" + hasil.jumlahItem() + " item");
+                } else {
+                    System.out.println("[FSRS] Latihan otomatis dilewati: " + hasil.alasan());
+                }
+            } catch (Exception e) {
+                System.err.println("[FSRS] Latihan otomatis gagal: " + e.getMessage());
+            }
+        }, "fsrs-auto-train").start();
     }
 }

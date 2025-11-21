@@ -1,6 +1,7 @@
 package com.studyplanner.model;
 
 import java.time.LocalDate;
+import com.studyplanner.algoritma.AlgoritmaFSRS;
 
 public class Topik {
     private int id;
@@ -15,6 +16,10 @@ public class Topik {
     private double faktorKemudahan;
     private int interval;
     private boolean dikuasai;
+    private double stabilitasFsrs;
+    private double kesulitanFsrs;
+    private double retensiDiinginkan;
+    private double peluruhanFsrs;
 
     public Topik() {
         this.prioritas = 3;
@@ -23,6 +28,10 @@ public class Topik {
         this.faktorKemudahan = 2.5;
         this.interval = 1;
         this.dikuasai = false;
+        this.stabilitasFsrs = 0.0;
+        this.kesulitanFsrs = 0.0;
+        this.retensiDiinginkan = 0.9;
+        this.peluruhanFsrs = AlgoritmaFSRS.PARAMETER_BAWAAN[20];
     }
 
     public Topik(int id, int idMataKuliah, String nama, String deskripsi) {
@@ -127,6 +136,38 @@ public class Topik {
 
     public void setDikuasai(boolean dikuasai) {
         this.dikuasai = dikuasai;
+    }
+
+    public double getStabilitasFsrs() {
+        return stabilitasFsrs;
+    }
+
+    public void setStabilitasFsrs(double stabilitasFsrs) {
+        this.stabilitasFsrs = stabilitasFsrs;
+    }
+
+    public double getKesulitanFsrs() {
+        return kesulitanFsrs;
+    }
+
+    public void setKesulitanFsrs(double kesulitanFsrs) {
+        this.kesulitanFsrs = kesulitanFsrs;
+    }
+
+    public double getRetensiDiinginkan() {
+        return retensiDiinginkan;
+    }
+
+    public void setRetensiDiinginkan(double retensiDiinginkan) {
+        this.retensiDiinginkan = retensiDiinginkan;
+    }
+
+    public double getPeluruhanFsrs() {
+        return peluruhanFsrs;
+    }
+
+    public void setPeluruhanFsrs(double peluruhanFsrs) {
+        this.peluruhanFsrs = peluruhanFsrs;
     }
 
     @Override

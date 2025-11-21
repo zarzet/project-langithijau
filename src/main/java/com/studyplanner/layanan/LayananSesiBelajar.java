@@ -135,8 +135,7 @@ public class LayananSesiBelajar {
         daoSesiBelajar.tandaiSelesai(idSesi, ratingPerforma, catatan);
 
         // Update spaced repetition untuk topik terkait
-        // Konversi rating 1-5 ke nilai kualitas SM-2 (0-5)
-        // Rating 1 (buruk) = kualitas 1, Rating 5 (sempurna) = kualitas 5
+        // Konversi rating 1-5 ke rating jawaban FSRS (1-4)
         int nilaiKualitas = ratingPerforma;
         layananTopik.prosesHasilReview(sesi.getIdTopik(), nilaiKualitas);
     }

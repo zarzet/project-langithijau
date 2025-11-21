@@ -40,6 +40,13 @@
             <version>3.51.0.0</version>
         </dependency>
 
+        <!-- EJML untuk operasi matriks/numerik murni Java -->
+        <dependency>
+            <groupId>org.ejml</groupId>
+            <artifactId>ejml-simple</artifactId>
+            <version>0.43.1</version>
+        </dependency>
+
         <!-- JSON Processing -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -81,6 +88,13 @@
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-fontawesome5-pack</artifactId>
             <version>${ikonli.version}</version>
+        </dependency>
+
+        <!-- EJML untuk operasi matriks/numerik murni Java -->
+        <dependency>
+            <groupId>org.ejml</groupId>
+            <artifactId>ejml-simple</artifactId>
+            <version>0.43.1</version>
         </dependency>
     </dependencies>
 

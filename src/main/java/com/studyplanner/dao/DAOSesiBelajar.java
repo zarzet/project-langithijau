@@ -220,6 +220,27 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
     }
 
     /**
+     * Mengambil semua sesi yang sudah selesai dan memiliki rating performa (1-5).
+     */
+    public List<SesiBelajar> ambilSesiSelesaiDenganRating() throws SQLException {
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.selesai = 1 AND s.rating_performa BETWEEN 1 AND 5 " +
+                "ORDER BY s.id_topik, COALESCE(s.selesai_pada, s.tanggal_jadwal)";
+        List<SesiBelajar> daftarSesi = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                daftarSesi.add(mapRowKeSesiBelajar(rs));
+            }
+        }
+
+        return daftarSesi;
+    }
+
+    /**
      * Mengambil sesi belajar berdasarkan mata kuliah ID.
      *
      * @param mataKuliahId ID mata kuliah
