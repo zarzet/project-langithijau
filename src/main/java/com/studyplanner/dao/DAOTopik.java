@@ -21,8 +21,9 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
 
     @Override
     public Integer simpan(Topik topik) throws SQLException {
-        String sql = "INSERT INTO topik (id_mata_kuliah, nama, deskripsi, prioritas, tingkat_kesulitan) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO topik (id_mata_kuliah, nama, deskripsi, prioritas, tingkat_kesulitan, " +
+                     "stabilitas_fsrs, kesulitan_fsrs, retensi_diinginkan, peluruhan_fsrs) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -32,6 +33,10 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
             pstmt.setString(3, topik.getDeskripsi());
             pstmt.setInt(4, topik.getPrioritas());
             pstmt.setInt(5, topik.getTingkatKesulitan());
+            pstmt.setDouble(6, topik.getStabilitasFsrs());
+            pstmt.setDouble(7, topik.getKesulitanFsrs());
+            pstmt.setDouble(8, topik.getRetensiDiinginkan());
+            pstmt.setDouble(9, topik.getPeluruhanFsrs());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -148,7 +153,8 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
     public boolean perbarui(Topik topik) throws SQLException {
         String sql = "UPDATE topik SET nama = ?, deskripsi = ?, prioritas = ?, tingkat_kesulitan = ?, " +
                      "tanggal_belajar_pertama = ?, tanggal_ulasan_terakhir = ?, jumlah_ulasan = ?, " +
-                     "faktor_kemudahan = ?, interval = ?, dikuasai = ? WHERE id = ?";
+                     "faktor_kemudahan = ?, interval = ?, stabilitas_fsrs = ?, kesulitan_fsrs = ?, " +
+                     "retensi_diinginkan = ?, peluruhan_fsrs = ?, dikuasai = ? WHERE id = ?";
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -162,8 +168,12 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
             pstmt.setInt(7, topik.getJumlahUlasan());
             pstmt.setDouble(8, topik.getFaktorKemudahan());
             pstmt.setInt(9, topik.getInterval());
-            pstmt.setBoolean(10, topik.isDikuasai());
-            pstmt.setInt(11, topik.getId());
+            pstmt.setDouble(10, topik.getStabilitasFsrs());
+            pstmt.setDouble(11, topik.getKesulitanFsrs());
+            pstmt.setDouble(12, topik.getRetensiDiinginkan());
+            pstmt.setDouble(13, topik.getPeluruhanFsrs());
+            pstmt.setBoolean(14, topik.isDikuasai());
+            pstmt.setInt(15, topik.getId());
 
             return pstmt.executeUpdate() > 0;
         }
@@ -177,13 +187,20 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
      * @param tanggalUlasanTerakhir Tanggal ulasan terakhir
      * @param faktorKemudahanBaru Faktor kemudahan baru
      * @param jumlahUlasanBaru Jumlah ulasan baru
+     * @param stabilitasFsrs Stabilitas memori terbaru
+     * @param kesulitanFsrs Kesulitan memori terbaru
+     * @param retensiDiinginkan Target retensi
+     * @param peluruhanFsrs Parameter peluruhan
      * @return true jika berhasil diperbarui
      * @throws SQLException jika terjadi kesalahan database
      */
     public boolean perbaruiDataSpacedRepetition(int topikId, int intervalBaru, LocalDate tanggalUlasanTerakhir,
-                                                 double faktorKemudahanBaru, int jumlahUlasanBaru) throws SQLException {
+                                                double faktorKemudahanBaru, int jumlahUlasanBaru,
+                                                double stabilitasFsrs, double kesulitanFsrs,
+                                                double retensiDiinginkan, double peluruhanFsrs) throws SQLException {
         String sql = "UPDATE topik SET interval = ?, tanggal_ulasan_terakhir = ?, " +
-                     "faktor_kemudahan = ?, jumlah_ulasan = ? WHERE id = ?";
+                     "faktor_kemudahan = ?, jumlah_ulasan = ?, stabilitas_fsrs = ?, kesulitan_fsrs = ?, " +
+                     "retensi_diinginkan = ?, peluruhan_fsrs = ? WHERE id = ?";
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -192,7 +209,11 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
             pstmt.setDate(2, Date.valueOf(tanggalUlasanTerakhir));
             pstmt.setDouble(3, faktorKemudahanBaru);
             pstmt.setInt(4, jumlahUlasanBaru);
-            pstmt.setInt(5, topikId);
+            pstmt.setDouble(5, stabilitasFsrs);
+            pstmt.setDouble(6, kesulitanFsrs);
+            pstmt.setDouble(7, retensiDiinginkan);
+            pstmt.setDouble(8, peluruhanFsrs);
+            pstmt.setInt(9, topikId);
 
             return pstmt.executeUpdate() > 0;
         }
@@ -341,6 +362,13 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
         topik.setFaktorKemudahan(rs.getDouble("faktor_kemudahan"));
         topik.setInterval(rs.getInt("interval"));
         topik.setDikuasai(rs.getBoolean("dikuasai"));
+        try {
+            topik.setStabilitasFsrs(rs.getDouble("stabilitas_fsrs"));
+            topik.setKesulitanFsrs(rs.getDouble("kesulitan_fsrs"));
+            topik.setRetensiDiinginkan(rs.getDouble("retensi_diinginkan"));
+            topik.setPeluruhanFsrs(rs.getDouble("peluruhan_fsrs"));
+        } catch (SQLException ignored) {
+        }
 
         return topik;
     }

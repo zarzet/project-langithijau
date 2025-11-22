@@ -67,6 +67,10 @@ public class ManajerBasisData {
                         jumlah_ulasan INTEGER DEFAULT 0,
                         faktor_kemudahan REAL DEFAULT 2.5,
                         interval INTEGER DEFAULT 1,
+                        stabilitas_fsrs REAL DEFAULT 0,
+                        kesulitan_fsrs REAL DEFAULT 0,
+                        retensi_diinginkan REAL DEFAULT 0.9,
+                        peluruhan_fsrs REAL DEFAULT 0.1542,
                         dikuasai BOOLEAN DEFAULT 0,
                         dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (id_mata_kuliah) REFERENCES mata_kuliah(id) ON DELETE CASCADE
@@ -114,6 +118,11 @@ public class ManajerBasisData {
             stmt.execute(buatTabelJadwalUjian);
             stmt.execute(buatTabelSesiBelajar);
         }
+
+        tambahKolomJikaBelumAda("topik", "stabilitas_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda("topik", "kesulitan_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda("topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
+        tambahKolomJikaBelumAda("topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
     }
 
     private void catatKueri(String sql) {
@@ -258,6 +267,14 @@ public class ManajerBasisData {
         topik.setFaktorKemudahan(rs.getDouble("faktor_kemudahan"));
         topik.setInterval(rs.getInt("interval"));
         topik.setDikuasai(rs.getBoolean("dikuasai"));
+        try {
+            topik.setStabilitasFsrs(rs.getDouble("stabilitas_fsrs"));
+            topik.setKesulitanFsrs(rs.getDouble("kesulitan_fsrs"));
+            topik.setRetensiDiinginkan(rs.getDouble("retensi_diinginkan"));
+            topik.setPeluruhanFsrs(rs.getDouble("peluruhan_fsrs"));
+        } catch (SQLException ignored) {
+            // kolom baru mungkin belum ada pada DB lama
+        }
 
         return topik;
     }
@@ -389,6 +406,26 @@ public class ManajerBasisData {
         catatKueri("[MANUAL] " + sql);
         try (Statement stmt = koneksi.createStatement()) {
             stmt.executeUpdate(sql);
+        }
+    }
+
+    private void tambahKolomJikaBelumAda(String namaTabel, String namaKolom, String definisi)
+            throws SQLException {
+        String sqlCek = "PRAGMA table_info(" + namaTabel + ")";
+        boolean sudahAda = false;
+        try (Statement stmt = koneksi.createStatement(); ResultSet rs = stmt.executeQuery(sqlCek)) {
+            while (rs.next()) {
+                if (namaKolom.equalsIgnoreCase(rs.getString("name"))) {
+                    sudahAda = true;
+                    break;
+                }
+            }
+        }
+
+        if (!sudahAda) {
+            try (Statement stmt = koneksi.createStatement()) {
+                stmt.execute("ALTER TABLE " + namaTabel + " ADD COLUMN " + namaKolom + " " + definisi);
+            }
         }
     }
 

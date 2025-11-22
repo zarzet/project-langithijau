@@ -2,55 +2,34 @@ package com.studyplanner.algoritma;
 
 import com.studyplanner.model.Topik;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class PengulanganBerjarak {
 
+    private static final AlgoritmaSM2Zarz FSRS = new AlgoritmaSM2Zarz();
+
     public static LocalDate hitungTanggalUlasanBerikutnya(Topik topik, int ratingPerforma) {
-        if (ratingPerforma < 0)
-            ratingPerforma = 0;
-        if (ratingPerforma > 5)
-            ratingPerforma = 5;
+        int ratingFsrs = AlgoritmaSM2Zarz.petaRatingFsrs(ratingPerforma);
+        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
+                ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
+                : 0;
 
-        double faktorKemudahanSaatIni = topik.getFaktorKemudahan();
-        int intervalSaatIni = topik.getInterval();
-        int jumlahUlasan = topik.getJumlahUlasan();
+        AlgoritmaSM2Zarz.OpsiInterval opsi = FSRS.hitungKeadaanBerikutnya(
+                kondisi,
+                targetRetensi(topik),
+                hariSejakUlasan);
+        AlgoritmaSM2Zarz.KeadaanKartu hasil = opsi.pilih(ratingFsrs);
 
-        double faktorKemudahanBaru = faktorKemudahanSaatIni
-                + (0.1 - (5 - ratingPerforma) * (0.08 + (5 - ratingPerforma) * 0.02));
-
-        if (faktorKemudahanBaru < 1.3) {
-            faktorKemudahanBaru = 1.3;
-        }
-
-        topik.setFaktorKemudahan(faktorKemudahanBaru);
-
-        int intervalBaru;
-
-        if (ratingPerforma < 3) {
-            intervalBaru = 1;
-            topik.setJumlahUlasan(0);
-        } else {
-            if (jumlahUlasan == 0) {
-                intervalBaru = 1;
-            } else if (jumlahUlasan == 1) {
-                intervalBaru = 6;
-            } else {
-                intervalBaru = (int) Math.ceil(intervalSaatIni * faktorKemudahanBaru);
-            }
-
-            topik.setJumlahUlasan(jumlahUlasan + 1);
-        }
-
+        int intervalBaru = Math.max(1, (int) Math.round(hasil.interval()));
+        topik.setStabilitasFsrs(hasil.kondisiMemori().stabilitas());
+        topik.setKesulitanFsrs(hasil.kondisiMemori().kesulitan());
+        topik.setRetensiDiinginkan(targetRetensi(topik));
         topik.setInterval(intervalBaru);
-
-        if (jumlahUlasan >= 5 && ratingPerforma >= 4 && intervalBaru >= 30) {
-            topik.setDikuasai(true);
-        }
-
-        LocalDate tanggalUlasanBerikutnya = LocalDate.now().plusDays(intervalBaru);
         topik.setTanggalUlasanTerakhir(LocalDate.now());
+        topik.setJumlahUlasan(topik.getJumlahUlasan() + 1);
 
-        return tanggalUlasanBerikutnya;
+        return LocalDate.now().plusDays(intervalBaru);
     }
 
     public static boolean perluUlasanHariIni(Topik topik) {
@@ -62,21 +41,36 @@ public class PengulanganBerjarak {
             return false;
         }
 
-        if (topik.getTanggalUlasanTerakhir() == null) {
-            LocalDate tanggalHarusUlas = topik.getTanggalBelajarPertama().plusDays(1);
-            return !LocalDate.now().isBefore(tanggalHarusUlas);
+        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        if (kondisi == null) {
+            if (topik.getTanggalUlasanTerakhir() == null) {
+                LocalDate tanggalHarusUlas = topik.getTanggalBelajarPertama().plusDays(1);
+                return !LocalDate.now().isBefore(tanggalHarusUlas);
+            }
+            LocalDate tanggalUlasanBerikutnya = topik.getTanggalUlasanTerakhir().plusDays(topik.getInterval());
+            return !LocalDate.now().isBefore(tanggalUlasanBerikutnya);
         }
 
-        LocalDate tanggalUlasanBerikutnya = topik.getTanggalUlasanTerakhir().plusDays(topik.getInterval());
-
-        return !LocalDate.now().isBefore(tanggalUlasanBerikutnya);
+        long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
+                ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
+                : 0;
+        double retrievability = FSRS.hitungRetrievability(kondisi, hariSejakUlasan);
+        return retrievability <= targetRetensi(topik);
     }
 
     public static double hitungPrioritasTopik(Topik topik, LocalDate tanggalUjian) {
         double prioritas = 0.0;
 
-        prioritas += (topik.getPrioritas() / 5.0) * 30;
+        double targetRetensi = targetRetensi(topik);
+        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
+                ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
+                : 0;
+        double retrievability = kondisi != null
+                ? FSRS.hitungRetrievability(kondisi, hariSejakUlasan)
+                : 0.0;
 
+        prioritas += (topik.getPrioritas() / 5.0) * 25;
         prioritas += (topik.getTingkatKesulitan() / 5.0) * 20;
 
         if (tanggalUjian != null) {
@@ -108,9 +102,8 @@ public class PengulanganBerjarak {
             prioritas += 5;
         }
 
-        if (perluUlasanHariIni(topik)) {
-            prioritas += 15;
-        }
+        double jarakRetensi = Math.max(0.0, targetRetensi - retrievability);
+        prioritas += jarakRetensi * 50;
 
         if (topik.isDikuasai()) {
             prioritas -= 20;
@@ -134,5 +127,26 @@ public class PengulanganBerjarak {
             int tahun = hari / 365;
             return tahun + " tahun lagi";
         }
+    }
+
+    private static AlgoritmaSM2Zarz.KondisiMemori ambilKondisi(Topik topik) {
+        if (topik.getStabilitasFsrs() > 0 && topik.getKesulitanFsrs() > 0) {
+            return new AlgoritmaSM2Zarz.KondisiMemori(topik.getStabilitasFsrs(), topik.getKesulitanFsrs());
+        }
+        if (topik.getJumlahUlasan() > 0) {
+            try {
+                return FSRS.kondisiAwalDariSm2(
+                        topik.getFaktorKemudahan(),
+                        topik.getInterval(),
+                        targetRetensi(topik));
+            } catch (IllegalArgumentException ignored) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static double targetRetensi(Topik topik) {
+        return topik.getRetensiDiinginkan() > 0 ? topik.getRetensiDiinginkan() : 0.9;
     }
 }
