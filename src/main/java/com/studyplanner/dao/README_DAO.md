@@ -52,7 +52,7 @@ public interface DAOBase<T, ID> {
   - Pencarian berdasarkan nama/kode
 - ✅ **DAOTopik.java** - DAO untuk topik dengan fitur:
   - CRUD topik
-  - Spaced repetition (SM-2 algorithm)
+  - Spaced repetition (FSRS)
   - Filter berdasarkan kesulitan
 
 - ✅ **DAOJadwalUjian.java** - DAO untuk jadwal ujian dengan fitur:
@@ -96,7 +96,7 @@ private Timestamp dibuatPada; // Tanggal dibuat
 ```java
 private int mataKuliahId;              // Foreign key
 private int estimasiDurasiMenit;       // Estimasi waktu belajar
-private int intervalUlasan;            // Interval SM-2
+private int intervalUlasan;            // Interval rekomendasi algoritma
 private LocalDate tanggalUlasanBerikutnya; // Tanggal ulasan berikutnya
 private int jumlahPengulangan;         // Jumlah review yang sudah dilakukan
 private Timestamp dibuatPada;          // Tanggal dibuat

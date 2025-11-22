@@ -54,3 +54,6 @@ tokens/
 
 # Screenshots
 Screenshot*.png
+
+# Reference implementation (FSRS Rust)
+referensi/

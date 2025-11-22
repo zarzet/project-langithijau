@@ -6,7 +6,6 @@ import com.studyplanner.utilitas.PembuatIkon;
 import com.studyplanner.utilitas.UtilUI;
 import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.algoritma.PembuatJadwal;
-import com.studyplanner.algoritma.PengulanganBerjarak;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.tampilan.JamAnalog;
 import com.studyplanner.tampilan.WidgetRuntutanBelajar;
@@ -531,22 +530,13 @@ public class KontrolerUtama implements Initializable {
                         session.setRatingPerforma(rating);
                         layananSesiBelajar.perbarui(session);
 
-                        Topik topic = layananTopik.ambilBerdasarkanId(session.getIdTopik());
-                        if (topic != null) {
-                            if (topic.getTanggalBelajarPertama() == null) {
-                                topic.setTanggalBelajarPertama(LocalDate.now());
-                            }
+                        LocalDate nextReview = layananTopik.prosesHasilReview(
+                                session.getIdTopik(),
+                                rating);
 
-                            LocalDate nextReview = PengulanganBerjarak.hitungTanggalUlasanBerikutnya(
-                                    topic,
-                                    rating);
-
-                            layananTopik.perbarui(topic);
-
-                            UtilUI.tampilkanInfo(
-                                    "Sesi berhasil diselesaikan!\nReview berikutnya: " +
-                                            nextReview);
-                        }
+                        UtilUI.tampilkanInfo(
+                                "Sesi berhasil diselesaikan!\nReview berikutnya: " +
+                                        nextReview);
                     } catch (SQLException e) {
                         UtilUI.tampilkanKesalahan("Gagal menyimpan rating: " + e.getMessage());
                     }
