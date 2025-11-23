@@ -1,0 +1,88 @@
+/* ============================================
+   TABLES.CSS - Table View Styles
+   ============================================ */
+
+/* TABLE VIEW */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.table-view .column-header {
+    -fx-background-color: #ecedf4;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-font-size: 11px;
+    -fx-padding: 12;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: -color-on-surface;
+    -fx-padding: 12;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: -color-surface-container;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #e9eaf1;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #c9e6ff;
+    -fx-text-fill: #001e30;
+}
+
+.table-cell {
+    -fx-text-fill: -color-on-surface;
+    -fx-padding: 12;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #001e30;
+}
+
+/* ============================================
+   DARK MODE - TABLES
+   ============================================ */
+
+.dark-mode .table-view {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .table-view .column-header {
+    -fx-background-color: #0f1419;
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .table-row-cell {
+    -fx-background-color: #171c21;
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .table-row-cell:odd {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .table-row-cell:hover {
+    -fx-background-color: #1f252a;
+}
+
+.dark-mode .table-row-cell:selected {
+    -fx-background-color: #004c6f;
+    -fx-text-fill: #c9e6ff;
+}
+
+.dark-mode .table-cell {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .table-row-cell:selected .table-cell {
+    -fx-text-fill: #c9e6ff;
+}

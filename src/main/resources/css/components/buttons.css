@@ -1,0 +1,291 @@
+/* ============================================
+   BUTTONS.CSS - All Button Styles
+   ============================================ */
+
+/* BASE BUTTON */
+.button {
+    -fx-background-radius: 28;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-padding: 10 24;
+    -fx-border-width: 0;
+}
+
+/* FILLED BUTTON (PRIMARY) */
+.btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+.btn-primary:hover {
+    -fx-background-color: #005580;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: #004a70;
+}
+
+/* FILLED TONAL BUTTON (SECONDARY) */
+.btn-secondary {
+    -fx-background-color: -color-primary-container;
+    -fx-text-fill: #0b1d29;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #c0d8eb;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.btn-secondary:pressed {
+    -fx-background-color: #aecce0;
+}
+
+/* SUCCESS BUTTON (TERTIARY) */
+.btn-success {
+    -fx-background-color: #62597c;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+.btn-success:hover {
+    -fx-background-color: #574f6f;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.btn-success:pressed {
+    -fx-background-color: #4d4563;
+}
+
+/* DANGER BUTTON */
+.btn-danger {
+    -fx-background-color: -color-danger;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+.btn-danger:hover {
+    -fx-background-color: #a51717;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.btn-danger:pressed {
+    -fx-background-color: #901414;
+}
+
+/* Minimum width for buttons with icons and text */
+.btn-primary,
+.btn-secondary,
+.btn-success,
+.btn-danger {
+    -fx-min-width: 100px;
+    -fx-pref-width: -1;
+}
+
+/* TEXT BUTTON */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-primary;
+    -fx-font-size: 18px;
+    -fx-padding: 8 12;
+    -fx-background-radius: 12;
+    -fx-effect: none;
+}
+
+.btn-icon:hover {
+    -fx-background-color: rgba(0, 100, 149, 0.08);
+}
+
+.btn-icon:pressed {
+    -fx-background-color: rgba(0, 100, 149, 0.12);
+}
+
+/* THEME TOGGLE BUTTON */
+.theme-toggle {
+    -fx-background-color: -color-surface-variant;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+}
+
+.theme-toggle:hover {
+    -fx-background-color: #d4d5dc;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+}
+
+/* NAVIGATION ARROW BUTTONS */
+.nav-arrow-btn {
+    -fx-background-color: -color-surface-container;
+    -fx-text-fill: -color-primary;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-min-width: 40px;
+    -fx-pref-width: 40px;
+}
+
+.nav-arrow-btn:hover {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-border-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.2), 4, 0, 0, 2);
+}
+
+.nav-arrow-btn:pressed {
+    -fx-background-color: #00538b;
+    -fx-border-color: #00538b;
+}
+
+/* BUTTON ICONS */
+.btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+.btn-secondary .ikonli-font-icon {
+    -fx-icon-color: #0b1d29;
+}
+
+.btn-success .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+.btn-danger .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+.theme-toggle .ikonli-font-icon {
+    -fx-icon-color: -color-on-surface-variant;
+}
+
+.theme-toggle:hover .ikonli-font-icon {
+    -fx-icon-color: -color-on-surface;
+}
+
+/* ============================================
+   DARK MODE - BUTTONS
+   ============================================ */
+
+.dark-mode .btn-primary {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .btn-primary:hover {
+    -fx-background-color: #a5d6ff;
+}
+
+.dark-mode .btn-primary:pressed {
+    -fx-background-color: #bce0ff;
+}
+
+.dark-mode .btn-secondary {
+    -fx-background-color: #384956;
+    -fx-text-fill: -color-primary-container;
+}
+
+.dark-mode .btn-secondary:hover {
+    -fx-background-color: #425563;
+}
+
+.dark-mode .btn-secondary:pressed {
+    -fx-background-color: #4d6170;
+}
+
+.dark-mode .btn-success {
+    -fx-background-color: #ccc0e8;
+    -fx-text-fill: #342e4b;
+}
+
+.dark-mode .btn-success:hover {
+    -fx-background-color: #d6cbec;
+}
+
+.dark-mode .btn-success:pressed {
+    -fx-background-color: #e0d7f0;
+}
+
+.dark-mode .btn-danger {
+    -fx-background-color: #ffb4ab;
+    -fx-text-fill: #690005;
+}
+
+.dark-mode .btn-danger:hover {
+    -fx-background-color: #ffc1ba;
+}
+
+.dark-mode .btn-danger:pressed {
+    -fx-background-color: #ffcec9;
+}
+
+.dark-mode .btn-icon {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .btn-icon:hover {
+    -fx-background-color: rgba(141, 205, 255, 0.08);
+}
+
+.dark-mode .btn-icon:pressed {
+    -fx-background-color: rgba(141, 205, 255, 0.12);
+}
+
+.dark-mode .theme-toggle {
+    -fx-background-color: #30353b;
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .theme-toggle:hover {
+    -fx-background-color: #3a3f45;
+}
+
+.dark-mode .nav-arrow-btn {
+    -fx-background-color: #171c21;
+    -fx-text-fill: #8dcdff;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .nav-arrow-btn:hover {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+    -fx-border-color: #8dcdff;
+    -fx-effect: dropshadow(gaussian, rgba(141, 205, 255, 0.3), 6, 0, 0, 2);
+}
+
+.dark-mode .nav-arrow-btn:pressed {
+    -fx-background-color: #a5d6ff;
+    -fx-border-color: #a5d6ff;
+}
+
+/* Dark Mode Button Icons */
+.dark-mode .btn-primary .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
+.dark-mode .btn-secondary .ikonli-font-icon {
+    -fx-icon-color: -color-primary-container;
+}
+
+.dark-mode .btn-success .ikonli-font-icon {
+    -fx-icon-color: #342e4b;
+}
+
+.dark-mode .btn-danger .ikonli-font-icon {
+    -fx-icon-color: #690005;
+}
+
+.dark-mode .theme-toggle .ikonli-font-icon {
+    -fx-icon-color: -color-outline-variant;
+}
+
+.dark-mode .theme-toggle:hover .ikonli-font-icon {
+    -fx-icon-color: -color-surface-variant;
+}

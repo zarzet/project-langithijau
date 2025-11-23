@@ -2,7 +2,7 @@
 
 Aplikasi desktop untuk membantu mahasiswa mengelola jadwal belajar dengan teknik **Spaced Repetition (SM-2)** dan sistem pembelajaran adaptif.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Cara Tercepat (Windows)
 1. **Double-click** file `run.bat`
@@ -32,22 +32,41 @@ mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiUtama"
 mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiInspekturDB"
 ```
 
-## 📋 Requirements
+## Requirements
 
 - **Java Development Kit (JDK) 25+**
 - **Maven 3.9+**
 - **JavaFX 25**
+- **Google OAuth 2.0 Credentials** (untuk login Google)
 
-## ✨ Key Features
+## Setup Google OAuth (Wajib untuk Developer)
 
-### 🔐 Login & Authentication
+Sebelum menjalankan aplikasi, Anda perlu setup Google OAuth credentials:
+
+1. **Buat Google Cloud Project** di [Google Cloud Console](https://console.cloud.google.com/)
+2. **Enable Google+ API**
+3. **Buat OAuth 2.0 Client ID** (Desktop application)
+4. **Download credential JSON**
+5. **Copy credential:**
+   ```bash
+   cp src/main/resources/credentials.json.example src/main/resources/credentials.json
+   # Lalu isi dengan credential dari Google Cloud Console
+   ```
+
+**Panduan lengkap**: Lihat [DEPLOYMENT.md](DEPLOYMENT.md)
+
+**PENTING**: File `credentials.json` tidak di-commit ke Git untuk keamanan!
+
+## Key Features
+
+### Login & Authentication
 - Login dengan Google OAuth 2.0
 - Login dengan Username & Password
 - Register akun baru
 - Password encryption (SHA-256)
 - Session persistence
 
-### 📊 Dashboard
+### Dashboard
 - Widget runtutan belajar (streak counter)
 - Widget waktu belajar hari ini
 - Widget ulasan berikutnya
@@ -55,44 +74,44 @@ mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiInspekturDB"
 - Sidebar collapsible dengan animasi smooth
 - Dark mode / Light mode toggle
 
-### 📚 Mata Kuliah
+### Mata Kuliah
 - Tambah, edit, hapus mata kuliah
 - Kelola topik per mata kuliah
 - Sistem spaced repetition otomatis
 - Tracking progress per topik
 
-### 📅 Jadwal
+### Jadwal
 - View jadwal mingguan
 - Calendar picker dengan navigasi
 - Timeline schedule cards
 - Auto-generate jadwal belajar dengan algoritma SM-2
 
-### ⚙️ Settings
+### Settings
 - Toggle dark mode
 - Durasi belajar default
 - Pengingat belajar
 - Backup & export data
 - About aplikasi
 
-### 🔍 Inspektur Database
+### Inspektur Database
 - View semua tabel
 - Lihat struktur & data
 - Query SQL custom
 - Export data
 - View username & password (ter-hash)
 
-## 🎨 Design System
+## Design System
 
 Aplikasi ini menggunakan **Material Design 3** dengan:
-- ✨ Modern card-based layouts
-- 🎭 Smooth animations & transitions
-- 📐 Elevation & shadows untuk depth
-- 🎨 Color tokens untuk konsistensi visual
-- 📝 Responsive typography dengan Google Sans
-- 🌙 Full dark mode support
-- 🖼️ Custom window decorations
+- Modern card-based layouts
+- Smooth animations & transitions
+- Elevation & shadows untuk depth
+- Color tokens untuk konsistensi visual
+- Responsive typography dengan Google Sans
+- Full dark mode support
+- Custom window decorations
 
-## 🗄️ Database
+## Database
 
 **Database**: `data/study_planner.db` (SQLite)
 
@@ -103,7 +122,7 @@ Aplikasi ini menggunakan **Material Design 3** dengan:
 - `jadwal_ujian` - Exam schedules
 - `sesi_belajar` - Study sessions with spaced repetition
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 src/
@@ -145,15 +164,15 @@ src/
 └── pom.xml                                 → Maven configuration
 ```
 
-## 🔐 Security
+## Security
 
-- ✅ Password di-hash dengan SHA-256
-- ✅ Google OAuth 2.0 untuk authentication
-- ✅ Session tokens untuk persistence
-- ✅ Validasi input di semua form
-- ✅ SQL injection protection dengan PreparedStatement
+- Password di-hash dengan SHA-256
+- Google OAuth 2.0 untuk authentication
+- Session tokens untuk persistence
+- Validasi input di semua form
+- SQL injection protection dengan PreparedStatement
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Java 25** - Latest LTS
 - **JavaFX 25** - Modern UI framework
@@ -163,13 +182,13 @@ src/
 - **Ikonli Material Design 2** - Material icons
 - **Google Sans Flex** - Variable font
 
-## 📖 Documentation
+## Documentation
 
 Dokumentasi lengkap tersedia di:
 - `CARA_MENJALANKAN.txt` - Panduan lengkap menjalankan aplikasi
 - `docs/` - Dokumentasi teknis proyek
 
-## 💡 Development Tips
+## Development Tips
 
 1. **Pertama kali**: Gunakan `run.bat` pilih `[1]` (dengan compile)
 2. **Development**: Gunakan pilihan `[2]` (fast mode - lebih cepat)
@@ -177,7 +196,7 @@ Dokumentasi lengkap tersedia di:
 4. **Debug database**: Gunakan `[3]` untuk inspektur database
 5. **Lihat users**: Buka Inspektur DB → Pilih tabel `users`
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### IDE Error (Red Underlines)
 Jika IDE menunjukkan error tapi build success:
@@ -191,10 +210,53 @@ Jika database terkunci:
 - Tutup Inspektur Database
 - Restart aplikasi
 
-## 📝 License
+### Credential Error
+Jika error saat login Google:
+- Pastikan `credentials.json` ada di `src/main/resources/`
+- Pastikan credential valid dari Google Cloud Console
+- Pastikan Google+ API sudah enabled
 
-© 2025 Perencana Belajar Adaptif - Educational Project
+## Deployment & Distribution
+
+### Build Fat JAR (Single File Executable)
+
+```bash
+# Build aplikasi menjadi single JAR file
+mvn clean package
+
+# Hasil: target/adaptive-study-planner-1.0.0.jar
+# Jalankan dengan:
+java -jar target/adaptive-study-planner-1.0.0.jar
+```
+
+### Build Windows Installer
+
+```bash
+# Build installer Windows (.exe)
+mvn clean package
+mvn jpackage:jpackage
+
+# Hasil: target/dist/AdaptiveStudyPlanner-1.0.0.exe
+```
+
+### Untuk Demonstrasi
+
+**Option 1: Video Demo**
+- Record aplikasi saat digunakan
+- Upload ke YouTube
+- Link di README
+
+**Option 2: GitHub Releases**
+- Build Fat JAR atau Installer
+- Upload ke GitHub Releases
+- User download & jalankan
+
+**Panduan lengkap**: Lihat [DEPLOYMENT.md](DEPLOYMENT.md)
+
+## License
+
+Copyright 2025 Perencana Belajar Adaptif - Educational Project
 
 ---
 
-**Dibuat dengan ❤️ menggunakan Material Design 3**
+Built with Material Design 3

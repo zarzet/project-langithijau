@@ -1,0 +1,89 @@
+/* ============================================
+   BASE.CSS - Font, Reset & Typography
+   ============================================ */
+
+/* FONT */
+@font-face {
+    font-family: 'Google Sans';
+    src: url('../fonts/GoogleSansFlex.ttf');
+}
+
+/* GLOBAL RESET & BASE */
+.root {
+    -fx-font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: -color-background;
+    -fx-font-smoothing-type: gray;
+}
+
+.root.dark-mode {
+    -fx-background-color: -color-background;
+}
+
+* {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* TYPOGRAPHY */
+.label {
+    -fx-text-fill: -color-on-surface;
+}
+
+.text-small {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.text-muted {
+    -fx-text-fill: -color-outline;
+}
+
+/* LABELS & TEXT */
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.date-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.stat-title {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-font-weight: 500;
+    -fx-text-transform: uppercase;
+    -fx-letter-spacing: 0.5px;
+}
+
+.stat-number {
+    -fx-font-size: 36px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -color-on-surface;
+}
+
+.progress-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* DARK MODE TYPOGRAPHY */
+.dark-mode .label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .text-small,
+.dark-mode .date-label,
+.dark-mode .stat-title {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .section-title,
+.dark-mode .stat-number,
+.dark-mode .progress-label {
+    -fx-text-fill: -color-surface-variant;
+}

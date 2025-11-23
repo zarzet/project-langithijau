@@ -1,0 +1,419 @@
+/* ============================================
+   CARDS.CSS - All Card Styles
+   ============================================ */
+
+/* BASE CARD */
+.card {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+/* STAT CARD */
+.stat-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+    -fx-border-width: 0;
+}
+
+/* TASK CARD */
+.task-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-padding: 16;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.task-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-color: -color-outline;
+}
+
+.task-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.task-course {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.task-type {
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-padding: 4 12;
+    -fx-background-radius: 8;
+}
+
+.task-duration {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* EXAM CARD */
+.exam-card {
+    -fx-background-color: #ecedf4;
+    -fx-background-radius: 12;
+    -fx-padding: 14;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.exam-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.exam-course {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 500;
+}
+
+.exam-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.exam-days {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-font-weight: 500;
+}
+
+/* SCHEDULE CARD */
+.schedule-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-border-color: -color-surface-variant;
+    -fx-border-radius: 16;
+    -fx-border-width: 0 0 0 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 4, 0, 0, 2);
+}
+
+.schedule-card.completed {
+    -fx-border-color: #10b981;
+}
+
+.schedule-card:hover {
+    -fx-background-color: #f8f9ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+.schedule-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.schedule-course {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.schedule-duration {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* STATUS BADGES */
+.status-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-padding: 6 12;
+    -fx-background-radius: 8;
+}
+
+.status-badge.completed {
+    -fx-background-color: #d1fae5;
+    -fx-text-fill: #065f46;
+}
+
+.status-badge.pending {
+    -fx-background-color: #fef3c7;
+    -fx-text-fill: #92400e;
+}
+
+/* TASK TYPE BADGES */
+.badge-initial_study {
+    -fx-background-color: #c9e6ff;
+    -fx-text-fill: #001e30;
+}
+
+.badge-review {
+    -fx-background-color: -color-primary-container;
+    -fx-text-fill: #0b1d29;
+}
+
+.badge-practice {
+    -fx-background-color: #e8ddff;
+    -fx-text-fill: #1e1835;
+}
+
+/* WEEK CALENDAR CARDS */
+.week-day-card {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 2, 0, 0, 1);
+}
+
+.week-day-card.selected {
+    -fx-background-color: -color-primary;
+}
+
+.week-day-card:hover {
+    -fx-background-color: #e7e9f0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 3, 0, 0, 2);
+}
+
+.week-day-card.selected:hover {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.2), 4, 0, 0, 2);
+}
+
+.day-name-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.week-day-card.selected .day-name-label {
+    -fx-text-fill: white;
+}
+
+.day-number-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-on-surface;
+}
+
+.week-day-card.selected .day-number-label {
+    -fx-text-fill: white;
+}
+
+.today-indicator {
+    -fx-font-size: 16px;
+    -fx-text-fill: -color-primary;
+}
+
+.week-day-card.selected .today-indicator {
+    -fx-text-fill: white;
+}
+
+/* SCHEDULE HEADER */
+.schedule-header {
+    -fx-padding: 24;
+    -fx-background-color: #ffffff;
+}
+
+.schedule-page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.week-calendar-container {
+    -fx-padding: 16 0;
+}
+
+/* SELECTED DATE INFO BOX */
+.selected-date-info {
+    -fx-padding: 12 16;
+    -fx-background-color: #e9eaf1;
+    -fx-background-radius: 12;
+}
+
+.selected-date-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.session-count-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* EMPTY STATE */
+.empty-state-schedule {
+    -fx-padding: 60 40;
+}
+
+.empty-state-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.empty-state-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-outline;
+}
+
+/* ============================================
+   DARK MODE - CARDS
+   ============================================ */
+
+.dark-mode .card,
+.dark-mode .stat-card {
+    -fx-background-color: #171c21;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+}
+
+.dark-mode .task-card {
+    -fx-background-color: #0a0e13;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .task-card:hover {
+    -fx-border-color: #8c9199;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 1, 0, 0, 1);
+}
+
+.dark-mode .exam-card {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .schedule-card {
+    -fx-background-color: #1b2025;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .schedule-card.completed {
+    -fx-border-color: #10b981;
+}
+
+.dark-mode .schedule-card:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .schedule-title,
+.dark-mode .task-title,
+.dark-mode .exam-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .schedule-course,
+.dark-mode .schedule-duration,
+.dark-mode .task-course,
+.dark-mode .task-duration,
+.dark-mode .exam-date,
+.dark-mode .exam-days {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .exam-course {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .status-badge.completed {
+    -fx-background-color: #064e3b;
+    -fx-text-fill: #a7f3d0;
+}
+
+.dark-mode .status-badge.pending {
+    -fx-background-color: #78350f;
+    -fx-text-fill: #fde68a;
+}
+
+.dark-mode .badge-initial_study {
+    -fx-background-color: #004c6f;
+    -fx-text-fill: #c9e6ff;
+}
+
+.dark-mode .badge-review {
+    -fx-background-color: #384956;
+    -fx-text-fill: -color-primary-container;
+}
+
+.dark-mode .badge-practice {
+    -fx-background-color: #4a4563;
+    -fx-text-fill: #e8ddff;
+}
+
+/* Dark Mode - Week Calendar Cards */
+.dark-mode .week-day-card {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .week-day-card.selected {
+    -fx-background-color: #8dcdff;
+}
+
+.dark-mode .week-day-card:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .week-day-card.selected:hover {
+    -fx-background-color: #a5d6ff;
+}
+
+.dark-mode .day-name-label {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .week-day-card.selected .day-name-label {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .day-number-label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .week-day-card.selected .day-number-label {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .today-indicator {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .week-day-card.selected .today-indicator {
+    -fx-text-fill: #00344e;
+}
+
+/* Dark Mode - Schedule Header */
+.dark-mode .schedule-header {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .schedule-page-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+/* Dark Mode - Selected Date Info */
+.dark-mode .selected-date-info {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .selected-date-label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .session-count-label {
+    -fx-text-fill: -color-outline-variant;
+}
+
+/* Dark Mode - Empty State */
+.dark-mode .empty-state-title {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .empty-state-subtitle {
+    -fx-text-fill: #8c9199;
+}

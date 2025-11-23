@@ -20,18 +20,11 @@
             <VBox spacing="8" VBox.vgrow="ALWAYS" style="-fx-padding: 8 0;">
                 <Button fx:id="manageCourseBtn" text="Kelola Mata Kuliah" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
                 <Button fx:id="viewScheduleBtn" text="Lihat Jadwal" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
-                <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="sidebar-btn-primary" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
+                <Button fx:id="generateScheduleBtn" text="Buat Jadwal" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
             </VBox>
 
-            <!-- User Section at Bottom -->
-            <MenuButton fx:id="userMenuBtn" text="Pengguna" styleClass="sidebar-btn" maxWidth="Infinity" mnemonicParsing="false" style="-fx-padding: 12 16;">
-                <items>
-                    <MenuItem fx:id="profileMenuItem" text="Profil Saya"/>
-                    <MenuItem fx:id="settingsMenuItem" text="Pengaturan"/>
-                    <SeparatorMenuItem/>
-                    <MenuItem fx:id="logoutMenuItem" text="Keluar"/>
-                </items>
-            </MenuButton>
+            <!-- Logout Button at Bottom -->
+            <Button fx:id="logoutBtn" text="Keluar" styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT" style="-fx-padding: 12 16;"/>
         </VBox>
     </left>
 
@@ -49,6 +42,15 @@
                         <Label fx:id="welcomeLabel" text="Selamat Datang!" styleClass="section-title" style="-fx-font-size: 28px; -fx-font-weight: 600;"/>
                         <Label fx:id="dateLabel" text="Senin, 20 Oktober 2025" styleClass="date-label" style="-fx-font-size: 14px; -fx-opacity: 0.7;"/>
                     </VBox>
+
+                    <!-- User Profile Section -->
+                    <HBox spacing="12" alignment="CENTER">
+                        <!-- Settings Button -->
+                        <Button fx:id="headerSettingsBtn" styleClass="header-icon-btn" style="-fx-font-size: 20px; -fx-padding: 10;"/>
+                        
+                        <!-- Profile Picture Button -->
+                        <Button fx:id="headerProfileBtn" styleClass="profile-btn" style="-fx-padding: 0; -fx-min-width: 44; -fx-min-height: 44; -fx-max-width: 44; -fx-max-height: 44;"/>
+                    </HBox>
                 </HBox>
 
                 <!-- Stats Overview Cards -->

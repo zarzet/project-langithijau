@@ -1,0 +1,330 @@
+/* ============================================
+   LOGIN.CSS - Login Screen Styles
+   ============================================ */
+
+/* LOGIN ROOT */
+.login-root {
+    -fx-background-color: #fafbff;
+}
+
+.dark-mode .login-root {
+    -fx-background-color: #171c21;
+}
+
+/* LEFT PANEL - BRANDING */
+.login-branding-panel {
+    -fx-background-color: #fafbff;
+}
+
+.dark-mode .login-branding-panel {
+    -fx-background-color: #171c21;
+}
+
+.login-brand-title {
+    -fx-font-size: 34px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .login-brand-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.login-brand-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: -color-outline;
+    -fx-line-spacing: 6px;
+}
+
+.dark-mode .login-brand-subtitle {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.login-feature-text-simple {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-font-weight: 400;
+}
+
+.dark-mode .login-feature-text-simple {
+    -fx-text-fill: -color-outline-variant;
+}
+
+/* RIGHT PANEL - FORMS */
+.login-form-panel {
+    -fx-background-color: #fafbff;
+}
+
+.dark-mode .login-form-panel {
+    -fx-background-color: #171c21;
+}
+
+.login-form-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .login-form-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.login-form-subtitle {
+    -fx-font-size: 15px;
+    -fx-text-fill: -color-outline;
+}
+
+.dark-mode .login-form-subtitle {
+    -fx-text-fill: -color-outline-variant;
+}
+
+/* MODERN TAB PANE */
+.login-tab-pane-modern {
+    -fx-background-color: transparent;
+}
+
+.login-tab-pane-modern .tab-header-area {
+    -fx-padding: 0;
+}
+
+.login-tab-pane-modern .tab-header-background {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.dark-mode .login-tab-pane-modern .tab-header-background {
+    -fx-background-color: #1f252b;
+}
+
+.login-tab-pane-modern .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 14 24;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: transparent;
+}
+
+.login-tab-pane-modern .tab-label {
+    -fx-text-fill: -color-outline;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+}
+
+.login-tab-pane-modern .tab:selected {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -color-primary transparent;
+}
+
+.login-tab-pane-modern .tab:selected .tab-label {
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 600;
+}
+
+.dark-mode .login-tab-pane-modern .tab:selected {
+    -fx-border-color: transparent transparent #8dcdff transparent;
+}
+
+.dark-mode .login-tab-pane-modern .tab:selected .tab-label {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .login-tab-pane-modern .tab-label {
+    -fx-text-fill: -color-outline-variant;
+}
+
+/* TAB CONTENT */
+.tab-description-modern {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-outline;
+}
+
+.dark-mode .tab-description-modern {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.tab-hint-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8c9199;
+}
+
+.dark-mode .tab-hint-text {
+    -fx-text-fill: #8c9199;
+}
+
+/* MODERN FORM */
+.modern-form {
+    -fx-padding: 0;
+}
+
+.modern-form-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .modern-form-label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.modern-text-field {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-color: #e6e9f5;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-padding: 14 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface;
+}
+
+.modern-text-field:focused {
+    -fx-background-color: white;
+    -fx-border-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.1), 8, 0, 0, 2);
+}
+
+.dark-mode .modern-text-field {
+    -fx-background-color: #1f252b;
+    -fx-border-color: #2d3439;
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .modern-text-field:focused {
+    -fx-background-color: #252c32;
+    -fx-border-color: #8dcdff;
+    -fx-effect: dropshadow(gaussian, rgba(141, 205, 255, 0.15), 8, 0, 0, 2);
+}
+
+.modern-text-field:hover {
+    -fx-border-color: -color-outline-variant;
+}
+
+.dark-mode .modern-text-field:hover {
+    -fx-border-color: -color-on-surface-variant;
+}
+
+/* MODERN BUTTONS */
+.btn-google-modern {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-text-fill: -color-on-surface;
+    -fx-font-size: 15px;
+    -fx-font-weight: 500;
+    -fx-padding: 14 24;
+    -fx-cursor: hand;
+    -fx-border-color: #e6e9f5;
+    -fx-border-width: 2;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 4, 0, 0, 2);
+}
+
+.btn-google-modern:hover {
+    -fx-background-color: #f8f9ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
+}
+
+.dark-mode .btn-google-modern {
+    -fx-background-color: #1f252b;
+    -fx-text-fill: -color-surface-variant;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .btn-google-modern:hover {
+    -fx-background-color: #252c32;
+}
+
+.btn-primary-modern {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 12;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-padding: 14 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.2), 6, 0, 0, 3);
+}
+
+.btn-primary-modern:hover {
+    -fx-background-color: #005580;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.3), 8, 0, 0, 4);
+}
+
+.dark-mode .btn-primary-modern {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .btn-primary-modern:hover {
+    -fx-background-color: #a5d6ff;
+}
+
+/* FORM HELPER TEXT */
+.form-hint-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-outline;
+}
+
+.dark-mode .form-hint-text {
+    -fx-text-fill: -color-outline-variant;
+}
+
+/* LINK TEXT */
+.link-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-primary;
+    -fx-underline: false;
+}
+
+.link-text:hover {
+    -fx-text-fill: #005580;
+    -fx-underline: true;
+}
+
+.dark-mode .link-text {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .link-text:hover {
+    -fx-text-fill: #a5d6ff;
+}
+
+.link-text-bold {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-primary;
+    -fx-underline: false;
+}
+
+.link-text-bold:hover {
+    -fx-text-fill: #005580;
+    -fx-underline: true;
+}
+
+.dark-mode .link-text-bold {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .link-text-bold:hover {
+    -fx-text-fill: #a5d6ff;
+}
+
+/* REGISTER FORM TITLE */
+.register-form-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .register-form-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+/* FOOTER */
+.login-footer-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8c9199;
+}
+
+.dark-mode .login-footer-text {
+    -fx-text-fill: -color-outline;
+}

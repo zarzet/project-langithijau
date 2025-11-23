@@ -1,0 +1,361 @@
+/* ============================================
+   FORMS.CSS - All Form Elements
+   ============================================ */
+
+/* PROGRESS BAR */
+.progress-bar {
+    -fx-background-color: -color-surface-variant;
+    -fx-background-radius: 4;
+    -fx-pref-height: 8;
+}
+
+.progress-bar > .track {
+    -fx-background-color: -color-surface-variant;
+    -fx-background-radius: 4;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 4;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* CHECKBOX - Material Design 3 */
+.check-box {
+    -fx-cursor: hand;
+    -fx-text-fill: -color-on-surface;
+    -fx-label-padding: 0 0 0 8;
+}
+
+.check-box .box {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-outline;
+    -fx-border-radius: 2;
+    -fx-border-width: 2;
+    -fx-padding: 2;
+}
+
+.check-box:hover .box {
+    -fx-border-color: -color-on-surface;
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+}
+
+.check-box:selected .box {
+    -fx-background-color: -color-primary;
+    -fx-border-color: -color-primary;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: -color-on-primary;
+    -fx-shape: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z";
+    -fx-scale-shape: true;
+}
+
+.check-box:indeterminate .box {
+    -fx-background-color: -color-primary;
+    -fx-border-color: -color-primary;
+}
+
+.check-box:indeterminate .mark {
+    -fx-background-color: -color-on-primary;
+    -fx-shape: "M 0 0 H 10 V 2 H 0 Z";
+    -fx-scale-shape: false;
+}
+
+/* TEXTFIELD & TEXTAREA */
+.text-field,
+.text-area {
+    -fx-background-color: -color-surface-variant;
+    -fx-border-color: -color-outline;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-padding: 14 16;
+    -fx-text-fill: -color-on-surface;
+    -fx-font-size: 16px;
+}
+
+.text-field:hover,
+.text-area:hover {
+    -fx-border-color: -color-on-surface;
+}
+
+.text-field:focused,
+.text-area:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+}
+
+/* COMBOBOX - Material Design 3 Outlined */
+.combo-box {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-outline;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+}
+
+.combo-box:hover {
+    -fx-border-color: -color-on-surface;
+}
+
+.combo-box:focused,
+.combo-box:showing {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+    -fx-padding: -1; /* Compensate for border width increase */
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -color-on-surface;
+    -fx-background-color: transparent;
+    -fx-padding: 10 12;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 12;
+}
+
+.combo-box .arrow {
+    -fx-background-color: -color-on-surface-variant;
+    -fx-shape: "M7 10l5 5 5-5z";
+    -fx-scale-shape: true;
+    -fx-padding: 4 5; /* Size of the arrow */
+}
+
+.combo-box:hover .arrow {
+    -fx-background-color: -color-on-surface;
+}
+
+.combo-box:focused .arrow,
+.combo-box:showing .arrow {
+    -fx-background-color: -color-primary;
+    -fx-rotate: 180;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -color-surface-container;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-padding: 12 16;
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-on-surface;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: -color-surface-variant;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: -color-secondary-container;
+    -fx-text-fill: -color-on-secondary-container;
+}
+
+/* DATEPICKER */
+.date-picker {
+    -fx-background-color: -color-surface-variant;
+    -fx-border-color: -color-outline;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+}
+
+.date-picker .text-field {
+    -fx-text-fill: -color-on-surface;
+}
+
+.date-picker-popup {
+    -fx-background-color: #ffffff;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 4);
+}
+
+.date-picker-popup > * > .spinner {
+    -fx-background-color: -color-surface-container;
+}
+
+.date-picker-popup > * > .spinner > .button {
+    -fx-background-color: transparent;
+}
+
+.date-picker-popup > * > .spinner > .label {
+    -fx-text-fill: -color-on-surface;
+}
+
+.date-picker-popup > * > .day-name-cell,
+.date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-font-weight: 600;
+}
+
+.date-picker-popup > * > .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-on-surface;
+}
+
+.date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: #e7e9f0;
+}
+
+.date-picker-popup > * > .day-cell.selected {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > * > .day-cell.today {
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 700;
+}
+
+.date-picker-popup > * > .day-cell.selected.today {
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > * > .previous-month,
+.date-picker-popup > * > .next-month {
+    -fx-text-fill: -color-outline;
+}
+
+/* ============================================
+   DARK MODE - FORMS
+   ============================================ */
+
+.dark-mode .progress-bar,
+.dark-mode .progress-bar > .track {
+    -fx-background-color: #30353b;
+}
+
+.dark-mode .progress-bar > .bar {
+    -fx-background-color: #8dcdff;
+}
+
+.dark-mode .check-box {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .check-box .box {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .check-box:hover .box {
+    -fx-border-color: #8c9199;
+    -fx-background-color: rgba(141, 205, 255, 0.08);
+}
+
+.dark-mode .check-box:selected .box {
+    -fx-background-color: #8dcdff;
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .check-box:selected > .box > .mark {
+    -fx-background-color: #00344e;
+}
+
+.dark-mode .text-field,
+.dark-mode .text-area {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .text-field:hover,
+.dark-mode .text-area:hover {
+    -fx-border-color: #8c9199;
+}
+
+.dark-mode .text-field:focused,
+.dark-mode .text-area:focused {
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .combo-box {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .combo-box:hover {
+    -fx-border-color: #8c9199;
+}
+
+.dark-mode .combo-box .list-cell {
+    -fx-text-fill: -color-surface-variant;
+    -fx-background-color: #171c21;
+}
+
+.dark-mode .combo-box-popup .list-view {
+    -fx-background-color: #1b2025;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #242a2f;
+}
+
+.dark-mode .date-picker {
+    -fx-background-color: #171c21;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .date-picker .text-field {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .date-picker-popup {
+    -fx-background-color: #1b2025;
+    -fx-border-color: -color-on-surface-variant;
+}
+
+.dark-mode .date-picker-popup > * > .spinner {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .button {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .date-picker-popup > * > .spinner > .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .date-picker-popup > * > .day-name-cell,
+.dark-mode .date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: -color-outline-variant;
+    -fx-font-weight: 600;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell:hover {
+    -fx-background-color: #20252b;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.selected {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.today {
+    -fx-text-fill: #8dcdff;
+    -fx-font-weight: 700;
+}
+
+.dark-mode .date-picker-popup > * > .day-cell.selected.today {
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .date-picker-popup > * > .previous-month,
+.dark-mode .date-picker-popup > * > .next-month {
+    -fx-text-fill: -color-outline;
+}

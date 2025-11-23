@@ -1,0 +1,389 @@
+/* ============================================
+   WIDGETS.CSS - All Widget Styles
+   ============================================ */
+
+/* STREAK WIDGET */
+.streak-widget {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+.streak-number {
+    -fx-font-size: 48px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-primary;
+}
+
+.streak-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.streak-motivation {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* STUDY TIME WIDGET */
+.study-time-widget {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+.widget-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.study-time-number {
+    -fx-font-size: 28px;
+    -fx-font-weight: 400;
+    -fx-text-fill: -color-primary;
+}
+
+.study-time-target,
+.study-time-comparison {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* NEXT REVIEW WIDGET */
+.next-review-widget {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+.next-review-topic {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.next-review-course {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.next-review-due {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 500;
+}
+
+.next-review-status {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+/* CLOCK WIDGET */
+.clock-container {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+/* ACHIEVEMENT & UPCOMING WIDGETS */
+.achievement-widget,
+.upcoming-widget {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 16;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
+    -fx-border-width: 0;
+}
+
+.widget-interactive {
+    -fx-cursor: hand;
+}
+
+.widget-interactive:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+    -fx-translate-y: -2;
+}
+
+.achievement-item {
+    -fx-padding: 8 0;
+}
+
+.achievement-title {
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-text-transform: uppercase;
+}
+
+.achievement-value {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.achievement-detail {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-outline;
+}
+
+.achievement-badge {
+    -fx-background-color: #c9e6ff;
+    -fx-text-fill: #001e30;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-padding: 4 12;
+    -fx-background-radius: 8;
+}
+
+.upcoming-task {
+    -fx-background-color: #ecedf4;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+.upcoming-task-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.upcoming-task-course {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.upcoming-task-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: 500;
+}
+
+/* SETTINGS DIALOG */
+.settings-dialog .dialog-pane {
+    -fx-background-color: #f8f9ff;
+}
+
+.settings-dialog .dialog-pane > .content {
+    -fx-padding: 0;
+}
+
+.settings-section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.settings-row {
+    -fx-padding: 16;
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 2, 0, 0, 1);
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.settings-row:hover {
+    -fx-background-color: #fafbff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 3, 0, 0, 2);
+}
+
+.settings-row-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.settings-row-description {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-wrap-text: true;
+}
+
+.settings-about-box {
+    -fx-padding: 16;
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.settings-about-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.settings-about-version {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.settings-about-description {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-outline;
+}
+
+.settings-about-copyright {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-outline;
+}
+
+/* ============================================
+   DARK MODE - WIDGETS
+   ============================================ */
+
+.dark-mode .streak-widget,
+.dark-mode .study-time-widget,
+.dark-mode .next-review-widget,
+.dark-mode .clock-container,
+.dark-mode .achievement-widget,
+.dark-mode .upcoming-widget {
+    -fx-background-color: #171c21;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 1, 0, 0, 1);
+}
+
+.dark-mode .widget-interactive:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+}
+
+.dark-mode .streak-number,
+.dark-mode .study-time-number,
+.dark-mode .next-review-due {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .streak-label,
+.dark-mode .widget-title,
+.dark-mode .next-review-topic,
+.dark-mode .achievement-value,
+.dark-mode .upcoming-task-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .streak-motivation,
+.dark-mode .study-time-target,
+.dark-mode .study-time-comparison,
+.dark-mode .next-review-course,
+.dark-mode .next-review-status,
+.dark-mode .achievement-title,
+.dark-mode .upcoming-task-course {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .achievement-detail {
+    -fx-text-fill: #8c9199;
+}
+
+.dark-mode .achievement-badge {
+    -fx-background-color: #004c6f;
+    -fx-text-fill: #c9e6ff;
+}
+
+.dark-mode .upcoming-task {
+    -fx-background-color: #1b2025;
+}
+
+.dark-mode .upcoming-task-date {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .settings-dialog .dialog-pane {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .settings-section-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .settings-row {
+    -fx-background-color: #171c21;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.dark-mode .settings-row:hover {
+    -fx-background-color: #1f252b;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 6, 0, 0, 3);
+}
+
+.dark-mode .settings-row-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .settings-row-description {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .settings-about-box {
+    -fx-background-color: #171c21;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.dark-mode .settings-about-title {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .settings-about-version {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .settings-about-description {
+    -fx-text-fill: #8c9199;
+}
+
+.dark-mode .settings-about-copyright {
+    -fx-text-fill: #8c9199;
+}
+
+/* DARK MODE DIALOG */
+.dark-mode .dialog-pane {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .dialog-pane > .header-panel {
+    -fx-background-color: #0f1419;
+}
+
+.dark-mode .dialog-pane > .header-panel > .label {
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .dialog-pane > .content .label {
+    -fx-text-fill: -color-outline-variant;
+}
+
+.dark-mode .dialog-pane .button:default {
+    -fx-background-color: #4fa8d5;
+    -fx-text-fill: #0f1419;
+}
+
+.dark-mode .dialog-pane .button:default:hover {
+    -fx-background-color: #6bb8df;
+}
+
+.dark-mode .dialog-pane .button:cancel-button {
+    -fx-background-color: #1f252b;
+    -fx-text-fill: -color-surface-variant;
+}
+
+.dark-mode .dialog-pane .button:cancel-button:hover {
+    -fx-background-color: #2a3139;
+}

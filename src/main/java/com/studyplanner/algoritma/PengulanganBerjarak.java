@@ -37,12 +37,9 @@ public class PengulanganBerjarak {
             return false;
         }
 
-        if (topik.isDikuasai() && topik.getInterval() > 60) {
-            return false;
-        }
-
         AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
-        if (kondisi == null) {
+        
+        if (kondisi == null || kondisi.adalahKosong()) {
             if (topik.getTanggalUlasanTerakhir() == null) {
                 LocalDate tanggalHarusUlas = topik.getTanggalBelajarPertama().plusDays(1);
                 return !LocalDate.now().isBefore(tanggalHarusUlas);
@@ -52,10 +49,17 @@ public class PengulanganBerjarak {
         }
 
         long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
-                ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
+                ? ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now())
                 : 0;
+        
+        if (hariSejakUlasan < 0) {
+            return false;
+        }
+        
         double retrievability = FSRS.hitungRetrievability(kondisi, hariSejakUlasan);
-        return retrievability <= targetRetensi(topik);
+        double targetRetensi = targetRetensi(topik);
+        
+        return retrievability <= targetRetensi;
     }
 
     public static double hitungPrioritasTopik(Topik topik, LocalDate tanggalUjian) {

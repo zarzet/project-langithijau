@@ -1,0 +1,80 @@
+/* ============================================
+   VARIABLES.CSS - Color Palette & Themes
+   ============================================ */
+
+/* LIGHT MODE (Default) */
+.root {
+    /* Color Palette - Light */
+    -color-primary: #006495;
+    -color-on-primary: #ffffff;
+    -color-primary-container: #d2e5f5;
+    -color-on-primary-container: #001e30;
+    
+    -color-secondary: #d2e5f5;
+    -color-on-secondary: #0b1d29;
+    -color-secondary-container: #d2e5f5;
+    -color-on-secondary-container: #0b1d29;
+    
+    -color-success: #62597c;
+    -color-on-success: #ffffff;
+    
+    -color-danger: #ba1a1a;
+    -color-on-danger: #ffffff;
+    
+    -color-background: #f8f9ff;
+    -color-on-background: #191c20;
+    
+    -color-surface: #ffffff;
+    -color-on-surface: #191c20;
+    
+    -color-surface-container: #f2f3fa;
+    -color-surface-variant: #e1e2e9;
+    -color-on-surface-variant: #42474e;
+    
+    -color-outline: #72777f;
+    -color-outline-variant: #c2c7cf;
+    
+    /* App Specific Mappings */
+    -color-header-bg: -color-surface-container;
+    -color-sidebar-bg: -color-surface-container;
+    -color-card-bg: -color-surface-container;
+    -color-stat-card-bg: -color-surface;
+}
+
+/* DARK MODE */
+.root.dark-mode {
+    /* Color Palette - Dark */
+    -color-primary: #8dcdff;
+    -color-on-primary: #00344e;
+    -color-primary-container: #004b70;
+    -color-on-primary-container: #cce5ff;
+    
+    -color-secondary: #384956;
+    -color-on-secondary: #d2e5f5;
+    -color-secondary-container: #3e3653;
+    -color-on-secondary-container: #dccce8;
+    
+    -color-success: #ccc0e8;
+    -color-on-success: #342e4b;
+    
+    -color-danger: #ffb4ab;
+    -color-on-danger: #690005;
+    
+    -color-background: #0f1419;
+    -color-on-background: #e1e2e9;
+    
+    -color-surface: #171c21;
+    -color-on-surface: #e1e2e9;
+    
+    -color-surface-container: #171c21;
+    -color-surface-variant: #42474e;
+    -color-on-surface-variant: #c2c7cf;
+    
+    -color-outline: #8c9199;
+    -color-outline-variant: #42474e;
+    
+    -color-header-bg: -color-surface-container;
+    -color-sidebar-bg: -color-surface-container;
+    -color-card-bg: -color-surface-container;
+    -color-stat-card-bg: -color-surface-container;
+}

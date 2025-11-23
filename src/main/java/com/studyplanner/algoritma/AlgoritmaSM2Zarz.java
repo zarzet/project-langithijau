@@ -46,8 +46,15 @@ public class AlgoritmaSM2Zarz {
     public OpsiInterval hitungKeadaanBerikutnya(KondisiMemori kondisiSaatIni,
                                                 double retensiDiinginkan,
                                                 long hariSejakUlasan) {
+        if (retensiDiinginkan <= 0 || retensiDiinginkan > 1) {
+            throw new IllegalArgumentException("Retensi harus antara 0 dan 1");
+        }
+        if (hariSejakUlasan < 0) {
+            throw new IllegalArgumentException("Hari sejak ulasan tidak boleh negatif");
+        }
+
         KondisiMemori kondisi = kondisiSaatIni != null ? kondisiSaatIni : KondisiMemori.kosong();
-        int urutanKe = kondisiSaatIni == null ? 0 : 1;
+        int urutanKe = (kondisiSaatIni == null || kondisiSaatIni.adalahKosong()) ? 0 : 1;
 
         KeadaanKartu ulang = hitungLangkah(kondisi, retensiDiinginkan, hariSejakUlasan, 1, urutanKe);
         KeadaanKartu sulit = hitungLangkah(kondisi, retensiDiinginkan, hariSejakUlasan, 2, urutanKe);
@@ -58,10 +65,18 @@ public class AlgoritmaSM2Zarz {
     }
 
     public double hitungRetrievability(KondisiMemori kondisiSaatIni, double hariSejakUlasan) {
-        if (kondisiSaatIni == null) return 0.0;
+        if (kondisiSaatIni == null || kondisiSaatIni.adalahKosong()) {
+            return 0.0;
+        }
+        
         double stabilitas = clamp(kondisiSaatIni.stabilitas(), S_MIN, S_MAX);
         double decay = -bobot[20];
         double factor = Math.exp(Math.log(0.9) / decay) - 1.0;
+        
+        if (hariSejakUlasan == 0) {
+            return 1.0;
+        }
+        
         return Math.pow((hariSejakUlasan / stabilitas) * factor + 1.0, decay);
     }
 
@@ -73,7 +88,7 @@ public class AlgoritmaSM2Zarz {
         double lastS = clamp(kondisiSaatIni.stabilitas(), S_MIN, S_MAX);
         double lastD = clamp(kondisiSaatIni.kesulitan(), D_MIN, D_MAX);
 
-        double retrievability = hitungRetrievability(new KondisiMemori(lastS, lastD), Math.max(0, hariSejakUlasan));
+        double retrievability = hitungRetrievability(new KondisiMemori(lastS, lastD), hariSejakUlasan);
 
         double sSukses = stabilitasSetelahSukses(lastS, lastD, retrievability, ratingFsrs);
         double sGagal = stabilitasSetelahGagal(lastS, lastD, retrievability);
@@ -92,6 +107,11 @@ public class AlgoritmaSM2Zarz {
             double ratingTerbatas = clamp(ratingFsrs, 1, 4);
             stabilitasBaru = stabilitasAwal(ratingTerbatas);
             kesulitanBaru = kesulitanAwal(ratingTerbatas);
+        }
+
+        if (ratingFsrs == 0) {
+            stabilitasBaru = lastS;
+            kesulitanBaru = lastD;
         }
 
         stabilitasBaru = clamp(stabilitasBaru, S_MIN, S_MAX);
@@ -135,7 +155,7 @@ public class AlgoritmaSM2Zarz {
         double faktorInti = Math.exp(bobot[8]) *
                 (-kesulitanLama + 11.0) *
                 Math.pow(stabilitasLama, -bobot[9]) *
-                (Math.exp((1.0 - retrievability) * bobot[10]) - 1.0);
+                Math.expm1((1.0 - retrievability) * bobot[10]);
 
         return stabilitasLama * (faktorInti * penaltiSulit * bonusMudah + 1.0);
     }
@@ -185,6 +205,69 @@ public class AlgoritmaSM2Zarz {
 
     private double clamp(double nilai, double min, double max) {
         return Math.max(min, Math.min(max, nilai));
+    }
+
+    public double hitungUncertainty(KondisiMemori kondisi, double hariSejakUlasan) {
+        if (kondisi == null || kondisi.adalahKosong()) {
+            return 1.0;
+        }
+        double retrievability = hitungRetrievability(kondisi, hariSejakUlasan);
+        return Math.abs(retrievability - 0.5) * 2.0;
+    }
+
+    public boolean apakahPerluReview(KondisiMemori kondisi, double hariSejakUlasan, double targetRetensi) {
+        if (kondisi == null || kondisi.adalahKosong()) {
+            return hariSejakUlasan >= 1;
+        }
+        double retrievability = hitungRetrievability(kondisi, hariSejakUlasan);
+        return retrievability <= targetRetensi;
+    }
+
+    public RangeInterval hitungRangeInterval(double stabilitas, double retensiDiinginkan) {
+        double intervalIdeal = hitungIntervalDariStabilitas(stabilitas, retensiDiinginkan);
+        double minRetensi = Math.max(0.7, retensiDiinginkan - 0.1);
+        double maxRetensi = Math.min(0.99, retensiDiinginkan + 0.05);
+        
+        double intervalMin = hitungIntervalDariStabilitas(stabilitas, maxRetensi);
+        double intervalMax = hitungIntervalDariStabilitas(stabilitas, minRetensi);
+        
+        return new RangeInterval(
+            Math.max(1, (int) Math.floor(intervalMin)),
+            Math.max(1, (int) Math.round(intervalIdeal)),
+            Math.max(1, (int) Math.ceil(intervalMax))
+        );
+    }
+
+    public java.util.List<OpsiInterval> hitungKeadaanBerikutnyaBatch(
+            java.util.List<KondisiMemori> daftarKondisi,
+            double retensiDiinginkan,
+            java.util.List<Long> daftarHariSejakUlasan) {
+        if (daftarKondisi.size() != daftarHariSejakUlasan.size()) {
+            throw new IllegalArgumentException("Ukuran daftar kondisi dan hari harus sama");
+        }
+        
+        java.util.List<OpsiInterval> hasil = new java.util.ArrayList<>(daftarKondisi.size());
+        for (int i = 0; i < daftarKondisi.size(); i++) {
+            hasil.add(hitungKeadaanBerikutnya(
+                daftarKondisi.get(i),
+                retensiDiinginkan,
+                daftarHariSejakUlasan.get(i)
+            ));
+        }
+        return hasil;
+    }
+
+    public record RangeInterval(int minimum, int ideal, int maksimum) {
+        public boolean dalamRange(int hari) {
+            return hari >= minimum && hari <= maksimum;
+        }
+        
+        public String toString() {
+            if (minimum == maksimum) {
+                return minimum + " hari";
+            }
+            return minimum + "-" + maksimum + " hari (ideal: " + ideal + ")";
+        }
     }
 
     public record KondisiMemori(double stabilitas, double kesulitan) {

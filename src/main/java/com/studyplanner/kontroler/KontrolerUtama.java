@@ -116,19 +116,16 @@ public class KontrolerUtama implements Initializable {
     private Button themeToggleBtn;
 
     @FXML
-    private MenuButton userMenuBtn;
-
-    @FXML
-    private MenuItem profileMenuItem;
-
-    @FXML
-    private MenuItem settingsMenuItem;
-
-    @FXML
-    private MenuItem logoutMenuItem;
+    private Button logoutBtn;
 
     @FXML
     private Button toggleSidebarBtn;
+
+    @FXML
+    private Button headerSettingsBtn;
+
+    @FXML
+    private Button headerProfileBtn;
 
     @FXML
     private VBox streakContainer;
@@ -247,29 +244,35 @@ public class KontrolerUtama implements Initializable {
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
             Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
             welcomeLabel.setText("Selamat Datang, " + user.getGivenName() + "!");
-
-            if (userMenuBtn != null) {
-                aturFotoProfilPengguna(user);
-            }
         }
         
-        if (profileMenuItem != null) {
-            profileMenuItem.setGraphic(PembuatIkon.ikonProfil());
-            profileMenuItem.setOnAction(_ -> tampilkanProfil());
-        }
-        if (settingsMenuItem != null) {
-            settingsMenuItem.setGraphic(PembuatIkon.ikonPengaturan());
-            settingsMenuItem.setOnAction(_ -> tampilkanPengaturan());
-        }
-        if (logoutMenuItem != null) {
-            logoutMenuItem.setGraphic(PembuatIkon.ikonKeluar());
-            logoutMenuItem.setOnAction(_ -> keluar());
+        if (logoutBtn != null) {
+            logoutBtn.setGraphic(PembuatIkon.ikonKeluar());
+            logoutBtn.setGraphicTextGap(8);
+            logoutBtn.setOnAction(_ -> keluar());
         }
 
         if (toggleSidebarBtn != null) {
             toggleSidebarBtn.setGraphic(PembuatIkon.ikonMenu());
             toggleSidebarBtn.setText("");
             toggleSidebarBtn.setOnAction(_ -> toggleSidebar());
+        }
+
+        if (headerSettingsBtn != null) {
+            headerSettingsBtn.setGraphic(PembuatIkon.ikonPengaturan());
+            headerSettingsBtn.setText("");
+            headerSettingsBtn.setOnAction(_ -> tampilkanPengaturan());
+        }
+
+        if (headerProfileBtn != null) {
+            if (ManajerOtentikasi.getInstance().isLoggedIn()) {
+                Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
+                aturFotoProfilHeader(user);
+            } else {
+                headerProfileBtn.setGraphic(PembuatIkon.ikonProfil());
+            }
+            headerProfileBtn.setText("");
+            headerProfileBtn.setOnAction(_ -> tampilkanProfil());
         }
     }
 
@@ -915,48 +918,6 @@ public class KontrolerUtama implements Initializable {
         return manajerBasisData;
     }
 
-    private void aturFotoProfilPengguna(Userinfo user) {
-        try {
-            ImageView imageView = new ImageView();
-            imageView.setFitWidth(32);
-            imageView.setFitHeight(32);
-            imageView.setPreserveRatio(true);
-
-            Circle clip = new Circle(16, 16, 16);
-            imageView.setClip(clip);
-
-            String photoUrl = user.getPicture();
-            if (photoUrl != null && !photoUrl.isEmpty()) {
-                Image image = new Image(photoUrl, true);
-                imageView.setImage(image);
-
-                userMenuBtn.setGraphic(imageView);
-                userMenuBtn.setText(user.getGivenName());
-                userMenuBtn.setGraphicTextGap(8);
-            } else {
-                Label inisial = new Label(ambilInisial(user.getName()));
-                inisial.setStyle(
-                    "-fx-background-color: #006495;" +
-                    "-fx-text-fill: white;" +
-                    "-fx-font-weight: bold;" +
-                    "-fx-min-width: 32px;" +
-                    "-fx-min-height: 32px;" +
-                    "-fx-max-width: 32px;" +
-                    "-fx-max-height: 32px;" +
-                    "-fx-background-radius: 16;" +
-                    "-fx-alignment: center;" +
-                    "-fx-font-size: 14px;"
-                );
-                userMenuBtn.setGraphic(inisial);
-                userMenuBtn.setText(user.getGivenName());
-                userMenuBtn.setGraphicTextGap(8);
-            }
-        } catch (Exception e) {
-            userMenuBtn.setText(user.getGivenName());
-            e.printStackTrace();
-        }
-    }
-
     private String ambilInisial(String namaLengkap) {
         if (namaLengkap == null || namaLengkap.isEmpty()) {
             return "?";
@@ -966,6 +927,38 @@ public class KontrolerUtama implements Initializable {
             return parts[0].substring(0, Math.min(2, parts[0].length())).toUpperCase();
         } else {
             return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
+        }
+    }
+
+    private void aturFotoProfilHeader(Userinfo user) {
+        try {
+            String photoUrl = user.getPicture();
+            if (photoUrl != null && !photoUrl.isEmpty()) {
+                ImageView imageView = new ImageView();
+                imageView.setFitWidth(44);
+                imageView.setFitHeight(44);
+                imageView.setPreserveRatio(true);
+
+                Circle clip = new Circle(22, 22, 22);
+                imageView.setClip(clip);
+
+                Image image = new Image(photoUrl, true);
+                imageView.setImage(image);
+
+                headerProfileBtn.setGraphic(imageView);
+            } else {
+                Label inisial = new Label(ambilInisial(user.getName()));
+                inisial.setStyle(
+                    "-fx-background-color: transparent;" +
+                    "-fx-text-fill: white;" +
+                    "-fx-font-weight: bold;" +
+                    "-fx-font-size: 18px;"
+                );
+                headerProfileBtn.setGraphic(inisial);
+            }
+        } catch (Exception e) {
+            headerProfileBtn.setGraphic(PembuatIkon.ikonProfil());
+            e.printStackTrace();
         }
     }
 
