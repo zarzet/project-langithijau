@@ -35,68 +35,41 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo [3/5] Creating custom runtime image dengan jlink...
-jlink --module-path "%JAVA_HOME%\jmods" ^
-      --add-modules java.base,java.desktop,java.sql,java.logging,java.naming,java.xml,java.net.http,java.management,jdk.unsupported,jdk.crypto.ec ^
-      --output target\runtime-image ^
-      --strip-debug ^
-      --no-header-files ^
-      --no-man-pages ^
-      --compress=2
-
-if %ERRORLEVEL% NEQ 0 (
-    echo ERROR: jlink gagal!
-    echo.
-    echo Pastikan JAVA_HOME sudah di-set dengan benar
-    echo JAVA_HOME saat ini: %JAVA_HOME%
-    pause
-    exit /b 1
-)
+echo [3/5] Skipping jlink, using system Java runtime...
+echo (jpackage will create runtime automatically)
 
 echo.
 echo [4/5] Creating Windows installer dengan jpackage...
+echo This may take 5-10 minutes...
+echo.
+
+REM Try with icon first
 jpackage --type exe ^
          --name "AdaptiveStudyPlanner" ^
          --app-version "0.1.4" ^
          --vendor "Adaptive Study Planner" ^
          --description "Aplikasi Perencana Belajar Adaptif dengan Spaced Repetition" ^
-         --icon src\main\resources\icon.ico ^
          --input target ^
          --main-jar adaptive-study-planner-0.1.4-ALPHA.jar ^
-         --runtime-image target\runtime-image ^
          --dest target\installer ^
          --win-dir-chooser ^
          --win-menu ^
          --win-shortcut ^
-         --java-options "--add-opens java.base/java.lang=ALL-UNNAMED" ^
-         --java-options "--add-opens java.base/java.util=ALL-UNNAMED"
+         --java-options "--add-opens" ^
+         --java-options "java.base/java.lang=ALL-UNNAMED" ^
+         --java-options "--add-opens" ^
+         --java-options "java.base/java.util=ALL-UNNAMED"
 
 if %ERRORLEVEL% NEQ 0 (
+    echo ERROR: jpackage gagal!
     echo.
-    echo WARNING: jpackage gagal (mungkin icon tidak ada)
-    echo Mencoba tanpa icon...
+    echo Troubleshooting:
+    echo 1. Pastikan menggunakan JDK 25 (bukan JRE)
+    echo 2. Pastikan JAVA_HOME sudah di-set: %JAVA_HOME%
+    echo 3. Pastikan jpackage ada: %JAVA_HOME%\bin\jpackage.exe
     echo.
-    
-    jpackage --type exe ^
-             --name "AdaptiveStudyPlanner" ^
-             --app-version "0.1.4" ^
-             --vendor "Adaptive Study Planner" ^
-             --description "Aplikasi Perencana Belajar Adaptif dengan Spaced Repetition" ^
-             --input target ^
-             --main-jar adaptive-study-planner-0.1.4-ALPHA.jar ^
-             --runtime-image target\runtime-image ^
-             --dest target\installer ^
-             --win-dir-chooser ^
-             --win-menu ^
-             --win-shortcut ^
-             --java-options "--add-opens java.base/java.lang=ALL-UNNAMED" ^
-             --java-options "--add-opens java.base/java.util=ALL-UNNAMED"
-    
-    if %ERRORLEVEL% NEQ 0 (
-        echo ERROR: jpackage gagal!
-        pause
-        exit /b 1
-    )
+    pause
+    exit /b 1
 )
 
 echo.
