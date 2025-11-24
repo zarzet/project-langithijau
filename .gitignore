@@ -54,3 +54,9 @@ tokens/
 
 # Screenshots
 Screenshot*.png
+
+# Maven generated files
+dependency-reduced-pom.xml
+
+# Build output (kecuali dist/ untuk release)
+# target/ sudah di-ignore di atas

@@ -1,73 +1,99 @@
-name: Build and Release
+name: Release Installer
 
 on:
   push:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 0.1.4)'
+        required: true
+        default: '0.1.4'
 
 permissions:
   contents: write
 
 jobs:
-  build:
-    runs-on: windows-latest
-    
+  release:
+    runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
+    - name: Checkout code with LFS
       uses: actions/checkout@v4
-      
-    - name: Setup Java 25
-      uses: actions/setup-java@v4
       with:
-        distribution: 'oracle'
-        java-version: '25'
-        cache: 'maven'
-        
-    - name: Build with Maven
-      run: mvn clean package -DskipTests
-      
-    - name: Get version
+        lfs: true
+
+    - name: Pull LFS files
+      run: git lfs pull
+
+    - name: Get version from tag or input
       id: version
       run: |
-        [xml]$pom = Get-Content pom.xml
-        $version = $pom.project.version
-        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-      shell: pwsh
-      
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          # Extract version from tag (remove 'v' prefix)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Check installer exists and size
+      run: |
+        FILE="dist/AdaptiveStudyPlanner-${{ steps.version.outputs.VERSION }}.exe"
+        if [ ! -f "$FILE" ]; then
+          echo "::error::Installer tidak ditemukan di $FILE"
+          exit 1
+        fi
+
+        # Check file size (should be > 50MB)
+        SIZE=$(stat -c%s "$FILE")
+        SIZE_MB=$((SIZE / 1048576))
+        echo "Installer size: ${SIZE_MB} MB"
+
+        if [ $SIZE -lt 50000000 ]; then
+          echo "::error::File terlalu kecil (${SIZE_MB}MB). Kemungkinan LFS pointer, bukan file asli."
+          echo "Pastikan Git LFS sudah pull dengan benar."
+          exit 1
+        fi
+
+        echo "Installer valid!"
+        ls -lh dist/
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: Adaptive Study Planner v${{ steps.version.outputs.VERSION }}
         files: |
-          target/adaptive-study-planner-*.jar
-          src/main/resources/credentials.json.example
+          dist/AdaptiveStudyPlanner-${{ steps.version.outputs.VERSION }}.exe
         body: |
           ## Adaptive Study Planner v${{ steps.version.outputs.VERSION }}
-          
-          ### Download
-          
-          Download file JAR di bawah dan jalankan dengan:
-          ```bash
-          java -jar adaptive-study-planner-${{ steps.version.outputs.VERSION }}.jar
-          ```
-          
-          ### Setup Credentials
-          
-          1. Download `credentials.json.example`
-          2. Rename menjadi `credentials.json`
-          3. Isi dengan Google OAuth credentials Anda
-          4. Simpan di folder yang sama dengan JAR
-          
-          **Panduan lengkap**: Lihat [DEPLOYMENT.md](https://github.com/${{ github.repository }}/blob/main/DEPLOYMENT.md)
-          
-          ### What's New
-          
-          - Modern Material Design 3 UI
-          - Google OAuth 2.0 Login
-          - Spaced Repetition Algorithm (SM-2)
-          - Dark Mode Support
-          - Interactive Dashboard Widgets
-          
+
+          ### Download & Install
+
+          1. Download **AdaptiveStudyPlanner-${{ steps.version.outputs.VERSION }}.exe**
+          2. Jalankan installer
+          3. Ikuti wizard instalasi
+          4. Aplikasi siap digunakan!
+
+          ### Fitur
+
+          - **Tidak perlu install Java** - Runtime sudah bundled
+          - **Google OAuth Login** - Login dengan akun Google
+          - **Spaced Repetition** - Algoritma SM-2 untuk pembelajaran efektif
+          - **Modern UI** - Material Design 3 dengan Dark Mode
+          - **Start Menu & Desktop Shortcut** - Akses cepat
+
+          ### System Requirements
+
+          - Windows 10/11 (64-bit)
+          - 200 MB disk space
+          - Internet connection (untuk Google Login)
+
+          ### Uninstall
+
+          Gunakan Windows Settings → Apps → Adaptive Study Planner → Uninstall
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
