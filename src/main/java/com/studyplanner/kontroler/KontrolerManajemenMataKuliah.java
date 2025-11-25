@@ -7,6 +7,7 @@ import com.studyplanner.layanan.LayananJadwalUjian;
 import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.model.Topik;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PembuatIkon;
 import com.studyplanner.utilitas.UtilUI;
@@ -185,7 +186,8 @@ public class KontrolerManajemenMataKuliah implements Initializable {
 
     private void muatMataKuliah() {
         try {
-            List<MataKuliah> daftarMK = layananMataKuliah.ambilSemua();
+            int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+            List<MataKuliah> daftarMK = layananMataKuliah.ambilSemuaByUserId(userId);
             daftarMataKuliah = FXCollections.observableArrayList(daftarMK);
             tabelMataKuliah.setItems(daftarMataKuliah);
         } catch (SQLException e) {
@@ -245,6 +247,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
                 MataKuliah course = new MataKuliah();
+                course.setUserId(ManajerOtentikasi.getInstance().getCurrentUserId());
                 course.setKode(codeField.getText());
                 course.setNama(nameField.getText());
                 course.setDeskripsi(descArea.getText());

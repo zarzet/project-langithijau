@@ -5,6 +5,7 @@ import java.util.List;
 
 public class MataKuliah {
     private int id;
+    private int userId;
     private String nama;
     private String kode;
     private String deskripsi;
@@ -22,12 +23,29 @@ public class MataKuliah {
         this.daftarTopik = new ArrayList<>();
     }
 
+    public MataKuliah(int id, int userId, String nama, String kode, String deskripsi) {
+        this.id = id;
+        this.userId = userId;
+        this.nama = nama;
+        this.kode = kode;
+        this.deskripsi = deskripsi;
+        this.daftarTopik = new ArrayList<>();
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getNama() {

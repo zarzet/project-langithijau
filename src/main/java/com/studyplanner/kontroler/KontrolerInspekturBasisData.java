@@ -139,27 +139,33 @@ public class KontrolerInspekturBasisData implements Initializable {
 
         HBox clearBtnContent = new HBox(8);
         clearBtnContent.setAlignment(javafx.geometry.Pos.CENTER);
+        Label clearLabel = new Label("Bersihkan Log");
+        clearLabel.setStyle("-fx-text-fill: inherit;");
         clearBtnContent.getChildren().addAll(
             PembuatIkon.buat(Material2OutlinedAL.DELETE, 16),
-            new Label("Bersihkan Log")
+            clearLabel
         );
         clearLogBtn.setGraphic(clearBtnContent);
         clearLogBtn.setText("");
 
         HBox refreshBtnContent = new HBox(8);
         refreshBtnContent.setAlignment(javafx.geometry.Pos.CENTER);
+        Label refreshLabel = new Label("Segarkan");
+        refreshLabel.setStyle("-fx-text-fill: white;");
         refreshBtnContent.getChildren().addAll(
             PembuatIkon.buat(Material2OutlinedMZ.REFRESH, 16),
-            new Label("Segarkan")
+            refreshLabel
         );
         refreshTablesBtn.setGraphic(refreshBtnContent);
         refreshTablesBtn.setText("");
 
         HBox executeBtnContent = new HBox(8);
         executeBtnContent.setAlignment(javafx.geometry.Pos.CENTER);
+        Label executeLabel = new Label("Jalankan Query");
+        executeLabel.setStyle("-fx-text-fill: white;");
         executeBtnContent.getChildren().addAll(
             PembuatIkon.buat(Material2OutlinedMZ.PLAY_ARROW, 18),
-            new Label("Jalankan Query")
+            executeLabel
         );
         executeBtn.setGraphic(executeBtnContent);
         executeBtn.setText("");

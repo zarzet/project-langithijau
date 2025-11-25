@@ -6,6 +6,7 @@ import com.studyplanner.layanan.LayananMataKuliah;
 import com.studyplanner.layanan.LayananTopik;
 import com.studyplanner.layanan.LayananJadwalUjian;
 import com.studyplanner.layanan.LayananSesiBelajar;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -29,8 +30,9 @@ public class PembuatJadwal {
     public Map<LocalDate, List<SesiBelajar>> buatJadwal(int hariKeDepan) throws SQLException {
         Map<LocalDate, List<SesiBelajar>> jadwal = new LinkedHashMap<>();
 
-        List<MataKuliah> daftarMataKuliah = layananMataKuliah.ambilSemua();
-        List<Topik> semuaTopik = layananTopik.ambilSemua();
+        int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+        List<MataKuliah> daftarMataKuliah = layananMataKuliah.ambilSemuaByUserId(userId);
+        List<Topik> semuaTopik = layananTopik.ambilSemua(); // TODO: Update LayananTopik untuk filter by userId
         List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang();
 
         Map<Integer, JadwalUjian> ujianPerMataKuliah = new HashMap<>();

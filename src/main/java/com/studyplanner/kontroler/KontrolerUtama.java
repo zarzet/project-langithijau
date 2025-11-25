@@ -1,14 +1,20 @@
 package com.studyplanner.kontroler;
 
+import com.studyplanner.utilitas.AnimasiUtil;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PembuatIkon;
+import com.studyplanner.utilitas.PreferensiPengguna;
 import com.studyplanner.utilitas.UtilUI;
 import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.algoritma.PembuatJadwal;
 import com.studyplanner.algoritma.PengulanganBerjarak;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
+import com.studyplanner.tampilan.DialogPengenalan;
+import com.studyplanner.tampilan.DialogPemilihWidget;
+import com.studyplanner.tampilan.TampilanKosong;
 import com.studyplanner.tampilan.JamAnalog;
+import com.studyplanner.tampilan.WadahWidgetDraggable;
 import com.studyplanner.tampilan.WidgetRuntutanBelajar;
 import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
@@ -128,19 +134,7 @@ public class KontrolerUtama implements Initializable {
     private Button headerProfileBtn;
 
     @FXML
-    private VBox streakContainer;
-
-    @FXML
-    private VBox studyTimeContainer;
-
-    @FXML
-    private VBox nextReviewContainer;
-
-    @FXML
-    private VBox clockContainer;
-
-    @FXML
-    private VBox upcomingTasksWidgetContainer;
+    private HBox widgetContainer;
 
     private ManajerBasisData manajerBasisData;
     private LayananMataKuliah layananMataKuliah;
@@ -156,6 +150,8 @@ public class KontrolerUtama implements Initializable {
     private WidgetTugasMendatang upcomingTasksWidget;
     private Timeline autoRefreshTimeline;
     private boolean isSidebarVisible = true;
+    private WadahWidgetDraggable wadahWidget;
+    private KonfigurasiWidget konfigurasiWidget;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -168,9 +164,37 @@ public class KontrolerUtama implements Initializable {
 
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
+
+        isDarkMode = PreferensiPengguna.getInstance().isDarkMode();
+
         siapkanUI();
         loadDashboardData();
         siapkanPembaruanOtomatis();
+
+        // Cek dan tampilkan onboarding untuk user baru
+        periksaDanTampilkanOnboarding();
+    }
+
+    /**
+     * Cek apakah perlu menampilkan onboarding untuk user baru.
+     */
+    private void periksaDanTampilkanOnboarding() {
+        int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+        if (userId > 0 && !PreferensiPengguna.getInstance().isOnboardingSelesai(userId)) {
+            // Tampilkan onboarding setelah scene ditampilkan
+            javafx.application.Platform.runLater(() -> {
+                try {
+                    Thread.sleep(500); // Tunggu sebentar agar UI siap
+                    Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+                    DialogPengenalan pengenalan = new DialogPengenalan(stage, () -> {
+                        PreferensiPengguna.getInstance().setOnboardingSelesai(userId, true);
+                    });
+                    pengenalan.tampilkan();
+                } catch (Exception e) {
+                    // Abaikan error onboarding
+                }
+            });
+        }
     }
 
     private void siapkanUI() {
@@ -180,47 +204,8 @@ public class KontrolerUtama implements Initializable {
 
         terapkanAnimasiMasuk();
 
-        if (streakContainer != null) {
-            streakWidget = new WidgetRuntutanBelajar();
-            streakContainer.getChildren().clear();
-            streakContainer.getChildren().add(streakWidget);
-        }
-
-        if (studyTimeContainer != null) {
-            studyTimeWidget = new WidgetWaktuBelajarHariIni();
-            studyTimeContainer.getChildren().clear();
-            studyTimeContainer.getChildren().add(studyTimeWidget);
-        }
-
-        if (nextReviewContainer != null) {
-            nextReviewWidget = new WidgetUlasanBerikutnya();
-            nextReviewContainer.getChildren().clear();
-            nextReviewContainer.getChildren().add(nextReviewWidget);
-        }
-
-        if (clockContainer != null) {
-            analogClock = new JamAnalog(140);
-
-            VBox clockBox = new VBox();
-            clockBox.setAlignment(javafx.geometry.Pos.CENTER);
-            clockBox.getStyleClass().add("clock-container");
-            clockBox.setPrefSize(180, 180);
-            clockBox.setMinSize(180, 180);
-            clockBox.setMaxSize(180, 180);
-            clockBox.getChildren().add(analogClock);
-
-            clockContainer.getChildren().clear();
-            clockContainer.getChildren().add(clockBox);
-        }
-
-        if (upcomingTasksWidgetContainer != null) {
-            upcomingTasksWidget = new WidgetTugasMendatang();
-            terapkanUkuranWidgetKompak(upcomingTasksWidget);
-            upcomingTasksWidget.setOnMouseClicked(_ -> showUpcomingTasksDetailDialog());
-            upcomingTasksWidgetContainer
-                    .getChildren()
-                    .setAll(upcomingTasksWidget);
-        }
+        // Setup widget system
+        siapkanSistemWidget();
 
         manageCourseBtn.setGraphic(PembuatIkon.ikonMataKuliah());
         manageCourseBtn.setGraphicTextGap(8);
@@ -258,10 +243,10 @@ public class KontrolerUtama implements Initializable {
             toggleSidebarBtn.setOnAction(_ -> toggleSidebar());
         }
 
+        // Tombol settings dihapus dari header - dipindah ke dialog profil
         if (headerSettingsBtn != null) {
-            headerSettingsBtn.setGraphic(PembuatIkon.ikonPengaturan());
-            headerSettingsBtn.setText("");
-            headerSettingsBtn.setOnAction(_ -> tampilkanPengaturan());
+            headerSettingsBtn.setVisible(false);
+            headerSettingsBtn.setManaged(false);
         }
 
         if (headerProfileBtn != null) {
@@ -272,8 +257,107 @@ public class KontrolerUtama implements Initializable {
                 headerProfileBtn.setGraphic(PembuatIkon.ikonProfil());
             }
             headerProfileBtn.setText("");
-            headerProfileBtn.setOnAction(_ -> tampilkanProfil());
+            headerProfileBtn.setOnAction(_ -> tampilkanPengaturan()); // Langsung buka pengaturan
         }
+    }
+
+    /**
+     * Setup sistem widget yang dapat dikustomisasi.
+     */
+    private void siapkanSistemWidget() {
+        if (widgetContainer == null) return;
+
+        int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+        
+        // Muat konfigurasi widget dari preferensi
+        String configStr = PreferensiPengguna.getInstance().getWidgetConfig(userId);
+        if (configStr.isEmpty()) {
+            // User baru - mulai dengan kosong (atau bisa juga default)
+            konfigurasiWidget = new KonfigurasiWidget();
+        } else {
+            konfigurasiWidget = KonfigurasiWidget.dariString(configStr);
+        }
+
+        // Buat wadah widget dengan drag & drop
+        wadahWidget = new WadahWidgetDraggable(
+            konfigurasiWidget,
+            this::buatWidgetDariJenis,
+            this::simpanKonfigurasiWidget
+        );
+
+        // Handler untuk buka dialog pemilih widget
+        wadahWidget.setOnTambahWidgetClicked(_ -> tampilkanDialogPemilihWidget());
+
+        widgetContainer.getChildren().clear();
+        widgetContainer.getChildren().add(wadahWidget);
+    }
+
+    /**
+     * Factory method untuk membuat widget berdasarkan jenisnya.
+     */
+    private Node buatWidgetDariJenis(KonfigurasiWidget.JenisWidget jenis) {
+        return switch (jenis) {
+            case RUNTUTAN_BELAJAR -> {
+                streakWidget = new WidgetRuntutanBelajar();
+                yield streakWidget;
+            }
+            case JAM_ANALOG -> {
+                analogClock = new JamAnalog(140);
+                VBox clockBox = new VBox();
+                clockBox.setAlignment(javafx.geometry.Pos.CENTER);
+                clockBox.getStyleClass().add("clock-container");
+                clockBox.setPrefSize(180, 180);
+                clockBox.setMinSize(180, 180);
+                clockBox.setMaxSize(180, 180);
+                clockBox.getChildren().add(analogClock);
+                if (isDarkMode && analogClock != null) {
+                    analogClock.aturModeGelap(true);
+                }
+                yield clockBox;
+            }
+            case WAKTU_BELAJAR -> {
+                studyTimeWidget = new WidgetWaktuBelajarHariIni();
+                yield studyTimeWidget;
+            }
+            case ULASAN_BERIKUTNYA -> {
+                nextReviewWidget = new WidgetUlasanBerikutnya();
+                yield nextReviewWidget;
+            }
+            case TUGAS_MENDATANG -> {
+                upcomingTasksWidget = new WidgetTugasMendatang();
+                terapkanUkuranWidgetKompak(upcomingTasksWidget);
+                upcomingTasksWidget.setOnMouseClicked(_ -> showUpcomingTasksDetailDialog());
+                yield upcomingTasksWidget;
+            }
+        };
+    }
+
+    /**
+     * Simpan konfigurasi widget ke preferensi.
+     */
+    private void simpanKonfigurasiWidget(KonfigurasiWidget config) {
+        int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+        PreferensiPengguna.getInstance().setWidgetConfig(userId, config.keString());
+        konfigurasiWidget = config;
+    }
+
+    /**
+     * Tampilkan dialog untuk memilih widget.
+     */
+    private void tampilkanDialogPemilihWidget() {
+        Stage stage = (Stage) widgetContainer.getScene().getWindow();
+        DialogPemilihWidget dialog = new DialogPemilihWidget(
+            stage,
+            konfigurasiWidget,
+            isDarkMode,
+            config -> {
+                simpanKonfigurasiWidget(config);
+                wadahWidget.updateKonfigurasi(config);
+                // Refresh data widget
+                loadDashboardData();
+            }
+        );
+        dialog.tampilkan();
     }
 
     private void terapkanUkuranWidgetKompak(Region region) {
@@ -293,6 +377,9 @@ public class KontrolerUtama implements Initializable {
 
     private void alihkanModaGelap() {
         isDarkMode = !isDarkMode;
+
+        // Simpan preferensi
+        PreferensiPengguna.getInstance().setDarkMode(isDarkMode);
 
         if (themeToggleBtn != null) {
             themeToggleBtn.setGraphic(PembuatIkon.ikonModeGelap(isDarkMode));
@@ -421,10 +508,8 @@ public class KontrolerUtama implements Initializable {
         List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiHariIni();
 
         if (sessions.isEmpty()) {
-            Label emptyLabel = new Label(
-                    "Belum ada tugas untuk hari ini. Klik 'Buat Jadwal' untuk membuat jadwal otomatis.");
-            emptyLabel.setStyle("-fx-text-fill: #888; -fx-padding: 20;");
-            todayTasksContainer.getChildren().add(emptyLabel);
+            TampilanKosong tampilanKosong = TampilanKosong.untukTugasKosong(this::buatJadwalBaru);
+            todayTasksContainer.getChildren().add(tampilanKosong);
         } else {
             for (SesiBelajar session : sessions) {
                 todayTasksContainer.getChildren().add(createTaskCard(session));
@@ -572,9 +657,8 @@ public class KontrolerUtama implements Initializable {
         List<JadwalUjian> exams = layananJadwalUjian.ambilUjianMendatang();
 
         if (exams.isEmpty()) {
-            Label emptyLabel = new Label("Belum ada ujian yang dijadwalkan.");
-            emptyLabel.setStyle("-fx-text-fill: #888; -fx-padding: 20;");
-            upcomingExamsContainer.getChildren().add(emptyLabel);
+            TampilanKosong tampilanKosong = TampilanKosong.untukUjianKosong(null);
+            upcomingExamsContainer.getChildren().add(tampilanKosong);
         } else {
             for (JadwalUjian exam : exams) {
                 upcomingExamsContainer.getChildren().add(createExamCard(exam));
@@ -680,34 +764,60 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    private void tampilkanProfil() {
-        if (!ManajerOtentikasi.getInstance().isLoggedIn()) {
-            return;
+    /**
+     * Buat section profil untuk ditampilkan di pengaturan.
+     */
+    private VBox buatSectionProfil() {
+        VBox section = new VBox(16);
+        section.getStyleClass().add("settings-profile-section");
+        
+        HBox profileCard = new HBox(16);
+        profileCard.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        profileCard.getStyleClass().add("settings-profile-card");
+        profileCard.setPadding(new Insets(16));
+        profileCard.setStyle("-fx-background-color: -color-surface-container; -fx-background-radius: 12;");
+
+        if (ManajerOtentikasi.getInstance().isLoggedIn()) {
+            Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
+            
+            // Avatar
+            ImageView avatarView = new ImageView();
+            if (user.getPicture() != null) {
+                try {
+                    avatarView.setImage(new Image(user.getPicture(), 56, 56, true, true));
+                } catch (Exception e) {
+                    avatarView.setImage(null);
+                }
+            }
+            avatarView.setFitWidth(56);
+            avatarView.setFitHeight(56);
+            Circle clip = new Circle(28, 28, 28);
+            avatarView.setClip(clip);
+            
+            // Info
+            VBox infoBox = new VBox(4);
+            HBox.setHgrow(infoBox, javafx.scene.layout.Priority.ALWAYS);
+            
+            Label nameLabel = new Label(user.getName());
+            nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+            
+            Label emailLabel = new Label(user.getEmail() != null ? user.getEmail() : "");
+            emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
+            
+            Label providerLabel = new Label("Masuk dengan Google");
+            providerLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
+            
+            infoBox.getChildren().addAll(nameLabel, emailLabel, providerLabel);
+            
+            profileCard.getChildren().addAll(avatarView, infoBox);
+        } else {
+            Label notLoggedIn = new Label("Belum masuk");
+            notLoggedIn.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+            profileCard.getChildren().add(notLoggedIn);
         }
         
-        Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
-
-        Dialog<Void> dialog = PembuatDialogMD3.buatDialog("Profil Pengguna", "Informasi Profil Anda");
-        
-        VBox content = new VBox(15);
-        content.setPadding(new Insets(20));
-        content.setStyle("-fx-min-width: 400px;");
-        
-        Label nameLabel = new Label("Nama: " + user.getName());
-        nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        
-        Label emailLabel = new Label("Email: " + (user.getEmail() != null ? user.getEmail() : "Tidak tersedia"));
-        emailLabel.setStyle("-fx-font-size: 13px;");
-        
-        Label idLabel = new Label("ID: " + user.getId());
-        idLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
-        
-        content.getChildren().addAll(nameLabel, emailLabel, idLabel);
-        
-        dialog.getDialogPane().setContent(content);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
-        
-        dialog.showAndWait();
+        section.getChildren().add(profileCard);
+        return section;
     }
 
     private void tampilkanPengaturan() {
@@ -724,6 +834,9 @@ public class KontrolerUtama implements Initializable {
 
             VBox settingsContent = new VBox(32);
             settingsContent.setPadding(new Insets(24));
+
+        // === SECTION PROFIL ===
+        VBox profileSection = buatSectionProfil();
 
         VBox appearanceSection = createSettingsSection("Tampilan", PembuatIkon.ikonTampilan());
 
@@ -815,6 +928,7 @@ public class KontrolerUtama implements Initializable {
         aboutSection.getChildren().add(aboutContent);
 
         settingsContent.getChildren().addAll(
+            profileSection,
             appearanceSection,
             studySection,
             dataSection,
@@ -963,70 +1077,84 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void terapkanAnimasiMasuk() {
+        // Sidebar: slide in dari kiri dengan spring physics
         if (sidebar != null) {
             sidebar.setOpacity(0);
             sidebar.setTranslateX(-50);
 
-            FadeTransition fadeSidebar = new FadeTransition(Duration.millis(500), sidebar);
+            FadeTransition fadeSidebar = new FadeTransition(Duration.millis(400), sidebar);
             fadeSidebar.setFromValue(0.0);
             fadeSidebar.setToValue(1.0);
+            fadeSidebar.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
             TranslateTransition slideSidebar = new TranslateTransition(Duration.millis(500), sidebar);
             slideSidebar.setFromX(-50);
             slideSidebar.setToX(0);
+            slideSidebar.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
 
             ParallelTransition sidebarAnim = new ParallelTransition(fadeSidebar, slideSidebar);
             sidebarAnim.play();
         }
 
+        // Welcome section: fade in dengan easing
         if (welcomeLabel != null && welcomeLabel.getParent() != null) {
-            FadeTransition fadeWelcome = new FadeTransition(Duration.millis(600), welcomeLabel.getParent());
+            welcomeLabel.getParent().setOpacity(0);
+            FadeTransition fadeWelcome = new FadeTransition(Duration.millis(500), welcomeLabel.getParent());
             fadeWelcome.setFromValue(0.0);
             fadeWelcome.setToValue(1.0);
+            fadeWelcome.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
             fadeWelcome.setDelay(Duration.millis(100));
             fadeWelcome.play();
         }
 
+        // Stats grid: slide up dengan spring
         if (statsGrid != null) {
             statsGrid.setOpacity(0);
-            statsGrid.setTranslateY(30);
+            statsGrid.setTranslateY(40);
 
-            FadeTransition fadeStats = new FadeTransition(Duration.millis(600), statsGrid);
+            FadeTransition fadeStats = new FadeTransition(Duration.millis(400), statsGrid);
             fadeStats.setFromValue(0.0);
             fadeStats.setToValue(1.0);
+            fadeStats.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
             TranslateTransition slideStats = new TranslateTransition(Duration.millis(600), statsGrid);
-            slideStats.setFromY(30);
+            slideStats.setFromY(40);
             slideStats.setToY(0);
+            slideStats.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
 
             ParallelTransition statsAnim = new ParallelTransition(fadeStats, slideStats);
-            statsAnim.setDelay(Duration.millis(200));
+            statsAnim.setDelay(Duration.millis(150));
             statsAnim.play();
         }
 
+        // Activity section: fade in
         if (activitySection != null) {
             activitySection.setOpacity(0);
-            FadeTransition fadeActivity = new FadeTransition(Duration.millis(600), activitySection);
+            FadeTransition fadeActivity = new FadeTransition(Duration.millis(500), activitySection);
             fadeActivity.setFromValue(0.0);
             fadeActivity.setToValue(1.0);
-            fadeActivity.setDelay(Duration.millis(400));
+            fadeActivity.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
+            fadeActivity.setDelay(Duration.millis(300));
             fadeActivity.play();
         }
 
+        // Main content: slide up dengan spring
         if (mainContentGrid != null) {
             mainContentGrid.setOpacity(0);
-            mainContentGrid.setTranslateY(30);
+            mainContentGrid.setTranslateY(40);
 
-            FadeTransition fadeContent = new FadeTransition(Duration.millis(600), mainContentGrid);
+            FadeTransition fadeContent = new FadeTransition(Duration.millis(400), mainContentGrid);
             fadeContent.setFromValue(0.0);
             fadeContent.setToValue(1.0);
+            fadeContent.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
             TranslateTransition slideContent = new TranslateTransition(Duration.millis(600), mainContentGrid);
-            slideContent.setFromY(30);
+            slideContent.setFromY(40);
             slideContent.setToY(0);
+            slideContent.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
 
             ParallelTransition contentAnim = new ParallelTransition(fadeContent, slideContent);
-            contentAnim.setDelay(Duration.millis(500));
+            contentAnim.setDelay(Duration.millis(400));
             contentAnim.play();
         }
 
@@ -1038,28 +1166,49 @@ public class KontrolerUtama implements Initializable {
     private void terapkanAnimasiHoverSidebarButton(Button button) {
         if (button == null) return;
 
-        button.setOnMouseEntered(event -> {
-            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(150), button);
-            scaleUp.setToX(1.02);
-            scaleUp.setToY(1.02);
+        button.setOnMouseEntered(_ -> {
+            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), button);
+            scaleUp.setToX(1.03);
+            scaleUp.setToY(1.03);
+            scaleUp.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
-            TranslateTransition slideRight = new TranslateTransition(Duration.millis(150), button);
-            slideRight.setToX(4);
+            TranslateTransition slideRight = new TranslateTransition(Duration.millis(200), button);
+            slideRight.setToX(6);
+            slideRight.setInterpolator(AnimasiUtil.EASE_OUT_BACK);
 
             ParallelTransition hoverIn = new ParallelTransition(scaleUp, slideRight);
             hoverIn.play();
         });
 
-        button.setOnMouseExited(event -> {
-            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(150), button);
+        button.setOnMouseExited(_ -> {
+            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(250), button);
             scaleDown.setToX(1.0);
             scaleDown.setToY(1.0);
+            scaleDown.setInterpolator(AnimasiUtil.SPRING_SNAPPY);
 
-            TranslateTransition slideBack = new TranslateTransition(Duration.millis(150), button);
+            TranslateTransition slideBack = new TranslateTransition(Duration.millis(250), button);
             slideBack.setToX(0);
+            slideBack.setInterpolator(AnimasiUtil.SPRING_SNAPPY);
 
             ParallelTransition hoverOut = new ParallelTransition(scaleDown, slideBack);
             hoverOut.play();
+        });
+
+        // Press animation untuk feedback responsif
+        button.setOnMousePressed(_ -> {
+            ScaleTransition press = new ScaleTransition(Duration.millis(80), button);
+            press.setToX(0.97);
+            press.setToY(0.97);
+            press.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
+            press.play();
+        });
+
+        button.setOnMouseReleased(_ -> {
+            ScaleTransition release = new ScaleTransition(Duration.millis(200), button);
+            release.setToX(1.03);
+            release.setToY(1.03);
+            release.setInterpolator(AnimasiUtil.SPRING_BOUNCY);
+            release.play();
         });
     }
 
@@ -1073,13 +1222,15 @@ public class KontrolerUtama implements Initializable {
             sidebar.setVisible(true);
             sidebar.setTranslateX(-240);
 
-            TranslateTransition slideIn = new TranslateTransition(Duration.millis(300), sidebar);
+            TranslateTransition slideIn = new TranslateTransition(Duration.millis(400), sidebar);
             slideIn.setFromX(-240);
             slideIn.setToX(0);
+            slideIn.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
 
             FadeTransition fadeIn = new FadeTransition(Duration.millis(300), sidebar);
             fadeIn.setFromValue(0.0);
             fadeIn.setToValue(1.0);
+            fadeIn.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
             ParallelTransition showAnim = new ParallelTransition(slideIn, fadeIn);
             showAnim.play();
@@ -1087,10 +1238,12 @@ public class KontrolerUtama implements Initializable {
             TranslateTransition slideOut = new TranslateTransition(Duration.millis(300), sidebar);
             slideOut.setFromX(0);
             slideOut.setToX(-240);
+            slideOut.setInterpolator(AnimasiUtil.EASE_IN_OUT_CUBIC);
 
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), sidebar);
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(250), sidebar);
             fadeOut.setFromValue(1.0);
             fadeOut.setToValue(0.0);
+            fadeOut.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
 
             ParallelTransition hideAnim = new ParallelTransition(slideOut, fadeOut);
             hideAnim.setOnFinished(_ -> {

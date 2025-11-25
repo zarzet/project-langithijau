@@ -43,7 +43,7 @@ echo ========================================
 echo.
 echo Melakukan compile dan menjalankan aplikasi...
 echo.
-mvn clean compile exec:java -Dexec.mainClass="com.studyplanner.AplikasiUtama"
+call mvn clean compile exec:java -Dexec.mainClass=com.studyplanner.AplikasiUtama
 echo.
 echo Aplikasi telah ditutup.
 echo.
@@ -60,7 +60,7 @@ echo.
 echo Menjalankan aplikasi tanpa compile...
 echo Pastikan sudah di-compile sebelumnya!
 echo.
-mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiUtama"
+call mvn exec:java -Dexec.mainClass=com.studyplanner.AplikasiUtama
 echo.
 echo Aplikasi telah ditutup.
 echo.
@@ -76,7 +76,7 @@ echo ========================================
 echo.
 echo Melakukan compile dan menjalankan inspektur...
 echo.
-mvn clean compile exec:java -Dexec.mainClass="com.studyplanner.AplikasiInspekturDB"
+call mvn clean compile exec:java -Dexec.mainClass=com.studyplanner.AplikasiInspekturDB
 echo.
 echo Inspektur Database telah ditutup.
 echo.
@@ -93,7 +93,7 @@ echo.
 echo Menjalankan inspektur tanpa compile...
 echo Pastikan sudah di-compile sebelumnya!
 echo.
-mvn exec:java -Dexec.mainClass="com.studyplanner.AplikasiInspekturDB"
+call mvn exec:java -Dexec.mainClass=com.studyplanner.AplikasiInspekturDB
 echo.
 echo Inspektur Database telah ditutup.
 echo.

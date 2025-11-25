@@ -1,20 +1,24 @@
 package com.studyplanner.tampilan;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
+/**
+ * Jam analog dengan animasi smooth 60 FPS.
+ * Jarum detik bergerak fluid tanpa "melompat" setiap detik.
+ */
 public class JamAnalog extends Pane {
 
     private final Canvas canvas;
     private final double ukuran;
     private boolean modeGelap = false;
+    private AnimationTimer animationTimer;
+    private boolean smoothSecond = true; // Mode jarum detik smooth
 
     public JamAnalog(double ukuran) {
         this.ukuran = ukuran;
@@ -29,11 +33,31 @@ public class JamAnalog extends Pane {
     }
 
     private void mulaiJam() {
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), _ -> gambar()));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        // Menggunakan AnimationTimer untuk smooth 60 FPS animation
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                gambar();
+            }
+        };
+        animationTimer.start();
         gambar();
+    }
+
+    /**
+     * Set apakah jarum detik bergerak smooth atau melompat per detik.
+     */
+    public void setSmoothSecond(boolean smooth) {
+        this.smoothSecond = smooth;
+    }
+
+    /**
+     * Hentikan animasi jam (untuk cleanup).
+     */
+    public void stop() {
+        if (animationTimer != null) {
+            animationTimer.stop();
+        }
     }
 
     private void gambar() {
@@ -67,14 +91,24 @@ public class JamAnalog extends Pane {
             gc.strokeLine(x1, y1, x2, y2);
         }
 
-        LocalTime sekarang = LocalTime.now();
+        LocalDateTime sekarangDateTime = LocalDateTime.now();
+        LocalTime sekarang = sekarangDateTime.toLocalTime();
         int jam = sekarang.getHour() % 12;
         int menit = sekarang.getMinute();
         int detik = sekarang.getSecond();
+        int nano = sekarang.getNano();
 
-        double sudutJam = Math.toRadians((jam * 30 + menit * 0.5) - 90);
-        double sudutMenit = Math.toRadians((menit * 6) - 90);
-        double sudutDetik = Math.toRadians((detik * 6) - 90);
+        // Smooth interpolation untuk semua jarum
+        double fractionSecond = nano / 1_000_000_000.0;
+        double smoothDetik = detik + fractionSecond;
+        double smoothMenit = menit + smoothDetik / 60.0;
+        double smoothJam = jam + smoothMenit / 60.0;
+
+        double sudutJam = Math.toRadians((smoothJam * 30) - 90);
+        double sudutMenit = Math.toRadians((smoothMenit * 6) - 90);
+        double sudutDetik = smoothSecond
+                ? Math.toRadians((smoothDetik * 6) - 90)
+                : Math.toRadians((detik * 6) - 90);
 
         gc.setStroke(warnaDepan);
         gc.setLineWidth(4);

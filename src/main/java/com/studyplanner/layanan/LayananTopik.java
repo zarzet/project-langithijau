@@ -73,6 +73,17 @@ public class LayananTopik {
     }
 
     /**
+     * Mengambil semua topik berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @return List topik milik user tersebut
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<Topik> ambilSemuaByUserId(int userId) throws SQLException {
+        return daoTopik.ambilSemuaByUserId(userId);
+    }
+
+    /**
      * Mengambil semua topik berdasarkan mata kuliah.
      *
      * @param idMataKuliah ID mata kuliah
@@ -103,6 +114,18 @@ public class LayananTopik {
      */
     public List<Topik> ambilTopikUntukDiulang(int idMataKuliah) throws SQLException {
         return daoTopik.ambilTopikUntukDiulang(idMataKuliah, LocalDate.now());
+    }
+
+    /**
+     * Mengambil topik yang perlu diulang hari ini berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @param idMataKuliah ID mata kuliah (-1 untuk semua mata kuliah user)
+     * @return List topik yang perlu diulang
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<Topik> ambilTopikUntukDiulangByUserId(int userId, int idMataKuliah) throws SQLException {
+        return daoTopik.ambilTopikUntukDiulangByUserId(userId, idMataKuliah, LocalDate.now());
     }
 
     /**
@@ -194,6 +217,28 @@ public class LayananTopik {
      */
     public int hitungBerdasarkanMataKuliah(int idMataKuliah) throws SQLException {
         return daoTopik.hitungBerdasarkanMataKuliahId(idMataKuliah);
+    }
+
+    /**
+     * Menghitung total topik berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @return Jumlah topik
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungByUserId(int userId) throws SQLException {
+        return daoTopik.hitungByUserId(userId);
+    }
+
+    /**
+     * Menghitung topik yang dikuasai berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @return Jumlah topik dikuasai
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungDikuasaiByUserId(int userId) throws SQLException {
+        return daoTopik.hitungDikuasaiByUserId(userId);
     }
 
     /**

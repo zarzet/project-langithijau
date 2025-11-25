@@ -99,17 +99,11 @@
                     </VBox>
                 </GridPane>
 
-                <!-- Activity Widgets Grid -->
+                <!-- Activity Widgets Grid (Customizable) -->
                 <VBox fx:id="activitySection" spacing="12">
                     <Label text="Aktivitas" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
-                    <ScrollPane fitToHeight="true" vbarPolicy="NEVER" hbarPolicy="NEVER" styleClass="widget-scroll-pane" style="-fx-background-color: transparent;">
-                        <HBox spacing="16" alignment="CENTER_LEFT">
-                            <VBox fx:id="streakContainer" alignment="CENTER" spacing="8"/>
-                            <VBox fx:id="clockContainer" alignment="CENTER" spacing="8"/>
-                            <VBox fx:id="studyTimeContainer" alignment="CENTER" spacing="8"/>
-                            <VBox fx:id="nextReviewContainer" alignment="CENTER" spacing="8"/>
-                            <VBox fx:id="upcomingTasksWidgetContainer" alignment="CENTER" spacing="8"/>
-                        </HBox>
+                    <ScrollPane fitToHeight="true" vbarPolicy="NEVER" hbarPolicy="AS_NEEDED" styleClass="widget-scroll-pane" style="-fx-background-color: transparent;">
+                        <HBox fx:id="widgetContainer" spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 8 0;"/>
                     </ScrollPane>
                 </VBox>
 

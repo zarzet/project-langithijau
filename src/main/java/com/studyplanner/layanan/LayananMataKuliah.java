@@ -27,19 +27,19 @@ public class LayananMataKuliah {
     /**
      * Mendaftarkan mata kuliah baru dengan validasi.
      *
-     * @param mataKuliah Data mata kuliah
+     * @param mataKuliah Data mata kuliah (harus memiliki userId yang valid)
      * @return ID mata kuliah yang baru dibuat
      * @throws IllegalArgumentException jika data tidak valid
-     * @throws IllegalStateException jika kode sudah digunakan
+     * @throws IllegalStateException jika kode sudah digunakan oleh user yang sama
      * @throws SQLException jika terjadi kesalahan database
      */
     public int daftarkan(MataKuliah mataKuliah) throws SQLException {
         // Validasi
         validasiMataKuliah(mataKuliah);
 
-        // Cek duplikat kode
+        // Cek duplikat kode untuk user yang sama
         if (mataKuliah.getKode() != null && !mataKuliah.getKode().trim().isEmpty()) {
-            MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getKode());
+            MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getUserId(), mataKuliah.getKode());
             if (existing != null) {
                 throw new IllegalStateException("Kode mata kuliah '" + mataKuliah.getKode() + "' sudah digunakan");
             }
@@ -59,9 +59,9 @@ public class LayananMataKuliah {
     public boolean perbarui(MataKuliah mataKuliah) throws SQLException {
         validasiMataKuliah(mataKuliah);
 
-        // Cek duplikat kode (kecuali untuk mata kuliah yang sama)
+        // Cek duplikat kode untuk user yang sama (kecuali untuk mata kuliah yang sama)
         if (mataKuliah.getKode() != null && !mataKuliah.getKode().trim().isEmpty()) {
-            MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getKode());
+            MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getUserId(), mataKuliah.getKode());
             if (existing != null && existing.getId() != mataKuliah.getId()) {
                 throw new IllegalStateException("Kode mata kuliah '" + mataKuliah.getKode() + "' sudah digunakan");
             }
@@ -84,13 +84,26 @@ public class LayananMataKuliah {
     }
 
     /**
-     * Mengambil semua mata kuliah.
+     * Mengambil semua mata kuliah (deprecated - gunakan ambilSemuaByUserId).
      *
      * @return List semua mata kuliah
      * @throws SQLException jika terjadi kesalahan database
+     * @deprecated Gunakan {@link #ambilSemuaByUserId(int)} untuk multi-user support
      */
+    @Deprecated
     public List<MataKuliah> ambilSemua() throws SQLException {
         return daoMataKuliah.ambilSemua();
+    }
+
+    /**
+     * Mengambil semua mata kuliah untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return List mata kuliah milik user tersebut
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<MataKuliah> ambilSemuaByUserId(int userId) throws SQLException {
+        return daoMataKuliah.ambilSemuaByUserId(userId);
     }
 
     /**
@@ -105,24 +118,38 @@ public class LayananMataKuliah {
     }
 
     /**
-     * Mengambil mata kuliah berdasarkan kode.
+     * Mengambil mata kuliah berdasarkan kode untuk user tertentu.
      *
+     * @param userId ID user
      * @param kode Kode mata kuliah
      * @return MataKuliah atau null jika tidak ditemukan
      * @throws SQLException jika terjadi kesalahan database
      */
-    public MataKuliah ambilBerdasarkanKode(String kode) throws SQLException {
-        return daoMataKuliah.ambilBerdasarkanKode(kode);
+    public MataKuliah ambilBerdasarkanKode(int userId, String kode) throws SQLException {
+        return daoMataKuliah.ambilBerdasarkanKode(userId, kode);
     }
 
     /**
-     * Menghitung total mata kuliah.
+     * Menghitung total mata kuliah (semua user).
      *
      * @return Jumlah mata kuliah
      * @throws SQLException jika terjadi kesalahan database
+     * @deprecated Gunakan {@link #hitungTotalByUserId(int)} untuk multi-user support
      */
+    @Deprecated
     public int hitungTotal() throws SQLException {
         return daoMataKuliah.hitungTotal();
+    }
+
+    /**
+     * Menghitung total mata kuliah untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return Jumlah mata kuliah milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungTotalByUserId(int userId) throws SQLException {
+        return daoMataKuliah.hitungTotalByUserId(userId);
     }
 
     /**

@@ -6,16 +6,22 @@ import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class DekoratorJendelaKustom {
 
     private static final double TINGGI_TITLE_BAR = 40;
+    private static final double RADIUS_SUDUT = 12;
+    private static final double PADDING_BAYANGAN = 15;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -25,8 +31,9 @@ public class DekoratorJendelaKustom {
 
     private void terapkanDekorasi(Stage stage, String judul, boolean modeGelap) {
         try {
-            stage.initStyle(StageStyle.UNDECORATED);
+            stage.initStyle(StageStyle.TRANSPARENT);
         } catch (IllegalStateException e) {
+            // Stage sudah ditampilkan, abaikan
         }
 
         Scene scene = stage.getScene();
@@ -39,7 +46,19 @@ public class DekoratorJendelaKustom {
             lebar = scene.getWidth();
             tinggi = scene.getHeight();
 
-            if (originalRoot instanceof BorderPane) {
+            // Cek apakah sudah di-wrap sebelumnya
+            if (originalRoot instanceof StackPane) {
+                StackPane sp = (StackPane) originalRoot;
+                if (sp.getStyleClass().contains("window-shadow-container") && !sp.getChildren().isEmpty()) {
+                    javafx.scene.Node child = sp.getChildren().get(0);
+                    if (child instanceof BorderPane) {
+                        BorderPane bp = (BorderPane) child;
+                        if (bp.getStyleClass().contains("custom-window") && bp.getCenter() instanceof javafx.scene.Parent) {
+                            originalRoot = (javafx.scene.Parent) bp.getCenter();
+                        }
+                    }
+                }
+            } else if (originalRoot instanceof BorderPane) {
                 BorderPane bp = (BorderPane) originalRoot;
                 if (bp.getStyleClass().contains("custom-window") && bp.getCenter() instanceof javafx.scene.Parent) {
                     originalRoot = (javafx.scene.Parent) bp.getCenter();
@@ -52,36 +71,70 @@ public class DekoratorJendelaKustom {
             }
         }
 
-        BorderPane root = new BorderPane();
-        root.getStyleClass().add("custom-window");
+        // Container utama dengan rounded corners
+        BorderPane windowPane = new BorderPane();
+        windowPane.getStyleClass().add("custom-window");
 
         String bgColor = modeGelap ? "#0f1419" : "#f8f9ff";
-        root.setStyle("-fx-background-color: " + bgColor + ";");
+        windowPane.setStyle(
+            "-fx-background-color: " + bgColor + ";" +
+            "-fx-background-radius: " + RADIUS_SUDUT + ";" +
+            "-fx-border-radius: " + RADIUS_SUDUT + ";" +
+            "-fx-border-color: " + (modeGelap ? "#2a3038" : "#d0d5dd") + ";" +
+            "-fx-border-width: 1;"
+        );
+
+        // Clip untuk memastikan konten tidak keluar dari rounded corners
+        Rectangle clip = new Rectangle();
+        clip.setArcWidth(RADIUS_SUDUT * 2);
+        clip.setArcHeight(RADIUS_SUDUT * 2);
+        windowPane.setClip(clip);
+        
+        // Update clip size ketika window berubah ukuran
+        windowPane.layoutBoundsProperty().addListener((_, _, bounds) -> {
+            clip.setWidth(bounds.getWidth());
+            clip.setHeight(bounds.getHeight());
+        });
 
         HBox titleBar = buatTitleBar(stage, judul, modeGelap);
-        root.setTop(titleBar);
+        windowPane.setTop(titleBar);
 
         if (originalRoot != null) {
-            root.setCenter(originalRoot);
+            windowPane.setCenter(originalRoot);
         }
 
-        Scene sceneBaru = new Scene(root, lebar, tinggi);
+        // Wrapper dengan shadow
+        StackPane shadowContainer = new StackPane(windowPane);
+        shadowContainer.getStyleClass().add("window-shadow-container");
+        shadowContainer.setPadding(new Insets(PADDING_BAYANGAN));
+        shadowContainer.setStyle("-fx-background-color: transparent;");
+
+        // Drop shadow effect
+        DropShadow shadow = new DropShadow();
+        shadow.setRadius(12);
+        shadow.setOffsetX(0);
+        shadow.setOffsetY(4);
+        shadow.setColor(Color.rgb(0, 0, 0, 0.25));
+        windowPane.setEffect(shadow);
+
+        Scene sceneBaru = new Scene(shadowContainer, lebar + PADDING_BAYANGAN * 2, tinggi + PADDING_BAYANGAN * 2);
+        sceneBaru.setFill(Color.TRANSPARENT);
 
         if (scene != null && !scene.getStylesheets().isEmpty()) {
             sceneBaru.getStylesheets().addAll(scene.getStylesheets());
         }
 
         if (modeGelap) {
-            sceneBaru.getRoot().getStyleClass().add("dark-mode");
+            windowPane.getStyleClass().add("dark-mode");
         } else {
-            sceneBaru.getRoot().getStyleClass().remove("dark-mode");
-            sceneBaru.getRoot().getStyleClass().add("light-mode");
+            windowPane.getStyleClass().remove("dark-mode");
+            windowPane.getStyleClass().add("light-mode");
         }
 
         stage.setScene(sceneBaru);
 
         aktifkanGeser(titleBar, stage);
-        aktifkanUbahUkuran(root, stage);
+        aktifkanUbahUkuran(shadowContainer, windowPane, stage);
     }
 
     private HBox buatTitleBar(Stage stage, String judul, boolean modeGelap) {
@@ -98,14 +151,12 @@ public class DekoratorJendelaKustom {
         String warnaTeks = modeGelap ? "#e1e2e9" : "#191c20";
         String warnaBorder = modeGelap ? "#42474e" : "#c2c7cf";
 
+        // Title bar dengan rounded corners di atas
         titleBar.setStyle(
-                "-fx-background-color: " +
-                        warnaLatar +
-                        ";" +
-                        "-fx-border-color: transparent transparent " +
-                        warnaBorder +
-                        " transparent;" +
-                        "-fx-border-width: 0 0 1 0;");
+                "-fx-background-color: " + warnaLatar + ";" +
+                "-fx-background-radius: " + RADIUS_SUDUT + " " + RADIUS_SUDUT + " 0 0;" +
+                "-fx-border-color: transparent transparent " + warnaBorder + " transparent;" +
+                "-fx-border-width: 0 0 1 0;");
 
         Label labelJudul = new Label(judul);
         labelJudul.setStyle(
@@ -237,108 +288,93 @@ public class DekoratorJendelaKustom {
         });
     }
 
-    private void aktifkanUbahUkuran(BorderPane root, Stage stage) {
-        final double MARGIN_UBAH_UKURAN = 5;
+    private void aktifkanUbahUkuran(StackPane shadowContainer, BorderPane windowPane, Stage stage) {
+        final double MARGIN_UBAH_UKURAN = 8;
 
-        root.setOnMouseMoved(event -> {
+        shadowContainer.setOnMouseMoved(event -> {
             if (stage.isMaximized()) {
-                root.setCursor(Cursor.DEFAULT);
+                shadowContainer.setCursor(Cursor.DEFAULT);
                 return;
             }
 
             double x = event.getX();
             double y = event.getY();
-            double lebar = root.getWidth();
-            double tinggi = root.getHeight();
+            double lebar = shadowContainer.getWidth();
+            double tinggi = shadowContainer.getHeight();
 
             if (x < MARGIN_UBAH_UKURAN && y < MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.NW_RESIZE);
+                shadowContainer.setCursor(Cursor.NW_RESIZE);
             } else if (x > lebar - MARGIN_UBAH_UKURAN && y < MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.NE_RESIZE);
+                shadowContainer.setCursor(Cursor.NE_RESIZE);
             } else if (x < MARGIN_UBAH_UKURAN && y > tinggi - MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.SW_RESIZE);
+                shadowContainer.setCursor(Cursor.SW_RESIZE);
             } else if (x > lebar - MARGIN_UBAH_UKURAN && y > tinggi - MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.SE_RESIZE);
+                shadowContainer.setCursor(Cursor.SE_RESIZE);
             } else if (x < MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.W_RESIZE);
+                shadowContainer.setCursor(Cursor.W_RESIZE);
             } else if (x > lebar - MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.E_RESIZE);
+                shadowContainer.setCursor(Cursor.E_RESIZE);
             } else if (y < MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.N_RESIZE);
+                shadowContainer.setCursor(Cursor.N_RESIZE);
             } else if (y > tinggi - MARGIN_UBAH_UKURAN) {
-                root.setCursor(Cursor.S_RESIZE);
+                shadowContainer.setCursor(Cursor.S_RESIZE);
             } else {
-                root.setCursor(Cursor.DEFAULT);
+                shadowContainer.setCursor(Cursor.DEFAULT);
             }
         });
 
-        root.setOnMouseDragged(event -> {
+        shadowContainer.setOnMouseDragged(event -> {
             if (stage.isMaximized())
                 return;
 
-            Cursor kursor = root.getCursor();
+            Cursor kursor = shadowContainer.getCursor();
             double deltaX = event.getScreenX() - stage.getX();
             double deltaY = event.getScreenY() - stage.getY();
 
+            double minWidth = stage.getMinWidth() + PADDING_BAYANGAN * 2;
+            double minHeight = stage.getMinHeight() + PADDING_BAYANGAN * 2;
+
             if (kursor == Cursor.E_RESIZE) {
-                stage.setWidth(deltaX);
+                stage.setWidth(Math.max(deltaX, minWidth));
             } else if (kursor == Cursor.W_RESIZE) {
-                double lebarBaru = stage.getWidth() -
-                        deltaX +
-                        stage.getX() -
-                        event.getScreenX();
-                if (lebarBaru > stage.getMinWidth()) {
+                double lebarBaru = stage.getWidth() - deltaX + stage.getX() - event.getScreenX();
+                if (lebarBaru > minWidth) {
                     stage.setWidth(lebarBaru);
                     stage.setX(event.getScreenX());
                 }
             } else if (kursor == Cursor.S_RESIZE) {
-                stage.setHeight(deltaY);
+                stage.setHeight(Math.max(deltaY, minHeight));
             } else if (kursor == Cursor.N_RESIZE) {
-                double tinggiBaru = stage.getHeight() -
-                        deltaY +
-                        stage.getY() -
-                        event.getScreenY();
-                if (tinggiBaru > stage.getMinHeight()) {
+                double tinggiBaru = stage.getHeight() - deltaY + stage.getY() - event.getScreenY();
+                if (tinggiBaru > minHeight) {
                     stage.setHeight(tinggiBaru);
                     stage.setY(event.getScreenY());
                 }
             } else if (kursor == Cursor.SE_RESIZE) {
-                stage.setWidth(deltaX);
-                stage.setHeight(deltaY);
+                stage.setWidth(Math.max(deltaX, minWidth));
+                stage.setHeight(Math.max(deltaY, minHeight));
             } else if (kursor == Cursor.SW_RESIZE) {
-                double lebarBaru = stage.getWidth() -
-                        deltaX +
-                        stage.getX() -
-                        event.getScreenX();
-                if (lebarBaru > stage.getMinWidth()) {
+                double lebarBaru = stage.getWidth() - deltaX + stage.getX() - event.getScreenX();
+                if (lebarBaru > minWidth) {
                     stage.setWidth(lebarBaru);
                     stage.setX(event.getScreenX());
                 }
-                stage.setHeight(deltaY);
+                stage.setHeight(Math.max(deltaY, minHeight));
             } else if (kursor == Cursor.NE_RESIZE) {
-                stage.setWidth(deltaX);
-                double tinggiBaru = stage.getHeight() -
-                        deltaY +
-                        stage.getY() -
-                        event.getScreenY();
-                if (tinggiBaru > stage.getMinHeight()) {
+                stage.setWidth(Math.max(deltaX, minWidth));
+                double tinggiBaru = stage.getHeight() - deltaY + stage.getY() - event.getScreenY();
+                if (tinggiBaru > minHeight) {
                     stage.setHeight(tinggiBaru);
                     stage.setY(event.getScreenY());
                 }
             } else if (kursor == Cursor.NW_RESIZE) {
-                double lebarBaru = stage.getWidth() -
-                        deltaX +
-                        stage.getX() -
-                        event.getScreenX();
-                double tinggiBaru = stage.getHeight() -
-                        deltaY +
-                        stage.getY() -
-                        event.getScreenY();
-                if (lebarBaru > stage.getMinWidth()) {
+                double lebarBaru = stage.getWidth() - deltaX + stage.getX() - event.getScreenX();
+                double tinggiBaru = stage.getHeight() - deltaY + stage.getY() - event.getScreenY();
+                if (lebarBaru > minWidth) {
                     stage.setWidth(lebarBaru);
                     stage.setX(event.getScreenX());
                 }
-                if (tinggiBaru > stage.getMinHeight()) {
+                if (tinggiBaru > minHeight) {
                     stage.setHeight(tinggiBaru);
                     stage.setY(event.getScreenY());
                 }

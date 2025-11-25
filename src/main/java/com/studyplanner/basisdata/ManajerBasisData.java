@@ -47,10 +47,13 @@ public class ManajerBasisData {
         String buatTabelMataKuliah = """
                     CREATE TABLE IF NOT EXISTS mata_kuliah (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL DEFAULT 1,
                         nama TEXT NOT NULL,
-                        kode TEXT NOT NULL UNIQUE,
+                        kode TEXT NOT NULL,
                         deskripsi TEXT,
-                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                        UNIQUE(user_id, kode)
                     )
                 """;
 
@@ -123,6 +126,9 @@ public class ManajerBasisData {
         tambahKolomJikaBelumAda("topik", "kesulitan_fsrs", "REAL DEFAULT 0");
         tambahKolomJikaBelumAda("topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
         tambahKolomJikaBelumAda("topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
+
+        // Migrasi: tambah user_id ke mata_kuliah untuk multi-user support
+        tambahKolomJikaBelumAda("mata_kuliah", "user_id", "INTEGER NOT NULL DEFAULT 1");
     }
 
     private void catatKueri(String sql) {

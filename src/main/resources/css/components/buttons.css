@@ -145,6 +145,14 @@
     -fx-border-color: #00538b;
 }
 
+.nav-arrow-btn .ikonli-font-icon {
+    -fx-icon-color: -color-primary;
+}
+
+.nav-arrow-btn:hover .ikonli-font-icon {
+    -fx-icon-color: white;
+}
+
 /* BUTTON ICONS */
 .btn-primary .ikonli-font-icon {
     -fx-icon-color: white;
@@ -263,6 +271,14 @@
 .dark-mode .nav-arrow-btn:pressed {
     -fx-background-color: #a5d6ff;
     -fx-border-color: #a5d6ff;
+}
+
+.dark-mode .nav-arrow-btn .ikonli-font-icon {
+    -fx-icon-color: #8dcdff;
+}
+
+.dark-mode .nav-arrow-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #00344e;
 }
 
 /* Dark Mode Button Icons */

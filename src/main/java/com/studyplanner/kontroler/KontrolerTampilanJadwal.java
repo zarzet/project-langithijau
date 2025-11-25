@@ -3,6 +3,7 @@ package com.studyplanner.kontroler;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.model.SesiBelajar;
+import com.studyplanner.utilitas.PembuatIkon;
 import com.studyplanner.utilitas.UtilUI;
 import java.net.URL;
 import java.sql.SQLException;
@@ -68,10 +69,14 @@ public class KontrolerTampilanJadwal implements Initializable {
         });
 
         if (prevWeekBtn != null) {
+            prevWeekBtn.setGraphic(PembuatIkon.ikonPanahKiri(20));
+            prevWeekBtn.setText("");
             prevWeekBtn.setOnAction(_ -> navigasiMinggu(-7));
         }
 
         if (nextWeekBtn != null) {
+            nextWeekBtn.setGraphic(PembuatIkon.ikonPanahKanan(20));
+            nextWeekBtn.setText("");
             nextWeekBtn.setOnAction(_ -> navigasiMinggu(7));
         }
 

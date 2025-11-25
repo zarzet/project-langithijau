@@ -179,6 +179,34 @@ public class PembuatIkon {
     }
 
     /**
+     * Ikon panah kiri untuk navigasi
+     */
+    public static Node ikonPanahKiri() {
+        return buat(Material2OutlinedAL.CHEVRON_LEFT, 24);
+    }
+
+    /**
+     * Ikon panah kiri dengan ukuran custom
+     */
+    public static Node ikonPanahKiri(int ukuran) {
+        return buat(Material2OutlinedAL.CHEVRON_LEFT, ukuran);
+    }
+
+    /**
+     * Ikon panah kanan untuk navigasi
+     */
+    public static Node ikonPanahKanan() {
+        return buat(Material2OutlinedAL.CHEVRON_RIGHT, 24);
+    }
+
+    /**
+     * Ikon panah kanan dengan ukuran custom
+     */
+    public static Node ikonPanahKanan(int ukuran) {
+        return buat(Material2OutlinedAL.CHEVRON_RIGHT, ukuran);
+    }
+
+    /**
      * Ikon untuk timer/stopwatch
      */
     public static Node ikonTimer() {
@@ -260,5 +288,154 @@ public class PembuatIkon {
      */
     public static Node ikonCopyright() {
         return buat(Material2OutlinedAL.COPYRIGHT, 16);
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada tugas
+     */
+    public static FontIcon ikonKosongTugas() {
+        return buat(Material2OutlinedAL.ASSIGNMENT, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada ujian
+     */
+    public static FontIcon ikonKosongUjian() {
+        return buat(Material2OutlinedAL.EVENT_NOTE, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada review
+     */
+    public static FontIcon ikonKosongReview() {
+        return buat(Material2OutlinedMZ.RATE_REVIEW, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada mata kuliah
+     */
+    public static FontIcon ikonKosongMataKuliah() {
+        return buat(Material2OutlinedAL.BOOK, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada topik
+     */
+    public static FontIcon ikonKosongTopik() {
+        return buat(Material2OutlinedAL.LIBRARY_BOOKS, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - tidak ada jadwal
+     */
+    public static FontIcon ikonKosongJadwal() {
+        return buat(Material2OutlinedMZ.SCHEDULE, 48, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk empty state - semua selesai / celebrasi
+     */
+    public static FontIcon ikonSemuaSelesai() {
+        return buat(Material2OutlinedAL.CHECK_CIRCLE, 48, "#22c55e");
+    }
+
+    /**
+     * Ikon untuk onboarding - selamat datang
+     */
+    public static FontIcon ikonOnboardingSelamatDatang() {
+        return buat(Material2OutlinedAL.EMOJI_PEOPLE, 64, "#6366f1");
+    }
+
+    /**
+     * Ikon untuk onboarding - tambah mata kuliah
+     */
+    public static FontIcon ikonOnboardingMataKuliah() {
+        return buat(Material2OutlinedAL.ADD_BOX, 64, "#6366f1");
+    }
+
+    /**
+     * Ikon untuk onboarding - buat jadwal
+     */
+    public static FontIcon ikonOnboardingJadwal() {
+        return buat(Material2OutlinedAL.CALENDAR_TODAY, 64, "#6366f1");
+    }
+
+    /**
+     * Ikon untuk onboarding - selesai
+     */
+    public static FontIcon ikonOnboardingSelesai() {
+        return buat(Material2OutlinedMZ.STAR, 64, "#22c55e");
+    }
+
+    /**
+     * Ikon untuk navigasi next
+     */
+    public static FontIcon ikonNext() {
+        return buat(Material2OutlinedAL.ARROW_FORWARD, 20);
+    }
+
+    /**
+     * Ikon untuk navigasi back
+     */
+    public static FontIcon ikonBack() {
+        return buat(Material2OutlinedAL.ARROW_BACK, 20);
+    }
+
+    // ===== IKON UNTUK WIDGET PICKER =====
+
+    /**
+     * Ikon untuk simpan
+     */
+    public static FontIcon ikonSimpan() {
+        return buat(Material2OutlinedMZ.SAVE, 18);
+    }
+
+    /**
+     * Ikon untuk widget runtutan belajar
+     */
+    public static FontIcon ikonRuntutan() {
+        return buat(Material2OutlinedAL.LOCAL_FIRE_DEPARTMENT, 24, "#f97316");
+    }
+
+    /**
+     * Ikon untuk widget jam
+     */
+    public static FontIcon ikonJam() {
+        return buat(Material2OutlinedMZ.SCHEDULE, 24, "#6366f1");
+    }
+
+    /**
+     * Ikon untuk widget waktu belajar
+     */
+    public static FontIcon ikonWaktuBelajar() {
+        return buat(Material2OutlinedMZ.TIMER, 24, "#22c55e");
+    }
+
+    /**
+     * Ikon untuk widget ulasan berikutnya
+     */
+    public static FontIcon ikonUlasan() {
+        return buat(Material2OutlinedMZ.RATE_REVIEW, 24, "#eab308");
+    }
+
+    /**
+     * Ikon untuk widget tugas mendatang
+     */
+    public static FontIcon ikonTugasMendatang() {
+        return buat(Material2OutlinedAL.ASSIGNMENT, 24, "#3b82f6");
+    }
+
+    /**
+     * Ikon untuk tambah widget
+     */
+    public static FontIcon ikonTambahWidget() {
+        return buat(Material2OutlinedAL.ADD_CIRCLE_OUTLINE, 32, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk drag handle
+     */
+    public static FontIcon ikonDragHandle() {
+        return buat(Material2OutlinedAL.DRAG_INDICATOR, 20, "#94a3b8");
     }
 }

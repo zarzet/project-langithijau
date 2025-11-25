@@ -144,6 +144,39 @@ public class ManajerOtentikasi {
         return null;
     }
 
+    /**
+     * Mendapatkan ID user yang sedang login.
+     * Untuk local user, mengembalikan ID dari database.
+     * Untuk Google user, mengembalikan ID yang disimpan setelah sync ke database.
+     * 
+     * @return ID user atau -1 jika tidak ada user yang login
+     */
+    public int getCurrentUserId() {
+        if (currentLocalUser != null) {
+            Object id = currentLocalUser.get("id");
+            if (id instanceof Integer) {
+                return (Integer) id;
+            }
+        }
+        // Untuk Google user, ID harus di-set setelah sync ke database
+        return -1;
+    }
+
+    /**
+     * Set ID user untuk Google OAuth user setelah sync ke database.
+     */
+    public void setCurrentGoogleUserId(int userId) {
+        if (currentUser != null && currentLocalUser == null) {
+            // Buat map untuk menyimpan data Google user termasuk ID dari DB
+            currentLocalUser = new java.util.HashMap<>();
+            currentLocalUser.put("id", userId);
+            currentLocalUser.put("nama", currentUser.getName());
+            currentLocalUser.put("email", currentUser.getEmail());
+            currentLocalUser.put("provider", "google");
+            currentLocalUser.put("google_id", currentUser.getId());
+        }
+    }
+
     private void deleteDirectory(File directory) {
         if (directory.isDirectory()) {
             File[] files = directory.listFiles();

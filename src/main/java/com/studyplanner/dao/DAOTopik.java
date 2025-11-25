@@ -114,6 +114,34 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
     }
 
     /**
+     * Mengambil semua topik berdasarkan user ID.
+     * Melakukan JOIN dengan tabel mata_kuliah untuk filter by user.
+     *
+     * @param userId ID user
+     * @return List topik milik user tersebut
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<Topik> ambilSemuaByUserId(int userId) throws SQLException {
+        String sql = "SELECT t.* FROM topik t " +
+                     "INNER JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id " +
+                     "WHERE mk.user_id = ? ORDER BY t.id_mata_kuliah, t.nama";
+        List<Topik> daftarTopik = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarTopik.add(mapRowKeTopik(rs));
+            }
+        }
+
+        return daftarTopik;
+    }
+
+    /**
      * Mengambil topik berdasarkan tingkat kesulitan.
      *
      * @param tingkatKesulitan Tingkat kesulitan (1-5, dimana 1=sangat mudah, 5=sangat sulit)
@@ -292,6 +320,57 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
     }
 
     /**
+     * Mengambil topik yang perlu diulang berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @param mataKuliahId ID mata kuliah (-1 untuk semua mata kuliah user)
+     * @param tanggal Tanggal referensi
+     * @return List topik yang perlu diulang
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<Topik> ambilTopikUntukDiulangByUserId(int userId, int mataKuliahId, LocalDate tanggal) throws SQLException {
+        String sql;
+        if (mataKuliahId > 0) {
+            sql = "SELECT t.* FROM topik t " +
+                  "INNER JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id " +
+                  "WHERE mk.user_id = ? AND t.id_mata_kuliah = ? AND t.dikuasai = 0 " +
+                  "AND (t.tanggal_ulasan_terakhir IS NULL OR " +
+                  "DATE(t.tanggal_ulasan_terakhir, '+' || t.interval || ' days') <= ?) " +
+                  "ORDER BY t.prioritas DESC, t.tingkat_kesulitan DESC";
+        } else {
+            sql = "SELECT t.* FROM topik t " +
+                  "INNER JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id " +
+                  "WHERE mk.user_id = ? AND t.dikuasai = 0 " +
+                  "AND (t.tanggal_ulasan_terakhir IS NULL OR " +
+                  "DATE(t.tanggal_ulasan_terakhir, '+' || t.interval || ' days') <= ?) " +
+                  "ORDER BY t.prioritas DESC, t.tingkat_kesulitan DESC";
+        }
+
+        List<Topik> daftarTopik = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            if (mataKuliahId > 0) {
+                pstmt.setInt(1, userId);
+                pstmt.setInt(2, mataKuliahId);
+                pstmt.setDate(3, Date.valueOf(tanggal));
+            } else {
+                pstmt.setInt(1, userId);
+                pstmt.setDate(2, Date.valueOf(tanggal));
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarTopik.add(mapRowKeTopik(rs));
+            }
+        }
+
+        return daftarTopik;
+    }
+
+    /**
      * Menandai topik sebagai dikuasai atau belum dikuasai.
      *
      * @param topikId ID topik
@@ -326,6 +405,58 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, mataKuliahId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            return 0;
+        }
+    }
+
+    /**
+     * Menghitung total topik berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @return Jumlah topik
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungByUserId(int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM topik t " +
+                     "INNER JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id " +
+                     "WHERE mk.user_id = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            return 0;
+        }
+    }
+
+    /**
+     * Menghitung topik yang dikuasai berdasarkan user ID.
+     *
+     * @param userId ID user
+     * @return Jumlah topik dikuasai
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungDikuasaiByUserId(int userId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM topik t " +
+                     "INNER JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id " +
+                     "WHERE mk.user_id = ? AND t.dikuasai = 1";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
