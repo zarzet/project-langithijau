@@ -1,6 +1,6 @@
 package com.studyplanner.algoritma;
 
-import com.studyplanner.algoritma.AlgoritmaSM2Zarz.*;
+import com.studyplanner.algoritma.AlgoritmaSM2.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,16 +12,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test untuk AlgoritmaSM2Zarz - implementasi spaced repetition berbasis FSRS.
+ * Unit test untuk AlgoritmaSM2 - implementasi spaced repetition berbasis FSRS.
  */
-@DisplayName("AlgoritmaSM2Zarz Tests")
-class AlgoritmaSM2ZarzTest {
+@DisplayName("AlgoritmaSM2 Tests")
+class AlgoritmaSM2Test {
 
-    private AlgoritmaSM2Zarz algoritma;
+    private AlgoritmaSM2 algoritma;
 
     @BeforeEach
     void setUp() {
-        algoritma = new AlgoritmaSM2Zarz();
+        algoritma = new AlgoritmaSM2();
     }
 
     // ==================== Test Konstruktor ====================
@@ -33,17 +33,17 @@ class AlgoritmaSM2ZarzTest {
         @Test
         @DisplayName("Konstruktor default menggunakan parameter bawaan")
         void konstruktorDefault_menggunakanParameterBawaan() {
-            AlgoritmaSM2Zarz alg = new AlgoritmaSM2Zarz();
+            AlgoritmaSM2 alg = new AlgoritmaSM2();
             assertNotNull(alg);
         }
 
         @Test
         @DisplayName("Konstruktor dengan bobot kustom berhasil")
         void konstruktorDenganBobotKustom_berhasil() {
-            double[] bobotKustom = AlgoritmaSM2Zarz.PARAMETER_BAWAAN.clone();
+            double[] bobotKustom = AlgoritmaSM2.PARAMETER_BAWAAN.clone();
             bobotKustom[0] = 0.5; // modifikasi satu parameter
             
-            AlgoritmaSM2Zarz alg = new AlgoritmaSM2Zarz(bobotKustom);
+            AlgoritmaSM2 alg = new AlgoritmaSM2(bobotKustom);
             assertNotNull(alg);
         }
 
@@ -51,7 +51,7 @@ class AlgoritmaSM2ZarzTest {
         @DisplayName("Konstruktor dengan bobot null melempar exception")
         void konstruktorDenganBobotNull_melemparException() {
             assertThrows(IllegalArgumentException.class, 
-                () -> new AlgoritmaSM2Zarz(null));
+                () -> new AlgoritmaSM2(null));
         }
 
         @Test
@@ -59,7 +59,7 @@ class AlgoritmaSM2ZarzTest {
         void konstruktorDenganBobotKurang_melemparException() {
             double[] bobotKurang = new double[5]; // kurang dari 21 parameter
             assertThrows(IllegalArgumentException.class, 
-                () -> new AlgoritmaSM2Zarz(bobotKurang));
+                () -> new AlgoritmaSM2(bobotKurang));
         }
     }
 
@@ -79,21 +79,21 @@ class AlgoritmaSM2ZarzTest {
         })
         @DisplayName("petaRatingFsrs memetakan rating UI ke FSRS dengan benar")
         void petaRatingFsrs_memetakanDenganBenar(int ratingUi, int expectedFsrs) {
-            assertEquals(expectedFsrs, AlgoritmaSM2Zarz.petaRatingFsrs(ratingUi));
+            assertEquals(expectedFsrs, AlgoritmaSM2.petaRatingFsrs(ratingUi));
         }
 
         @Test
         @DisplayName("petaRatingFsrs membatasi rating di bawah 1")
         void petaRatingFsrs_membatasiDiBawah1() {
-            assertEquals(1, AlgoritmaSM2Zarz.petaRatingFsrs(0));
-            assertEquals(1, AlgoritmaSM2Zarz.petaRatingFsrs(-5));
+            assertEquals(1, AlgoritmaSM2.petaRatingFsrs(0));
+            assertEquals(1, AlgoritmaSM2.petaRatingFsrs(-5));
         }
 
         @Test
         @DisplayName("petaRatingFsrs membatasi rating di atas 5")
         void petaRatingFsrs_membatasiDiAtas5() {
-            assertEquals(4, AlgoritmaSM2Zarz.petaRatingFsrs(6));
-            assertEquals(4, AlgoritmaSM2Zarz.petaRatingFsrs(100));
+            assertEquals(4, AlgoritmaSM2.petaRatingFsrs(6));
+            assertEquals(4, AlgoritmaSM2.petaRatingFsrs(100));
         }
     }
 

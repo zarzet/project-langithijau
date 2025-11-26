@@ -6,20 +6,20 @@ import java.time.temporal.ChronoUnit;
 
 public class PengulanganBerjarak {
 
-    private static final AlgoritmaSM2Zarz FSRS = new AlgoritmaSM2Zarz();
+    private static final AlgoritmaSM2 FSRS = new AlgoritmaSM2();
 
     public static LocalDate hitungTanggalUlasanBerikutnya(Topik topik, int ratingPerforma) {
-        int ratingFsrs = AlgoritmaSM2Zarz.petaRatingFsrs(ratingPerforma);
-        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        int ratingFsrs = AlgoritmaSM2.petaRatingFsrs(ratingPerforma);
+        AlgoritmaSM2.KondisiMemori kondisi = ambilKondisi(topik);
         long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
                 ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
                 : 0;
 
-        AlgoritmaSM2Zarz.OpsiInterval opsi = FSRS.hitungKeadaanBerikutnya(
+        AlgoritmaSM2.OpsiInterval opsi = FSRS.hitungKeadaanBerikutnya(
                 kondisi,
                 targetRetensi(topik),
                 hariSejakUlasan);
-        AlgoritmaSM2Zarz.KeadaanKartu hasil = opsi.pilih(ratingFsrs);
+        AlgoritmaSM2.KeadaanKartu hasil = opsi.pilih(ratingFsrs);
 
         int intervalBaru = Math.max(1, (int) Math.round(hasil.interval()));
         topik.setStabilitasFsrs(hasil.kondisiMemori().stabilitas());
@@ -37,7 +37,7 @@ public class PengulanganBerjarak {
             return false;
         }
 
-        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        AlgoritmaSM2.KondisiMemori kondisi = ambilKondisi(topik);
         
         if (kondisi == null || kondisi.adalahKosong()) {
             if (topik.getTanggalUlasanTerakhir() == null) {
@@ -66,7 +66,7 @@ public class PengulanganBerjarak {
         double prioritas = 0.0;
 
         double targetRetensi = targetRetensi(topik);
-        AlgoritmaSM2Zarz.KondisiMemori kondisi = ambilKondisi(topik);
+        AlgoritmaSM2.KondisiMemori kondisi = ambilKondisi(topik);
         long hariSejakUlasan = topik.getTanggalUlasanTerakhir() != null
                 ? Math.max(0, ChronoUnit.DAYS.between(topik.getTanggalUlasanTerakhir(), LocalDate.now()))
                 : 0;
@@ -133,9 +133,9 @@ public class PengulanganBerjarak {
         }
     }
 
-    private static AlgoritmaSM2Zarz.KondisiMemori ambilKondisi(Topik topik) {
+    private static AlgoritmaSM2.KondisiMemori ambilKondisi(Topik topik) {
         if (topik.getStabilitasFsrs() > 0 && topik.getKesulitanFsrs() > 0) {
-            return new AlgoritmaSM2Zarz.KondisiMemori(topik.getStabilitasFsrs(), topik.getKesulitanFsrs());
+            return new AlgoritmaSM2.KondisiMemori(topik.getStabilitasFsrs(), topik.getKesulitanFsrs());
         }
         if (topik.getJumlahUlasan() > 0) {
             try {

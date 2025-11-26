@@ -1,6 +1,6 @@
 package com.studyplanner.layanan;
 
-import com.studyplanner.algoritma.AlgoritmaSM2Zarz;
+import com.studyplanner.algoritma.AlgoritmaSM2;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.dao.DAOTopik;
 import com.studyplanner.model.Topik;
@@ -16,14 +16,14 @@ import java.util.List;
 public class LayananTopik {
 
     private final DAOTopik daoTopik;
-    private final AlgoritmaSM2Zarz algoritmaFSRS;
+    private final AlgoritmaSM2 algoritmaFSRS;
 
     // Batas minimum faktor kemudahan lama untuk menjaga kompatibilitas data
     private static final double FAKTOR_KEMUDAHAN_MINIMAL = 1.3;
 
     public LayananTopik(ManajerBasisData manajerDB) {
         this.daoTopik = new DAOTopik(manajerDB);
-        this.algoritmaFSRS = new AlgoritmaSM2Zarz();
+        this.algoritmaFSRS = new AlgoritmaSM2();
     }
 
     /**
@@ -153,14 +153,14 @@ public class LayananTopik {
         }
 
         double targetRetensi = topik.getRetensiDiinginkan() > 0 ? topik.getRetensiDiinginkan() : 0.9;
-        AlgoritmaSM2Zarz.KondisiMemori kondisiAwal = ambilKondisiMemoriAwal(topik);
-        int ratingFsrs = AlgoritmaSM2Zarz.petaRatingFsrs(nilaiKualitas);
+        AlgoritmaSM2.KondisiMemori kondisiAwal = ambilKondisiMemoriAwal(topik);
+        int ratingFsrs = AlgoritmaSM2.petaRatingFsrs(nilaiKualitas);
 
-        AlgoritmaSM2Zarz.OpsiInterval opsi = algoritmaFSRS.hitungKeadaanBerikutnya(
+        AlgoritmaSM2.OpsiInterval opsi = algoritmaFSRS.hitungKeadaanBerikutnya(
                 kondisiAwal,
                 targetRetensi,
                 hariSejakUlasan);
-        AlgoritmaSM2Zarz.KeadaanKartu hasil = opsi.pilih(ratingFsrs);
+        AlgoritmaSM2.KeadaanKartu hasil = opsi.pilih(ratingFsrs);
 
         int intervalBaru = Math.max(1, (int) Math.round(hasil.interval()));
         double stabilitasBaru = hasil.kondisiMemori().stabilitas();
@@ -265,9 +265,9 @@ public class LayananTopik {
         }
     }
 
-    private AlgoritmaSM2Zarz.KondisiMemori ambilKondisiMemoriAwal(Topik topik) {
+    private AlgoritmaSM2.KondisiMemori ambilKondisiMemoriAwal(Topik topik) {
         if (topik.getStabilitasFsrs() > 0 && topik.getKesulitanFsrs() > 0) {
-            return new AlgoritmaSM2Zarz.KondisiMemori(topik.getStabilitasFsrs(), topik.getKesulitanFsrs());
+            return new AlgoritmaSM2.KondisiMemori(topik.getStabilitasFsrs(), topik.getKesulitanFsrs());
         }
 
         if (topik.getJumlahUlasan() > 0) {

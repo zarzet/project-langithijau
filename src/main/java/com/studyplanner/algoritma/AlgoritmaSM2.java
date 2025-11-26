@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Versi modifikasi SM-2 dengan rumus stabilitas/kesulitan ala FSRS (SM2-Zarz).
  * Rating UI tetap 1-5, dipetakan ke 4 tombol FSRS.
  */
-public class AlgoritmaSM2Zarz {
+public class AlgoritmaSM2 {
 
     public static final double[] PARAMETER_BAWAAN = {
             0.212, 1.2931, 2.3065, 8.2956, 6.4133, 0.8334, 3.0194, 0.001,
@@ -21,11 +21,11 @@ public class AlgoritmaSM2Zarz {
 
     private final double[] bobot;
 
-    public AlgoritmaSM2Zarz() {
+    public AlgoritmaSM2() {
         this(PARAMETER_BAWAAN);
     }
 
-    public AlgoritmaSM2Zarz(double[] bobot) {
+    public AlgoritmaSM2(double[] bobot) {
         if (bobot == null || bobot.length < PARAMETER_BAWAAN.length) {
             throw new IllegalArgumentException("Bobot FSRS tidak valid");
         }
