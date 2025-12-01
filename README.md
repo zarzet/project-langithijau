@@ -71,7 +71,11 @@ Sebelum menjalankan aplikasi, Anda perlu setup Google OAuth credentials:
 - Widget waktu belajar hari ini
 - Widget ulasan berikutnya
 - Widget tugas mendatang
-- Sidebar collapsible dengan animasi smooth
+- Sidebar navigation:
+  - Kelola Mata Kuliah
+  - Lihat Jadwal
+  - Pengaturan
+  - Keluar
 - Dark mode / Light mode toggle
 
 ### Mata Kuliah
@@ -81,15 +85,17 @@ Sebelum menjalankan aplikasi, Anda perlu setup Google OAuth credentials:
 - Tracking progress per topik
 
 ### Jadwal
-- View jadwal mingguan
-- Calendar picker dengan navigasi
+- View jadwal mingguan dengan kalender
+- Calendar picker dengan navigasi (hari ini ditandai titik)
 - Timeline schedule cards
-- Auto-generate jadwal belajar dengan algoritma SM-2
+- Spaced repetition dengan algoritma SM-2
 
 ### Settings
+- Profil pengguna (Google account info)
 - Toggle dark mode
 - Durasi belajar default
 - Pengingat belajar
+- **Generate Jadwal Manual** - Override untuk buat ulang jadwal 7 hari
 - Backup & export data
 - About aplikasi
 
@@ -134,9 +140,10 @@ src/
 │   │   │   └── ManajerBasisData.java       → DB manager
 │   │   ├── kontroler/                      → MVC Controllers
 │   │   │   ├── KontrolerLogin.java         → Login controller
-│   │   │   ├── KontrolerUtama.java         → Main dashboard
-│   │   │   ├── KontrolerMataKuliah.java    → Course management
-│   │   │   └── KontrolerTampilanJadwal.java → Schedule view
+│   │   │   ├── KontrolerUtama.java         → Main dashboard & settings
+│   │   │   ├── KontrolerManajemenMataKuliah.java → Course management
+│   │   │   ├── KontrolerTampilanJadwal.java → Schedule view
+│   │   │   └── pembantu/                   → Helper classes
 │   │   ├── model/                          → Data models
 │   │   │   ├── MataKuliah.java
 │   │   │   ├── Topik.java
