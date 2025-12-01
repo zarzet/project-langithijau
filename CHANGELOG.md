@@ -1,8 +1,46 @@
 # Changelog
 
-## [Unreleased] - Development
+## [Unreleased] - 2 Desember 2025
+
+### 🔄 Refaktor Navigasi Sidebar
+
+#### Pindah Tombol "Buat Jadwal" ke Pengaturan
+- **`MainView.fxml`** — Hapus tombol "Buat Jadwal" dari sidebar
+- **`KontrolerUtama.java`** — Tombol dipindah ke halaman Pengaturan sebagai "Generate Jadwal Manual"
+  - Override manual untuk generate ulang jadwal 7 hari
+  - Validasi: cek mata kuliah dan topik sebelum generate
+
+#### Tombol Pengaturan di Sidebar
+- **`MainView.fxml`** — Tambah `tombolPengaturan` di atas "Keluar"
+- **`KontrolerUtama.java`** — Setup icon dan action untuk navigasi ke pengaturan
+  - Navigasi berfungsi dari halaman manapun (kembali ke dashboard dulu jika perlu)
+  - Tombol ter-highlight saat halaman pengaturan aktif
+
+---
 
 ### 🐛 Perbaikan Bug
+
+#### Fix Navigasi ke Pengaturan
+- **`KontrolerUtama.java`** — `tampilkanPengaturan()` sekarang bisa dipanggil dari halaman manapun
+  - Jika bukan di dashboard, otomatis kembali dulu lalu buka pengaturan
+
+#### Fix Spacing Profil di Pengaturan
+- **`KontrolerUtama.java`** — `buatSectionProfil()` hanya tampilkan email jika ada
+  - Kurangi VBox spacing dari 4px ke 2px
+  - Tidak ada space kosong jika email tidak tersedia
+
+#### Fix Today Indicator di Kalender
+- **`KontrolerTampilanJadwal.java`** — Gunakan StackPane untuk overlay titik hari ini
+  - Titik tidak lagi mendorong tanggal ke bawah
+  - Semua kartu hari sejajar rata
+
+#### Fix Konsistensi Tombol Kembali
+- **`KontrolerUtama.java`** — Samakan padding wrapper Jadwal Belajar dengan Kelola Mata Kuliah
+  - Kedua halaman: `VBox(16)` + `Insets(24)`
+
+#### Fix Warna Sidebar Selected State
+- **`sidebar.css`** — Samakan warna selected dengan hover
+  - Gunakan `-color-primary` untuk keduanya (bukan `#1a7ab3`)
 
 #### Cascade Delete Sesi Belajar
 - **`DAOSesiBelajar.java`** — Method baru untuk cascade delete
