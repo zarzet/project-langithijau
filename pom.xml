@@ -136,9 +136,41 @@
                 <version>3.5.0</version>
                 <configuration>
                     <argLine>
+                        @{argLine}
                         --add-opens java.base/java.lang=ALL-UNNAMED
                         --add-opens java.base/java.util=ALL-UNNAMED
                     </argLine>
+                </configuration>
+            </plugin>
+            <!-- JaCoCo - Code Coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.14</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude UI/JavaFX classes yang butuh TestFX -->
+                        <exclude>com/studyplanner/kontroler/**</exclude>
+                        <exclude>com/studyplanner/tampilan/**</exclude>
+                        <exclude>com/studyplanner/AplikasiUtama.class</exclude>
+                        <exclude>com/studyplanner/AplikasiInspekturDB.class</exclude>
+                        <exclude>com/studyplanner/Launcher.class</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

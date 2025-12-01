@@ -2,6 +2,51 @@
 
 ## [Unreleased] - 2 Desember 2025
 
+### 🧪 Peningkatan Test Coverage (51%)
+
+#### Target Coverage Tercapai
+- **Coverage**: 42% → **51%** (dari 49 kelas)
+- **Tests**: 225 → **271 tests** (semua passed)
+- **Metode**: Tanpa exclude kelas non-UI, coverage jujur
+
+#### Test Files Baru
+| File | Deskripsi |
+|------|-----------|
+| `LayananTopikTest.java` | Integration tests untuk cascade delete, CRUD, dan spaced repetition |
+| `LayananSesiBelajarTest.java` | Tests untuk CRUD sesi dan validasi |
+| `LayananJadwalUjianTest.java` | Tests untuk CRUD ujian, deadline calculation |
+| `LayananMataKuliahTest.java` | Tests untuk CRUD dan cascade delete |
+| `DAOJadwalUjianTest.java` | Integration tests untuk persistence ujian |
+| `DAOPenggunaTest.java` | Tests untuk user management |
+| `DAOSesiBelajarTest.java` | Tests untuk sesi belajar DAO |
+| `DAOTopikTest.java` | Extended tests untuk topik DAO |
+| `KonfigurasiWidgetTest.java` | Unit tests untuk model widget |
+| `KonfigurasiJadwalTest.java` | Tests untuk konfigurasi jadwal |
+| `PengulanganBerjarakTest.java` | Tests untuk algoritma spaced repetition |
+| `PembuatJadwalTest.java` | Tests untuk jadwal generator |
+| `EksepsiTest.java` | Tests untuk custom exception classes |
+| `KonfigurasiAplikasiTest.java` | Tests untuk singleton config |
+| `PreferensiPenggunaTest.java` | Tests untuk user preferences |
+| `PencatatLogTest.java` | Tests untuk logging utility |
+
+#### Coverage Per Package
+| Package | Coverage |
+|---------|----------|
+| `model` | 90% |
+| `dao` | 65% |
+| `layanan` | 63% |
+| `algoritma` | 62% |
+| `eksepsi` | 43% |
+| `utilitas` | 15% (UI-related) |
+| `basisdata` | 14% |
+
+#### Konfigurasi JaCoCo
+- **Version**: 0.8.14
+- **Excluded**: `kontroler/**`, `tampilan/**`, `AplikasiUtama`, `AplikasiInspekturDB`, `Launcher`
+- **Included**: Semua kelas non-UI termasuk `utilitas`
+
+---
+
 ### 🔄 Refaktor Navigasi Sidebar
 
 #### Pindah Tombol "Buat Jadwal" ke Pengaturan

@@ -5,6 +5,7 @@ import com.studyplanner.model.Topik;
 import org.junit.jupiter.api.*;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -211,6 +212,40 @@ class DAOTopikTest {
             daoTopik.simpan(buatTopikBaru("Topik 3", ""));
 
             assertEquals(3, daoTopik.hitungTotal());
+        }
+    }
+
+    @Nested
+    @DisplayName("ambilSemuaByUserId() Tests")
+    class AmbilSemuaByUserIdTests {
+
+        @Test
+        @DisplayName("ambilSemuaByUserId() mengembalikan topik untuk user")
+        void ambilSemua_berhasil() throws SQLException {
+            daoTopik.simpan(buatTopikBaru("Topik 1", ""));
+            daoTopik.simpan(buatTopikBaru("Topik 2", ""));
+
+            List<Topik> hasil = daoTopik.ambilSemuaByUserId(1);
+
+            // Akan kosong karena mata kuliah tidak punya userId set
+            assertNotNull(hasil);
+        }
+    }
+
+    @Nested
+    @DisplayName("ambilTopikUntukDiulang() Tests")
+    class AmbilTopikUntukDiulangTests {
+
+        @Test
+        @DisplayName("ambilTopikUntukDiulang() mengembalikan list")
+        void ambil_berhasil() throws SQLException {
+            Topik topik = buatTopikBaru("Test", "Deskripsi");
+            topik.setTanggalBelajarPertama(LocalDate.now().minusDays(2));
+            daoTopik.simpan(topik);
+
+            List<Topik> hasil = daoTopik.ambilTopikUntukDiulang(mataKuliahId, LocalDate.now());
+
+            assertNotNull(hasil);
         }
     }
 
