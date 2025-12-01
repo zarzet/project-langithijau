@@ -1,35 +1,76 @@
 package com.studyplanner.basisdata;
 
+import com.studyplanner.eksepsi.EksepsiAksesBasisData;
+import com.studyplanner.eksepsi.EksepsiKoneksiBasisData;
 import com.studyplanner.model.*;
+import com.studyplanner.utilitas.PencatatLog;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manajer basis data dengan connection pooling menggunakan HikariCP.
+ * Mengelola koneksi ke SQLite dan menyediakan operasi basis data.
+ */
 public class ManajerBasisData {
 
-    private static final String DB_URL = "jdbc:sqlite:study_planner.db";
-    private Connection koneksi;
+    private static final String URL_BASIS_DATA = "jdbc:sqlite:study_planner.db";
+    
+    // Konstanta konfigurasi
+    private static final int UKURAN_POOL_MAKSIMUM = 10;
+    private static final int UKURAN_POOL_MINIMUM = 2;
+    private static final long WAKTU_IDLE_MAKSIMUM_MS = 300000; // 5 menit
+    private static final long WAKTU_KONEKSI_MAKSIMUM_MS = 30000; // 30 detik
+    
+    private final HikariDataSource sumberData;
+    private static ManajerBasisData instansTunggal;
 
     public ManajerBasisData() {
+        this.sumberData = buatSumberData();
         inisialisasiBasisData();
+    }
+    
+    /**
+     * Mendapatkan instance singleton dari ManajerBasisData.
+     * Gunakan ini untuk berbagi connection pool di seluruh aplikasi.
+     */
+    public static synchronized ManajerBasisData dapatkanInstans() {
+        if (instansTunggal == null) {
+            instansTunggal = new ManajerBasisData();
+        }
+        return instansTunggal;
+    }
+    
+    private HikariDataSource buatSumberData() {
+        HikariConfig konfigurasi = new HikariConfig();
+        konfigurasi.setJdbcUrl(URL_BASIS_DATA);
+        konfigurasi.setMaximumPoolSize(UKURAN_POOL_MAKSIMUM);
+        konfigurasi.setMinimumIdle(UKURAN_POOL_MINIMUM);
+        konfigurasi.setIdleTimeout(WAKTU_IDLE_MAKSIMUM_MS);
+        konfigurasi.setConnectionTimeout(WAKTU_KONEKSI_MAKSIMUM_MS);
+        konfigurasi.setPoolName("StudyPlannerPool");
+        
+        // Konfigurasi khusus SQLite
+        konfigurasi.addDataSourceProperty("cachePrepStmts", "true");
+        konfigurasi.addDataSourceProperty("prepStmtCacheSize", "250");
+        
+        return new HikariDataSource(konfigurasi);
     }
 
     private void inisialisasiBasisData() {
-        try {
-            koneksi = DriverManager.getConnection(DB_URL);
-            buatTabel();
-            System.out.println("Basis data berhasil diinisialisasi!");
+        try (Connection koneksi = sumberData.getConnection()) {
+            buatTabel(koneksi);
+            PencatatLog.info("Basis data berhasil diinisialisasi dengan connection pool!");
         } catch (SQLException e) {
-            System.err.println(
-                    "Gagal menginisialisasi basis data: " + e.getMessage());
-            e.printStackTrace();
+            PencatatLog.error("Gagal menginisialisasi basis data: " + e.getMessage());
+            throw new EksepsiKoneksiBasisData("Gagal menginisialisasi basis data", e);
         }
     }
 
-    private void buatTabel() throws SQLException {
+    private void buatTabel(Connection koneksi) throws SQLException {
         String buatTabelUsers = """
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,20 +163,20 @@ public class ManajerBasisData {
             stmt.execute(buatTabelSesiBelajar);
         }
 
-        tambahKolomJikaBelumAda("topik", "stabilitas_fsrs", "REAL DEFAULT 0");
-        tambahKolomJikaBelumAda("topik", "kesulitan_fsrs", "REAL DEFAULT 0");
-        tambahKolomJikaBelumAda("topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
-        tambahKolomJikaBelumAda("topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
+        tambahKolomJikaBelumAda(koneksi, "topik", "stabilitas_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda(koneksi, "topik", "kesulitan_fsrs", "REAL DEFAULT 0");
+        tambahKolomJikaBelumAda(koneksi, "topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
+        tambahKolomJikaBelumAda(koneksi, "topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
 
         // Migrasi: tambah user_id ke mata_kuliah untuk multi-user support
-        tambahKolomJikaBelumAda("mata_kuliah", "user_id", "INTEGER NOT NULL DEFAULT 1");
+        tambahKolomJikaBelumAda(koneksi, "mata_kuliah", "user_id", "INTEGER NOT NULL DEFAULT 1");
     }
 
     private void catatKueri(String sql) {
         PencatatQuery.getInstance().catat(sql);
     }
 
-    public int ambilRuntutanBelajar() throws SQLException {
+    public int ambilRuntutanBelajar() {
         String sql = """
                     WITH RECURSIVE tanggal AS (
                         SELECT DATE('now') as cek_tanggal
@@ -175,17 +216,19 @@ public class ManajerBasisData {
                 """;
         catatKueri(sql);
 
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt("runtutan");
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mengambil runtutan belajar", e);
         }
         return 0;
     }
 
-    public int ambilWaktuBelajarHariIni() throws SQLException {
+    public int ambilWaktuBelajarHariIni() {
         String sql = """
                     SELECT COALESCE(SUM(durasi_menit), 0) as total_menit
                     FROM sesi_belajar
@@ -194,17 +237,19 @@ public class ManajerBasisData {
                 """;
         catatKueri(sql);
 
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt("total_menit");
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mengambil waktu belajar hari ini", e);
         }
         return 0;
     }
 
-    public int ambilWaktuBelajarKemarin() throws SQLException {
+    public int ambilWaktuBelajarKemarin() {
         String sql = """
                     SELECT COALESCE(SUM(durasi_menit), 0) as total_menit
                     FROM sesi_belajar
@@ -213,17 +258,19 @@ public class ManajerBasisData {
                 """;
         catatKueri(sql);
 
-        try (
-                PreparedStatement pstmt = koneksi.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt("total_menit");
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mengambil waktu belajar kemarin", e);
         }
         return 0;
     }
 
-    public List<Topik> ambilTopikUlasanBerikutnya(int batas) throws SQLException {
+    public List<Topik> ambilTopikUlasanBerikutnya(int batas) {
         List<Topik> daftarTopik = new ArrayList<>();
         String sql = """
                     SELECT t.*, c.nama as nama_mata_kuliah, c.kode as kode_mata_kuliah,
@@ -238,7 +285,8 @@ public class ManajerBasisData {
                 """;
         catatKueri(sql);
 
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setInt(1, batas);
             ResultSet rs = pstmt.executeQuery();
 
@@ -246,6 +294,8 @@ public class ManajerBasisData {
                 Topik topik = ekstrakTopikDariResultSet(rs);
                 daftarTopik.add(topik);
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mengambil topik ulasan berikutnya", e);
         }
         return daftarTopik;
     }
@@ -285,21 +335,29 @@ public class ManajerBasisData {
         return topik;
     }
 
+    /**
+     * Menutup connection pool dan melepaskan semua sumber daya.
+     * Panggil ini saat aplikasi ditutup.
+     */
     public void tutup() {
-        try {
-            if (koneksi != null && !koneksi.isClosed()) {
-                koneksi.close();
-            }
-        } catch (SQLException e) {
-            System.err.println(
-                    "Gagal menutup koneksi basis data: " + e.getMessage());
+        if (sumberData != null && !sumberData.isClosed()) {
+            sumberData.close();
+            PencatatLog.info("Connection pool berhasil ditutup.");
         }
     }
+    
+    /**
+     * Memeriksa apakah connection pool masih aktif.
+     */
+    public boolean apakahAktif() {
+        return sumberData != null && !sumberData.isClosed();
+    }
 
-    public int tambahUser(String username, String password, String email, String nama, String provider) throws SQLException {
+    public int tambahUser(String username, String password, String email, String nama, String provider) {
         String sql = "INSERT INTO users (username, password, email, nama, provider) VALUES (?, ?, ?, ?, ?)";
         catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, email);
@@ -311,14 +369,17 @@ public class ManajerBasisData {
             if (rs.next()) {
                 return rs.getInt(1);
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal menambah user", e);
         }
         return -1;
     }
 
-    public int tambahUserGoogle(String googleId, String email, String nama, String fotoProfil) throws SQLException {
+    public int tambahUserGoogle(String googleId, String email, String nama, String fotoProfil) {
         String sql = "INSERT INTO users (google_id, email, nama, foto_profil, provider) VALUES (?, ?, ?, ?, 'google')";
         catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, googleId);
             pstmt.setString(2, email);
             pstmt.setString(3, nama);
@@ -329,14 +390,17 @@ public class ManajerBasisData {
             if (rs.next()) {
                 return rs.getInt(1);
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal menambah user Google", e);
         }
         return -1;
     }
 
-    public java.util.Map<String, Object> cariUserByUsername(String username) throws SQLException {
+    public java.util.Map<String, Object> cariUserBerdasarkanUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
         catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -349,14 +413,17 @@ public class ManajerBasisData {
                 user.put("provider", rs.getString("provider"));
                 return user;
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mencari user berdasarkan username", e);
         }
         return null;
     }
 
-    public java.util.Map<String, Object> cariUserByGoogleId(String googleId) throws SQLException {
+    public java.util.Map<String, Object> cariUserBerdasarkanGoogleId(String googleId) {
         String sql = "SELECT * FROM users WHERE google_id = ?";
         catatKueri(sql);
-        try (PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
             pstmt.setString(1, googleId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -369,57 +436,70 @@ public class ManajerBasisData {
                 user.put("provider", rs.getString("provider"));
                 return user;
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mencari user berdasarkan Google ID", e);
         }
         return null;
     }
 
-    public List<String> ambilDaftarTabel() throws SQLException {
-        List<String> tables = new ArrayList<>();
-        DatabaseMetaData md = koneksi.getMetaData();
-        try (ResultSet rs = md.getTables(null, null, "%", new String[] { "TABLE" })) {
-            while (rs.next()) {
-                String tableName = rs.getString("TABLE_NAME");
-                if (!tableName.startsWith("sqlite_")) {
-                    tables.add(tableName);
+    public List<String> ambilDaftarTabel() {
+        List<String> daftarTabel = new ArrayList<>();
+        try (Connection koneksi = bukaKoneksi()) {
+            DatabaseMetaData md = koneksi.getMetaData();
+            try (ResultSet rs = md.getTables(null, null, "%", new String[] { "TABLE" })) {
+                while (rs.next()) {
+                    String namaTabel = rs.getString("TABLE_NAME");
+                    if (!namaTabel.startsWith("sqlite_")) {
+                        daftarTabel.add(namaTabel);
+                    }
                 }
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mengambil daftar tabel", e);
         }
-        return tables;
+        return daftarTabel;
     }
 
-    public List<java.util.Map<String, Object>> jalankanQuerySelect(String sql) throws SQLException {
+    public List<java.util.Map<String, Object>> jalankanKueriSelect(String sql) {
         catatKueri("[MANUAL] " + sql);
-        List<java.util.Map<String, Object>> results = new ArrayList<>();
+        List<java.util.Map<String, Object>> hasil = new ArrayList<>();
         
-        try (Statement stmt = koneksi.createStatement();
+        try (Connection koneksi = bukaKoneksi();
+             Statement stmt = koneksi.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             
             ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
+            int jumlahKolom = metaData.getColumnCount();
             
             while (rs.next()) {
-                java.util.Map<String, Object> row = new java.util.HashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    row.put(metaData.getColumnName(i), rs.getObject(i));
+                java.util.Map<String, Object> baris = new java.util.HashMap<>();
+                for (int i = 1; i <= jumlahKolom; i++) {
+                    baris.put(metaData.getColumnName(i), rs.getObject(i));
                 }
-                results.add(row);
+                hasil.add(baris);
             }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal menjalankan kueri SELECT", e);
         }
-        return results;
+        return hasil;
     }
     
-    public void jalankanQueryUpdate(String sql) throws SQLException {
+    public void jalankanKueriUpdate(String sql) {
         catatKueri("[MANUAL] " + sql);
-        try (Statement stmt = koneksi.createStatement()) {
+        try (Connection koneksi = bukaKoneksi();
+             Statement stmt = koneksi.createStatement()) {
             stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal menjalankan kueri UPDATE", e);
         }
     }
 
-    private void tambahKolomJikaBelumAda(String namaTabel, String namaKolom, String definisi)
+    private void tambahKolomJikaBelumAda(Connection koneksi, String namaTabel, String namaKolom, String definisi)
             throws SQLException {
         String sqlCek = "PRAGMA table_info(" + namaTabel + ")";
         boolean sudahAda = false;
-        try (Statement stmt = koneksi.createStatement(); ResultSet rs = stmt.executeQuery(sqlCek)) {
+        try (Statement stmt = koneksi.createStatement(); 
+             ResultSet rs = stmt.executeQuery(sqlCek)) {
             while (rs.next()) {
                 if (namaKolom.equalsIgnoreCase(rs.getString("name"))) {
                     sudahAda = true;
@@ -436,11 +516,33 @@ public class ManajerBasisData {
     }
 
     /**
-     * Memberikan akses ke Connection untuk DAO classes.
-     * Method ini membuat koneksi baru setiap kali dipanggil
-     * sehingga aman untuk digunakan dengan try-with-resources.
+     * Memberikan akses ke Connection dari pool untuk DAO classes.
+     * Connection ini HARUS ditutup setelah digunakan (gunakan try-with-resources).
+     * 
+     * @return Connection dari connection pool
+     * @throws EksepsiKoneksiBasisData jika gagal mendapatkan koneksi
      */
-    public Connection bukaKoneksi() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+    public Connection bukaKoneksi() {
+        try {
+            return sumberData.getConnection();
+        } catch (SQLException e) {
+            throw new EksepsiKoneksiBasisData("Gagal mendapatkan koneksi dari pool", e);
+        }
+    }
+    
+    /**
+     * Mendapatkan statistik connection pool untuk monitoring.
+     */
+    public String dapatkanStatistikPool() {
+        if (sumberData == null) {
+            return "Pool tidak aktif";
+        }
+        return String.format(
+            "Aktif: %d, Idle: %d, Menunggu: %d, Total: %d",
+            sumberData.getHikariPoolMXBean().getActiveConnections(),
+            sumberData.getHikariPoolMXBean().getIdleConnections(),
+            sumberData.getHikariPoolMXBean().getThreadsAwaitingConnection(),
+            sumberData.getHikariPoolMXBean().getTotalConnections()
+        );
     }
 }

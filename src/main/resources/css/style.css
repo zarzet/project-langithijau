@@ -1,27 +1,17 @@
-/* ============================================
-   STYLE.CSS - Main Stylesheet
-   Adaptive Study Planner Application
-   
-   This file imports all modular CSS files
-   ============================================ */
-
-/* VARIABLES & THEMES */
 @import "variables.css";
 
-/* BASE STYLES */
 @import "base.css";
 
-/* COMPONENTS */
 @import "components/buttons.css";
 @import "components/sidebar.css";
 @import "components/cards.css";
 @import "components/forms.css";
 @import "components/widgets.css";
 @import "components/tables.css";
+@import "components/dialogs.css";
+@import "components/management.css";
 
-/* UTILITIES */
 @import "utilities.css";
 
-/* PAGES */
 @import "pages/login.css";
 @import "pages/database-inspector.css";

@@ -28,7 +28,6 @@ public class DialogPemilihWidget {
     private final KonfigurasiWidget konfigurasi;
     private final Map<JenisWidget, CheckBox> checkBoxMap;
     private final PemilihWidgetCallback callback;
-    private boolean isDarkMode;
 
     public interface PemilihWidgetCallback {
         void onKonfigurasiDisimpan(KonfigurasiWidget konfigurasi);
@@ -39,7 +38,6 @@ public class DialogPemilihWidget {
         this.konfigurasi = new KonfigurasiWidget(konfigurasiAwal.getWidgetAktif());
         this.checkBoxMap = new HashMap<>();
         this.callback = callback;
-        this.isDarkMode = isDarkMode;
 
         stage = new Stage();
         stage.initOwner(parent);

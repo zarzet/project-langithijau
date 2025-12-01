@@ -1,0 +1,259 @@
+/* ============================================
+   MANAGEMENT.CSS - Card-based SPA Management UI
+   ============================================ */
+
+/* TAB NAVIGATION */
+.tab-nav {
+    -fx-padding: 0 0 16 0;
+}
+
+.tab-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+
+.tab-btn:selected {
+    -fx-text-fill: -color-primary;
+    -fx-border-color: -color-primary;
+}
+
+.tab-btn:hover {
+    -fx-background-color: rgba(0, 100, 149, 0.08);
+}
+
+.dark-mode .tab-btn {
+    -fx-text-fill: #94a3b8;
+}
+
+.dark-mode .tab-btn:selected {
+    -fx-text-fill: #8dcdff;
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .tab-btn:hover {
+    -fx-background-color: rgba(141, 205, 255, 0.08);
+}
+
+/* PANEL TITLE */
+.panel-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .panel-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+/* FILTER COMBO */
+.filter-combo {
+    -fx-pref-width: 200px;
+}
+
+/* CARD CONTAINER */
+.card-container {
+    -fx-padding: 8;
+}
+
+.card-scroll {
+    -fx-background-color: transparent;
+}
+
+.card-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* COURSE CARD */
+.course-card {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.course-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 8, 0, 0, 4);
+}
+
+.dark-mode .course-card {
+    -fx-background-color: #1e2328;
+}
+
+/* TOPIC CARD */
+.topic-card {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.dark-mode .topic-card {
+    -fx-background-color: #1e2328;
+}
+
+/* EXAM CARD SPA */
+.exam-card-spa {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+}
+
+.dark-mode .exam-card-spa {
+    -fx-background-color: #1e2328;
+}
+
+/* CARD TEXT STYLES */
+.card-code {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-primary;
+    -fx-padding: 4 8;
+    -fx-background-color: rgba(0, 100, 149, 0.1);
+    -fx-background-radius: 4;
+}
+
+.dark-mode .card-code {
+    -fx-text-fill: #8dcdff;
+    -fx-background-color: rgba(141, 205, 255, 0.1);
+}
+
+.card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .card-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+.card-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.dark-mode .card-desc {
+    -fx-text-fill: #94a3b8;
+}
+
+.card-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.dark-mode .card-date {
+    -fx-text-fill: #94a3b8;
+}
+
+/* BADGES */
+.badge-priority,
+.badge-difficulty,
+.badge-review {
+    -fx-font-size: 10px;
+    -fx-padding: 3 8;
+    -fx-background-radius: 4;
+}
+
+.badge-priority {
+    -fx-background-color: rgba(34, 197, 94, 0.15);
+    -fx-text-fill: #16a34a;
+}
+
+.badge-difficulty {
+    -fx-background-color: rgba(234, 179, 8, 0.15);
+    -fx-text-fill: #ca8a04;
+}
+
+.badge-review {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #2563eb;
+}
+
+.badge-exam-type {
+    -fx-font-size: 11px;
+    -fx-padding: 4 10;
+    -fx-background-radius: 12;
+    -fx-background-color: rgba(168, 85, 247, 0.15);
+    -fx-text-fill: #9333ea;
+}
+
+.dark-mode .badge-exam-type {
+    -fx-background-color: rgba(168, 85, 247, 0.2);
+    -fx-text-fill: #c084fc;
+}
+
+/* COUNTDOWN */
+.countdown-normal {
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #16a34a;
+}
+
+.countdown-urgent {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #dc2626;
+}
+
+/* ICON BUTTONS SMALL */
+.btn-icon-small {
+    -fx-background-color: transparent;
+    -fx-padding: 6;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-icon-small:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.06);
+}
+
+.dark-mode .btn-icon-small:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.btn-icon-small .ikonli-font-icon {
+    -fx-icon-color: -color-on-surface-variant;
+    -fx-fill: -color-on-surface-variant;
+}
+
+.dark-mode .btn-icon-small .ikonli-font-icon {
+    -fx-icon-color: #94a3b8;
+    -fx-fill: #94a3b8;
+}
+
+.btn-danger-icon .ikonli-font-icon {
+    -fx-icon-color: #dc2626;
+    -fx-fill: #dc2626;
+}
+
+.btn-danger-icon:hover {
+    -fx-background-color: rgba(220, 38, 38, 0.1);
+}
+
+/* EMPTY STATE */
+.empty-state {
+    -fx-min-width: 300;
+}
+
+.empty-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface-variant;
+}
+
+.dark-mode .empty-title {
+    -fx-text-fill: #94a3b8;
+}
+
+.empty-desc {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-outline;
+}
+
+.dark-mode .empty-desc {
+    -fx-text-fill: #64748b;
+}

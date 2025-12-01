@@ -53,11 +53,33 @@
 .sidebar-btn:hover {
     -fx-background-color: -color-primary;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.3), 4, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.4), 6, 0, 0, 3);
+}
+
+.sidebar-btn:hover .ikonli-font-icon {
+    -fx-icon-color: white;
+    -fx-fill: white;
 }
 
 .sidebar-btn:pressed {
     -fx-background-color: #00538b;
+}
+
+/* SIDEBAR BUTTON SELECTED/ACTIVE STATE */
+.sidebar-btn-selected {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-effect: none;
+}
+
+.sidebar-btn-selected .ikonli-font-icon {
+    -fx-icon-color: white !important;
+    -fx-fill: white !important;
+}
+
+.sidebar-btn-selected:hover {
+    -fx-background-color: -color-primary;
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.4), 6, 0, 0, 3);
 }
 
 /* SIDEBAR MENU BUTTON */

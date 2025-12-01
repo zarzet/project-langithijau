@@ -132,6 +132,34 @@ public class DekoratorJendelaKustom {
         }
 
         stage.setScene(sceneBaru);
+        
+        // Handler untuk maximize - hilangkan shadow dan rounded corners
+        stage.maximizedProperty().addListener((_, _, isMaximized) -> {
+            if (isMaximized) {
+                // Saat maximize: hapus padding, shadow, dan rounded corners
+                shadowContainer.setPadding(Insets.EMPTY);
+                windowPane.setEffect(null);
+                windowPane.setClip(null);
+                windowPane.setStyle(
+                    "-fx-background-color: " + bgColor + ";" +
+                    "-fx-background-radius: 0;" +
+                    "-fx-border-radius: 0;" +
+                    "-fx-border-width: 0;"
+                );
+            } else {
+                // Saat restore: kembalikan padding, shadow, dan rounded corners
+                shadowContainer.setPadding(new Insets(PADDING_BAYANGAN));
+                windowPane.setEffect(shadow);
+                windowPane.setClip(clip);
+                windowPane.setStyle(
+                    "-fx-background-color: " + bgColor + ";" +
+                    "-fx-background-radius: " + RADIUS_SUDUT + ";" +
+                    "-fx-border-radius: " + RADIUS_SUDUT + ";" +
+                    "-fx-border-color: " + (modeGelap ? "#2a3038" : "#d0d5dd") + ";" +
+                    "-fx-border-width: 1;"
+                );
+            }
+        });
 
         aktifkanGeser(titleBar, stage);
         aktifkanUbahUkuran(shadowContainer, windowPane, stage);

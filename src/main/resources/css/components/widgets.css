@@ -168,9 +168,43 @@
     -fx-font-weight: 500;
 }
 
+/* SETTINGS WINDOW */
+.settings-window {
+    -fx-background-color: -color-background;
+}
+
+.settings-window .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.settings-window .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.settings-window .scroll-pane > .scroll-bar {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+}
+
+.dark-mode.settings-window,
+.dark-mode .settings-window {
+    -fx-background-color: #0f1419;
+}
+
+/* Settings Profile Card */
+.settings-profile-card {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+}
+
+.dark-mode .settings-profile-card {
+    -fx-background-color: #1e2328;
+}
+
 /* SETTINGS DIALOG */
 .settings-dialog .dialog-pane {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
 }
 
 .settings-dialog .dialog-pane > .content {

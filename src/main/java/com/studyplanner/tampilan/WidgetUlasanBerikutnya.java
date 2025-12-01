@@ -3,7 +3,7 @@ package com.studyplanner.tampilan;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.model.Topik;
 import com.studyplanner.utilitas.UtilUI;
-import java.sql.SQLException;
+import com.studyplanner.eksepsi.EksepsiAksesBasisData;
 import java.time.LocalDate;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -108,7 +108,7 @@ public class WidgetUlasanBerikutnya extends VBox {
                 labelStatus.setStyle("-fx-text-fill: #64748b;");
                 labelStatus.setVisible(true);
             }
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             labelTopik.setText("Gagal memuat");
             labelMataKuliah.setText("");
             labelJatuhTempo.setText("");

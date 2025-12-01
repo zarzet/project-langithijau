@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class ManajerOtentikasi {
     private static final String APPLICATION_NAME = "Adaptive Study Planner";
@@ -145,21 +146,30 @@ public class ManajerOtentikasi {
     }
 
     /**
-     * Mendapatkan ID user yang sedang login.
+     * Mendapatkan ID user yang sedang login sebagai Optional.
      * Untuk local user, mengembalikan ID dari database.
      * Untuk Google user, mengembalikan ID yang disimpan setelah sync ke database.
      * 
-     * @return ID user atau -1 jika tidak ada user yang login
+     * @return Optional berisi ID user, atau empty jika tidak ada user yang login
      */
-    public int getCurrentUserId() {
+    public Optional<Integer> ambilIdPengguna() {
         if (currentLocalUser != null) {
             Object id = currentLocalUser.get("id");
             if (id instanceof Integer) {
-                return (Integer) id;
+                return Optional.of((Integer) id);
             }
         }
-        // Untuk Google user, ID harus di-set setelah sync ke database
-        return -1;
+        return Optional.empty();
+    }
+    
+    /**
+     * Mendapatkan ID user yang sedang login.
+     * @deprecated Gunakan {@link #ambilIdPengguna()} yang mengembalikan Optional
+     * @return ID user atau -1 jika tidak ada user yang login
+     */
+    @Deprecated
+    public int getCurrentUserId() {
+        return ambilIdPengguna().orElse(-1);
     }
 
     /**

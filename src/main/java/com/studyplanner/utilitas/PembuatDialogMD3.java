@@ -8,7 +8,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -18,59 +17,52 @@ import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
 /**
- * Utilitas untuk membuat dialog dengan gaya Material Design 3
+ * Utilitas untuk membuat dialog dengan gaya Material Design 3.
+ * Style dialog didefinisikan di CSS (components/dialogs.css) untuk
+ * memudahkan kustomisasi dan konsistensi dengan tema aplikasi.
  */
 public class PembuatDialogMD3 {
 
-    private static final String PRIMARY_COLOR = "#006495";
-    private static final String BG_COLOR = "#ffffff";
-    private static final String TEXT_COLOR = "#191c20";
-    private static final String TEXT_SECONDARY = "#42474e";
-    private static final String INPUT_BG = "#f2f3fa";
-    private static final String BORDER_COLOR = "#c2c7cf";
-    private static final String BUTTON_SECONDARY = "#d2e5f5";
+    // CSS class names untuk dialog styling
+    private static final String KELAS_DIALOG_PANE = "md3-dialog-pane";
+    private static final String KELAS_DIALOG_HEADER = "md3-dialog-header";
+    private static final String KELAS_KONTEN_LABEL = "md3-dialog-content-label";
+    private static final String KELAS_INPUT = "md3-dialog-input";
+    private static final String KELAS_TOMBOL_PRIMER = "md3-dialog-btn-primary";
+    private static final String KELAS_TOMBOL_SEKUNDER = "md3-dialog-btn-secondary";
+    private static final String KELAS_TOMBOL_BATAL = "md3-dialog-btn-cancel";
 
     /**
-     * Terapkan gaya MD3 ke DialogPane
+     * Terapkan gaya MD3 ke DialogPane menggunakan CSS classes.
      */
     public static void terapkanGayaMD3(DialogPane dialogPane) {
-        // Style untuk dialog pane utama
-        dialogPane.setStyle(
-            "-fx-background-color: " + BG_COLOR + ";" +
-            "-fx-background-radius: 24;" +
-            "-fx-border-radius: 24;" +
-            "-fx-padding: 24;" +
-            "-fx-border-color: " + BORDER_COLOR + ";" +
-            "-fx-border-width: 1;"
-        );
-
-        // Tambah shadow effect
-        DropShadow shadow = new DropShadow();
-        shadow.setRadius(16);
-        shadow.setOffsetY(8);
-        shadow.setColor(Color.rgb(0, 0, 0, 0.15));
-        dialogPane.setEffect(shadow);
+        // Load stylesheet ke dialog
+        String stylesheet = PembuatDialogMD3.class.getResource("/css/style.css").toExternalForm();
+        dialogPane.getStylesheets().add(stylesheet);
+        
+        // Tambah CSS class untuk styling dari dialogs.css
+        dialogPane.getStyleClass().add(KELAS_DIALOG_PANE);
+        
+        // Apply dark mode jika aktif
+        if (PreferensiPengguna.getInstance().isDarkMode()) {
+            dialogPane.getStyleClass().add("dark-mode");
+        }
 
         // Style header jika ada
         if (dialogPane.getHeader() != null) {
-            dialogPane.getHeader().setStyle(
-                "-fx-font-size: 20px;" +
-                "-fx-font-weight: 600;" +
-                "-fx-text-fill: " + TEXT_COLOR + ";" +
-                "-fx-padding: 0 0 8 0;"
-            );
+            dialogPane.getHeader().getStyleClass().add(KELAS_DIALOG_HEADER);
         }
 
-        // Style content labels
+        // Style content dengan CSS classes
         if (dialogPane.getContent() != null) {
-            styleContentRecursive(dialogPane.getContent());
+            terapkanKelasCSSKonten(dialogPane.getContent());
         }
 
-        // Style buttons
+        // Style buttons dengan CSS classes
         dialogPane.getButtonTypes().forEach(buttonType -> {
             Button button = (Button) dialogPane.lookupButton(buttonType);
             if (button != null) {
-                styleButton(button, buttonType);
+                terapkanKelasCSSButton(button, buttonType);
             }
         });
 
@@ -80,137 +72,55 @@ public class PembuatDialogMD3 {
                 for (ButtonType bt : c.getAddedSubList()) {
                     Button button = (Button) dialogPane.lookupButton(bt);
                     if (button != null) {
-                        styleButton(button, bt);
+                        terapkanKelasCSSButton(button, bt);
                     }
                 }
             }
         });
     }
 
-    private static void styleContentRecursive(Node node) {
+    /**
+     * Terapkan CSS classes ke konten dialog secara rekursif.
+     */
+    private static void terapkanKelasCSSKonten(Node node) {
         if (node instanceof Label label) {
-            label.setStyle(
-                "-fx-font-size: 14px;" +
-                "-fx-text-fill: " + TEXT_SECONDARY + ";" +
-                "-fx-wrap-text: true;"
-            );
+            label.getStyleClass().add(KELAS_KONTEN_LABEL);
         } else if (node instanceof javafx.scene.control.TextField tf) {
-            tf.setStyle(
-                "-fx-background-color: " + INPUT_BG + ";" +
-                "-fx-background-radius: 12;" +
-                "-fx-border-color: " + BORDER_COLOR + ";" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;" +
-                "-fx-padding: 10 14;" +
-                "-fx-font-size: 14px;" +
-                "-fx-text-fill: " + TEXT_COLOR + ";"
-            );
-            tf.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
-                if (isFocused) {
-                    tf.setStyle(
-                        "-fx-background-color: " + BG_COLOR + ";" +
-                        "-fx-background-radius: 12;" +
-                        "-fx-border-color: " + PRIMARY_COLOR + ";" +
-                        "-fx-border-radius: 12;" +
-                        "-fx-border-width: 2;" +
-                        "-fx-padding: 9 13;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-text-fill: " + TEXT_COLOR + ";"
-                    );
-                } else {
-                    tf.setStyle(
-                        "-fx-background-color: " + INPUT_BG + ";" +
-                        "-fx-background-radius: 12;" +
-                        "-fx-border-color: " + BORDER_COLOR + ";" +
-                        "-fx-border-radius: 12;" +
-                        "-fx-border-width: 1;" +
-                        "-fx-padding: 10 14;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-text-fill: " + TEXT_COLOR + ";"
-                    );
-                }
-            });
+            tf.getStyleClass().add(KELAS_INPUT);
         } else if (node instanceof javafx.scene.control.TextArea ta) {
-            ta.setStyle(
-                "-fx-background-color: " + INPUT_BG + ";" +
-                "-fx-background-radius: 12;" +
-                "-fx-border-color: " + BORDER_COLOR + ";" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;" +
-                "-fx-padding: 10;" +
-                "-fx-font-size: 14px;"
-            );
+            ta.getStyleClass().add(KELAS_INPUT);
         } else if (node instanceof javafx.scene.control.Spinner<?> sp) {
-            sp.setStyle(
-                "-fx-background-color: " + INPUT_BG + ";" +
-                "-fx-background-radius: 12;" +
-                "-fx-border-color: " + BORDER_COLOR + ";" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;"
-            );
+            sp.getStyleClass().add(KELAS_INPUT);
         } else if (node instanceof javafx.scene.control.ComboBox<?> cb) {
-            cb.setStyle(
-                "-fx-background-color: " + INPUT_BG + ";" +
-                "-fx-background-radius: 12;" +
-                "-fx-border-color: " + BORDER_COLOR + ";" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;" +
-                "-fx-padding: 4 8;"
-            );
+            cb.getStyleClass().add(KELAS_INPUT);
         } else if (node instanceof javafx.scene.control.DatePicker dp) {
-            dp.setStyle(
-                "-fx-background-color: " + INPUT_BG + ";" +
-                "-fx-background-radius: 12;" +
-                "-fx-border-color: " + BORDER_COLOR + ";" +
-                "-fx-border-radius: 12;" +
-                "-fx-border-width: 1;"
-            );
+            dp.getStyleClass().add(KELAS_INPUT);
         } else if (node instanceof javafx.scene.layout.Pane pane) {
             for (Node child : pane.getChildren()) {
-                styleContentRecursive(child);
+                terapkanKelasCSSKonten(child);
             }
         }
     }
 
-    private static void styleButton(Button button, ButtonType buttonType) {
-        boolean isPrimary = buttonType.getButtonData() == ButtonBar.ButtonData.OK_DONE;
-
-        String baseStyle;
-        if (isPrimary) {
-            baseStyle = 
-                "-fx-background-color: " + PRIMARY_COLOR + ";" +
-                "-fx-text-fill: white;" +
-                "-fx-background-radius: 20;" +
-                "-fx-padding: 10 24;" +
-                "-fx-font-size: 14px;" +
-                "-fx-font-weight: 500;" +
-                "-fx-cursor: hand;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.2), 3, 0, 0, 1);";
-        } else {
-            baseStyle = 
-                "-fx-background-color: " + BUTTON_SECONDARY + ";" +
-                "-fx-text-fill: #0b1d29;" +
-                "-fx-background-radius: 20;" +
-                "-fx-padding: 10 24;" +
-                "-fx-font-size: 14px;" +
-                "-fx-font-weight: 500;" +
-                "-fx-cursor: hand;";
+    /**
+     * Terapkan CSS class ke button berdasarkan tipe button.
+     */
+    private static void terapkanKelasCSSButton(Button button, ButtonType buttonType) {
+        ButtonBar.ButtonData data = buttonType.getButtonData();
+        
+        // Hapus class button yang mungkin sudah ada
+        button.getStyleClass().removeAll(
+            KELAS_TOMBOL_PRIMER, 
+            KELAS_TOMBOL_SEKUNDER, 
+            KELAS_TOMBOL_BATAL
+        );
+        
+        // Tentukan class berdasarkan tipe button
+        switch (data) {
+            case OK_DONE, YES, APPLY -> button.getStyleClass().add(KELAS_TOMBOL_PRIMER);
+            case CANCEL_CLOSE, NO -> button.getStyleClass().add(KELAS_TOMBOL_BATAL);
+            default -> button.getStyleClass().add(KELAS_TOMBOL_SEKUNDER);
         }
-
-        button.setStyle(baseStyle);
-
-        String hoverStyle = isPrimary ?
-            baseStyle.replace(PRIMARY_COLOR, "#005580") :
-            baseStyle.replace(BUTTON_SECONDARY, "#c0d8eb");
-
-        String pressedStyle = isPrimary ?
-            baseStyle.replace(PRIMARY_COLOR, "#004a70") :
-            baseStyle.replace(BUTTON_SECONDARY, "#aecce0");
-
-        button.setOnMouseEntered(e -> button.setStyle(hoverStyle));
-        button.setOnMouseExited(e -> button.setStyle(baseStyle));
-        button.setOnMousePressed(e -> button.setStyle(pressedStyle));
-        button.setOnMouseReleased(e -> button.setStyle(hoverStyle));
     }
 
     /**

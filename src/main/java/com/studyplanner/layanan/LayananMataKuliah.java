@@ -2,6 +2,7 @@ package com.studyplanner.layanan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.dao.DAOMataKuliah;
+import com.studyplanner.dao.DAOSesiBelajar;
 import com.studyplanner.dao.DAOTopik;
 import com.studyplanner.dao.DAOJadwalUjian;
 import com.studyplanner.model.MataKuliah;
@@ -17,11 +18,13 @@ public class LayananMataKuliah {
     private final DAOMataKuliah daoMataKuliah;
     private final DAOTopik daoTopik;
     private final DAOJadwalUjian daoJadwalUjian;
+    private final DAOSesiBelajar daoSesiBelajar;
 
     public LayananMataKuliah(ManajerBasisData manajerDB) {
         this.daoMataKuliah = new DAOMataKuliah(manajerDB);
         this.daoTopik = new DAOTopik(manajerDB);
         this.daoJadwalUjian = new DAOJadwalUjian(manajerDB);
+        this.daoSesiBelajar = new DAOSesiBelajar(manajerDB);
     }
 
     /**
@@ -71,15 +74,17 @@ public class LayananMataKuliah {
     }
 
     /**
-     * Menghapus mata kuliah beserta semua topik dan ujian terkait.
+     * Menghapus mata kuliah beserta semua topik, ujian, dan sesi belajar terkait.
      *
      * @param idMataKuliah ID mata kuliah
      * @return true jika berhasil
      * @throws SQLException jika terjadi kesalahan database
      */
     public boolean hapus(int idMataKuliah) throws SQLException {
-        // Cascade delete sudah dihandle oleh foreign key di database
-        // Tapi kita bisa tambahkan logic tambahan di sini jika perlu
+        // Cascade delete: hapus sesi belajar terkait terlebih dahulu
+        daoSesiBelajar.hapusBerdasarkanMataKuliahId(idMataKuliah);
+        
+        // Foreign key constraints akan menghapus topik dan ujian terkait
         return daoMataKuliah.hapus(idMataKuliah);
     }
 

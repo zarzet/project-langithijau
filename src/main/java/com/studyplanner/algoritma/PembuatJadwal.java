@@ -7,6 +7,7 @@ import com.studyplanner.layanan.LayananTopik;
 import com.studyplanner.layanan.LayananJadwalUjian;
 import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.utilitas.ManajerOtentikasi;
+import com.studyplanner.konfigurasi.KonfigurasiJadwal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
@@ -17,8 +18,6 @@ public class PembuatJadwal {
     private final LayananTopik layananTopik;
     private final LayananJadwalUjian layananJadwalUjian;
     private final LayananSesiBelajar layananSesiBelajar;
-    private static final int MAX_SESI_PER_HARI = 6;
-    private static final int MIN_SESI_PER_HARI = 3;
 
     public PembuatJadwal(ManajerBasisData manajerBasisData) {
         this.layananMataKuliah = new LayananMataKuliah(manajerBasisData);
@@ -30,9 +29,10 @@ public class PembuatJadwal {
     public Map<LocalDate, List<SesiBelajar>> buatJadwal(int hariKeDepan) throws SQLException {
         Map<LocalDate, List<SesiBelajar>> jadwal = new LinkedHashMap<>();
 
-        int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna()
+                .orElseThrow(() -> new IllegalStateException("User belum login"));
         List<MataKuliah> daftarMataKuliah = layananMataKuliah.ambilSemuaByUserId(userId);
-        List<Topik> semuaTopik = layananTopik.ambilSemua(); // TODO: Update LayananTopik untuk filter by userId
+        List<Topik> semuaTopik = layananTopik.ambilSemuaByUserId(userId);
         List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang();
 
         Map<Integer, JadwalUjian> ujianPerMataKuliah = new HashMap<>();
@@ -88,14 +88,14 @@ public class PembuatJadwal {
                 topikTerpilih.add(tp.topik);
                 mataKuliahTerpakai.add(tp.topik.getIdMataKuliah());
 
-                if (topikTerpilih.size() >= MIN_SESI_PER_HARI) {
+                if (topikTerpilih.size() >= KonfigurasiJadwal.MIN_SESI_PER_HARI) {
                     break;
                 }
             }
         }
 
         for (TopikDenganPrioritas tp : topikPrioritas) {
-            if (!topikTerpilih.contains(tp.topik) && topikTerpilih.size() < MAX_SESI_PER_HARI) {
+            if (!topikTerpilih.contains(tp.topik) && topikTerpilih.size() < KonfigurasiJadwal.MAKS_SESI_PER_HARI) {
                 topikTerpilih.add(tp.topik);
             }
         }

@@ -219,7 +219,7 @@
 }
 
 .btn-google-modern:hover {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 4);
 }
 

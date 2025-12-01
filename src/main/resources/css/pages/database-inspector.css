@@ -4,7 +4,7 @@
 
 /* INSPECTOR ROOT */
 .inspektur-root {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
 }
 
 .dark-mode .inspektur-root {
@@ -340,7 +340,7 @@
 
 /* INFO FOOTER */
 .info-footer {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
     -fx-background-radius: 8;
     -fx-padding: 12;
 }
@@ -461,7 +461,7 @@
 }
 
 .table-list-modern .list-cell:hover {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
 }
 
 .table-list-modern .list-cell:selected {
@@ -526,7 +526,7 @@
 }
 
 .data-table-modern .column-header {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
     -fx-font-weight: 600;
     -fx-text-fill: -color-on-surface-variant;
     -fx-font-size: 12px;
@@ -545,7 +545,7 @@
 }
 
 .data-table-modern .table-row-cell:odd {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
 }
 
 .data-table-modern .table-row-cell:hover {

@@ -2,6 +2,69 @@
 
 ## [Unreleased] - Development
 
+### 🐛 Perbaikan Bug
+
+#### Cascade Delete Sesi Belajar
+- **`DAOSesiBelajar.java`** — Method baru untuk cascade delete
+  - `hapusBerdasarkanTopikId(int topikId)` — Hapus semua sesi berdasarkan ID topik
+  - `hapusBerdasarkanMataKuliahId(int mataKuliahId)` — Hapus semua sesi berdasarkan ID mata kuliah
+  - Ubah `LEFT JOIN` ke `INNER JOIN` untuk otomatis filter sesi orphan
+
+- **`LayananTopik.java`** — Integrasi cascade delete
+  - Tambah `DAOSesiBelajar` sebagai dependency
+  - Panggil `daoSesiBelajar.hapusBerdasarkanTopikId()` di method `hapus()`
+
+- **`LayananMataKuliah.java`** — Integrasi cascade delete
+  - Tambah `DAOSesiBelajar` sebagai dependency
+  - Panggil `daoSesiBelajar.hapusBerdasarkanMataKuliahId()` di method `hapus()`
+
+---
+
+### 🎨 Perbaikan UI/UX
+
+#### Sidebar Selection State
+- **`sidebar.css`** — Styling untuk tombol sidebar yang aktif
+  - `.sidebar-btn-selected` dengan warna `#1a7ab3` (lebih terang dari primary)
+  - `.sidebar-btn-selected .ikonli-font-icon` untuk warna icon putih
+  - Hover state dengan shadow lebih prominent
+
+- **`KontrolerUtama.java`** — Logic untuk manage selection state
+  - `updateSidebarSelection(Button selected)` — Update state selected pada sidebar
+  - `resetSidebarButton(Button button)` — Reset tombol ke state normal
+  - Icon color diubah programmatically: putih saat selected, `#42474e` saat normal
+
+#### Konsistensi Header SPA
+- **`KontrolerUtama.java`** — Jadwal Belajar menggunakan header konsisten
+  - `bukaLihatJadwal()` menggunakan `buatHeaderDenganTombolKembali("Jadwal Belajar")`
+
+- **`ScheduleView.fxml`** — Layout adjustment
+  - Hapus label judul duplikat "Jadwal Belajar"
+  - Alignment date picker row ke kanan (`CENTER_RIGHT`)
+
+#### Konsistensi Ukuran Tombol Navigasi
+- **`buttons.css`** — Fixed size untuk `.nav-arrow-btn`
+  - Width: 40px (min, pref, max)
+  - Height: 40px (min, pref, max)
+  - Font size: 18px
+  - Padding: 0
+
+#### Konsistensi Warna Surface (Hapus Tint Biru)
+- **`variables.css`** — Warna surface yang netral
+  - `-color-background`: `#f8f9ff` → `#f8f9fa`
+  - `-color-surface-container`: `#f2f3fa` → `#f5f6f7`
+  - `-color-surface-variant`: `#e1e2e9` → `#e8e9eb`
+
+#### Styling Form Elements di Dialog
+- **`dialogs.css`** — Styling komprehensif untuk form elements
+  - TextField dengan focus state (border primary, padding adjustment)
+  - TextArea dengan background dan border radius
+  - Spinner dengan styling custom
+  - ComboBox dengan border styling
+  - DatePicker dengan modern look
+  - Full dark mode support untuk semua elements
+
+---
+
 ### ✨ Fitur Baru
 
 #### Sistem Widget Kustomisasi
@@ -154,27 +217,32 @@
 | `DialogPemilihWidget.java` | Baru | Dialog untuk memilih widget |
 | `WadahWidgetDraggable.java` | Baru | Container drag & drop widget |
 | `DAOTopik.java` | Diubah | Method filter by userId |
-| `LayananTopik.java` | Diubah | Method filter by userId |
+| `DAOSesiBelajar.java` | Diubah | Cascade delete + INNER JOIN |
+| `LayananTopik.java` | Diubah | Method filter by userId + cascade delete |
+| `LayananMataKuliah.java` | Diubah | Cascade delete sesi belajar |
 | `PreferensiPengguna.java` | Diubah | Simpan konfigurasi widget |
 | `MainView.fxml` | Diubah | Single widget container |
 | `widgets.css` | Diubah | Styling widget picker & draggable |
 | `AnimasiUtil.java` | Baru | Utility class untuk animasi fluid |
 | `JamAnalog.java` | Diubah | AnimationTimer untuk 60 FPS |
-| `KontrolerUtama.java` | Diubah | Integrasi widget system & AnimasiUtil |
+| `KontrolerUtama.java` | Diubah | Integrasi widget + sidebar selection |
 | `DialogPengenalan.java` | Diubah | Spring physics animations |
 | `PembuatIkon.java` | Diubah | Menambah ikon widget & panah |
 | `KontrolerTampilanJadwal.java` | Diubah | Ikon navigasi |
-| `ScheduleView.fxml` | Diubah | Hapus Unicode arrows |
+| `ScheduleView.fxml` | Diubah | Hapus Unicode arrows + label duplikat |
 | `DekoratorJendelaKustom.java` | Diubah | Rounded window corners |
 | `PembuatDialogMD3.java` | Diubah | MD3 dialog styling |
 | `forms.css` | Diubah | DatePicker styling |
-| `buttons.css` | Diubah | Nav button icon styling |
+| `buttons.css` | Diubah | Nav button sizing & icon styling |
+| `sidebar.css` | Diubah | Sidebar selection state styling |
+| `dialogs.css` | Diubah | Form elements styling (TextField, TextArea, etc.) |
+| `variables.css` | Diubah | Warna surface netral (hapus tint biru) |
 
 ---
 
 ### 🎨 Warna Utama
 
-| Mode | Primary | Background | Surface |
-|------|---------|------------|---------|
-| Light | `#006495` | `#f8f9ff` | `#ffffff` |
+| Mode | Primary | Background | Surface Container |
+|------|---------|------------|-------------------|
+| Light | `#006495` | `#f8f9fa` | `#f5f6f7` |
 | Dark | `#8dcdff` | `#0f1419` | `#171c21` |

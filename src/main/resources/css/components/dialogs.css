@@ -1,0 +1,371 @@
+/* ============================================
+   DIALOGS.CSS - Material Design 3 Dialog Styles
+   ============================================ */
+
+/* Dialog Pane Base */
+.md3-dialog-pane {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-padding: 24;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 16, 0, 0, 8);
+}
+
+/* Dialog Header */
+.md3-dialog-header {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+    -fx-padding: 0 0 8 0;
+}
+
+/* Dialog Content Label */
+.md3-dialog-content-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface-variant;
+    -fx-wrap-text: true;
+}
+
+/* Dialog Input Field */
+.md3-dialog-input {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface;
+}
+
+.md3-dialog-input:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+}
+
+/* Dialog Primary Button */
+.md3-dialog-btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: -color-on-primary;
+    -fx-background-radius: 20;
+    -fx-padding: 10 24;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.md3-dialog-btn-primary:hover {
+    -fx-background-color: derive(-color-primary, 10%);
+}
+
+/* Dialog Secondary Button */
+.md3-dialog-btn-secondary {
+    -fx-background-color: -color-secondary;
+    -fx-text-fill: -color-on-secondary;
+    -fx-background-radius: 20;
+    -fx-padding: 10 24;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.md3-dialog-btn-secondary:hover {
+    -fx-background-color: derive(-color-secondary, -10%);
+}
+
+/* Dialog Cancel Button */
+.md3-dialog-btn-cancel {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-primary;
+    -fx-background-radius: 20;
+    -fx-padding: 10 24;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.md3-dialog-btn-cancel:hover {
+    -fx-background-color: rgba(0, 100, 149, 0.08);
+}
+
+/* Dialog Danger Button */
+.md3-dialog-btn-danger {
+    -fx-background-color: -color-danger;
+    -fx-text-fill: -color-on-danger;
+    -fx-background-radius: 20;
+    -fx-padding: 10 24;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+
+.md3-dialog-btn-danger:hover {
+    -fx-background-color: derive(-color-danger, 10%);
+}
+
+/* Alert Dialogs */
+.md3-alert-info .icon-container {
+    -fx-background-color: -color-primary-container;
+}
+
+.md3-alert-info .icon-container .font-icon {
+    -fx-icon-color: -color-primary;
+}
+
+.md3-alert-warning .icon-container {
+    -fx-background-color: #fff3cd;
+}
+
+.md3-alert-warning .icon-container .font-icon {
+    -fx-icon-color: #856404;
+}
+
+.md3-alert-error .icon-container {
+    -fx-background-color: derive(-color-danger, 40%);
+}
+
+.md3-alert-error .icon-container .font-icon {
+    -fx-icon-color: -color-danger;
+}
+
+.md3-alert-confirmation .icon-container {
+    -fx-background-color: -color-primary-container;
+}
+
+.md3-alert-confirmation .icon-container .font-icon {
+    -fx-icon-color: -color-primary;
+}
+
+/* Icon Container */
+.icon-container {
+    -fx-min-width: 48;
+    -fx-min-height: 48;
+    -fx-background-radius: 24;
+    -fx-alignment: center;
+}
+
+.icon-container .font-icon {
+    -fx-icon-size: 24;
+}
+
+/* GridPane in Dialog */
+.md3-dialog-pane .grid-pane {
+    -fx-hgap: 12;
+    -fx-vgap: 12;
+}
+
+/* Labels in Dialog Grid */
+.md3-dialog-pane .label {
+    -fx-text-fill: -color-on-surface;
+    -fx-font-size: 13px;
+}
+
+/* Text Field in Dialog */
+.md3-dialog-pane .text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d0d5dd;
+    -fx-border-width: 1;
+    -fx-padding: 10 14;
+    -fx-font-size: 14px;
+    -fx-text-fill: #0b1d29;
+}
+
+.md3-dialog-pane .text-field:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+    -fx-padding: 9 13;
+}
+
+/* Text Area in Dialog */
+.md3-dialog-pane .text-area {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d0d5dd;
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+    -fx-padding: 0;
+}
+
+.md3-dialog-pane .text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+}
+
+.md3-dialog-pane .text-area:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+}
+
+.md3-dialog-pane .text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.md3-dialog-pane .text-area .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Spinner in Dialog */
+.md3-dialog-pane .spinner {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d0d5dd;
+    -fx-border-width: 1;
+}
+
+.md3-dialog-pane .spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.md3-dialog-pane .spinner .increment-arrow-button,
+.md3-dialog-pane .spinner .decrement-arrow-button {
+    -fx-background-color: #f0f4f8;
+    -fx-background-radius: 0 8 8 0;
+}
+
+.md3-dialog-pane .spinner .increment-arrow-button:hover,
+.md3-dialog-pane .spinner .decrement-arrow-button:hover {
+    -fx-background-color: #e0e7ef;
+}
+
+/* ComboBox in Dialog */
+.md3-dialog-pane .combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d0d5dd;
+    -fx-border-width: 1;
+    -fx-padding: 6 10;
+}
+
+.md3-dialog-pane .combo-box .list-cell {
+    -fx-text-fill: #0b1d29;
+    -fx-font-size: 14px;
+}
+
+.md3-dialog-pane .combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* DatePicker in Dialog */
+.md3-dialog-pane .date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #d0d5dd;
+    -fx-border-width: 1;
+}
+
+.md3-dialog-pane .date-picker .text-field {
+    -fx-border-width: 0;
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+.dark-mode .md3-dialog-pane {
+    -fx-background-color: #1e2328;
+    -fx-border-color: #2a3038;
+}
+
+.dark-mode .md3-dialog-header {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-content-label {
+    -fx-text-fill: #94a3b8;
+}
+
+.dark-mode .md3-dialog-input {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-input:focused {
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .md3-dialog-pane .label {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-pane .text-field {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-pane .text-field:focused {
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .md3-dialog-pane .text-area {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+}
+
+.dark-mode .md3-dialog-pane .text-area .content {
+    -fx-background-color: #282d33;
+}
+
+.dark-mode .md3-dialog-pane .text-area .text {
+    -fx-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-pane .text-area:focused {
+    -fx-border-color: #8dcdff;
+}
+
+.dark-mode .md3-dialog-pane .spinner {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+}
+
+.dark-mode .md3-dialog-pane .spinner .text-field {
+    -fx-text-fill: #e1e2e9;
+    -fx-border-color: transparent;
+}
+
+.dark-mode .md3-dialog-pane .spinner .increment-arrow-button,
+.dark-mode .md3-dialog-pane .spinner .decrement-arrow-button {
+    -fx-background-color: #3a4048;
+}
+
+.dark-mode .md3-dialog-pane .combo-box {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+}
+
+.dark-mode .md3-dialog-pane .combo-box .list-cell {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-pane .date-picker {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+}
+
+.dark-mode .md3-dialog-pane .date-picker .text-field {
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-btn-primary {
+    -fx-background-color: #0077b6;
+}
+
+.dark-mode .md3-dialog-btn-cancel {
+    -fx-text-fill: #8dcdff;
+}
+
+.dark-mode .md3-dialog-btn-cancel:hover {
+    -fx-background-color: rgba(141, 205, 255, 0.08);
+}

@@ -108,21 +108,15 @@ public class KontrolerTampilanJadwal implements Initializable {
 
         for (int i = 0; i < 7; i++) {
             LocalDate tanggal = awalMingguSaatIni.plusDays(i);
-            VBox kartuHari = buatKartuHari(tanggal, tanggal.equals(tanggalTerpilih));
+            var kartuHari = buatKartuHari(tanggal, tanggal.equals(tanggalTerpilih));
             weekCalendar.getChildren().add(kartuHari);
         }
     }
 
-    private VBox buatKartuHari(LocalDate tanggal, boolean dipilih) {
-        VBox kartu = new VBox(8);
-        kartu.setAlignment(Pos.CENTER);
-        kartu.setPrefWidth(80);
-        kartu.setPrefHeight(80);
-
-        kartu.getStyleClass().addAll("week-day-card");
-        if (dipilih) {
-            kartu.getStyleClass().add("selected");
-        }
+    private javafx.scene.layout.StackPane buatKartuHari(LocalDate tanggal, boolean dipilih) {
+        // Konten utama
+        VBox konten = new VBox(4);
+        konten.setAlignment(Pos.CENTER);
 
         String namaHari = tanggal.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.of("id", "ID"));
         Label labelHari = new Label(namaHari);
@@ -131,13 +125,27 @@ public class KontrolerTampilanJadwal implements Initializable {
         Label labelTanggal = new Label(String.valueOf(tanggal.getDayOfMonth()));
         labelTanggal.getStyleClass().add("day-number-label");
 
+        konten.getChildren().addAll(labelHari, labelTanggal);
+
+        // StackPane untuk overlay titik hari ini
+        javafx.scene.layout.StackPane kartu = new javafx.scene.layout.StackPane();
+        kartu.setPrefWidth(80);
+        kartu.setPrefHeight(80);
+        kartu.getStyleClass().addAll("week-day-card");
+        
+        if (dipilih) {
+            kartu.getStyleClass().add("selected");
+        }
+
+        kartu.getChildren().add(konten);
+
+        // Titik indikator hari ini (overlay di atas)
         if (tanggal.equals(LocalDate.now())) {
             Label titikHariIni = new Label("•");
             titikHariIni.getStyleClass().add("today-indicator");
+            javafx.scene.layout.StackPane.setAlignment(titikHariIni, Pos.TOP_CENTER);
             kartu.getChildren().add(titikHariIni);
         }
-
-        kartu.getChildren().addAll(labelHari, labelTanggal);
 
         kartu.setOnMouseClicked(_ -> {
             datePicker.setValue(tanggal);

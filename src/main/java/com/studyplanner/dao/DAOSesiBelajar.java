@@ -16,12 +16,13 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
     private final ManajerBasisData manajerDB;
 
-    /** Query SELECT dasar dengan JOIN untuk mengambil nama topik dan mata kuliah */
+    /** Query SELECT dasar dengan JOIN untuk mengambil nama topik dan mata kuliah.
+     *  Menggunakan INNER JOIN untuk otomatis filter sesi yang topik/matakuliahnya sudah dihapus. */
     private static final String SELECT_SESI_DENGAN_JOIN = """
             SELECT s.*, t.nama AS nama_topik, mk.nama AS nama_mata_kuliah
             FROM sesi_belajar s
-            LEFT JOIN topik t ON s.id_topik = t.id
-            LEFT JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
+            INNER JOIN topik t ON s.id_topik = t.id
+            INNER JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
             """;
 
     public DAOSesiBelajar(ManajerBasisData manajerDB) {
@@ -344,6 +345,44 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
             pstmt.setInt(1, id);
             return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Menghapus semua sesi belajar berdasarkan ID topik.
+     * Digunakan saat topik dihapus untuk cascade delete sesi terkait.
+     *
+     * @param topikId ID topik
+     * @return jumlah sesi yang dihapus
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hapusBerdasarkanTopikId(int topikId) throws SQLException {
+        String sql = "DELETE FROM sesi_belajar WHERE id_topik = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, topikId);
+            return pstmt.executeUpdate();
+        }
+    }
+
+    /**
+     * Menghapus semua sesi belajar berdasarkan ID mata kuliah.
+     * Digunakan saat mata kuliah dihapus untuk cascade delete sesi terkait.
+     *
+     * @param mataKuliahId ID mata kuliah
+     * @return jumlah sesi yang dihapus
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hapusBerdasarkanMataKuliahId(int mataKuliahId) throws SQLException {
+        String sql = "DELETE FROM sesi_belajar WHERE id_mata_kuliah = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, mataKuliahId);
+            return pstmt.executeUpdate();
         }
     }
 

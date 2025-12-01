@@ -11,16 +11,12 @@
     <!-- Header Section -->
     <top>
         <VBox spacing="20" styleClass="schedule-header">
-            <!-- Title & Date Picker Row -->
-            <HBox alignment="CENTER_LEFT" spacing="20">
-                <Label text="Jadwal Belajar" styleClass="schedule-page-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <HBox spacing="12" alignment="CENTER">
-                    <Button fx:id="prevWeekBtn" styleClass="nav-arrow-btn"/>
-                    <DatePicker fx:id="datePicker" styleClass="date-picker-modern"/>
-                    <Button fx:id="nextWeekBtn" styleClass="nav-arrow-btn"/>
-                    <Button fx:id="todayBtn" text="Hari Ini" styleClass="btn-primary"/>
-                </HBox>
+            <!-- Date Picker Row (judul sudah di header SPA) -->
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+                <Button fx:id="prevWeekBtn" styleClass="nav-arrow-btn"/>
+                <DatePicker fx:id="datePicker" styleClass="date-picker-modern"/>
+                <Button fx:id="nextWeekBtn" styleClass="nav-arrow-btn"/>
+                <Button fx:id="todayBtn" text="Hari Ini" styleClass="btn-primary"/>
             </HBox>
 
             <!-- Week Calendar View -->

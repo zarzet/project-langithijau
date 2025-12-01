@@ -1,8 +1,8 @@
 package com.studyplanner.dao;
 
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.eksepsi.EksepsiKoneksiBasisData;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Subclass dari ManajerBasisData untuk testing.
@@ -17,7 +17,11 @@ public class ManajerBasisDataTest extends ManajerBasisData {
     }
 
     @Override
-    public Connection bukaKoneksi() throws SQLException {
-        return testHelper.getKoneksi();
+    public Connection bukaKoneksi() {
+        try {
+            return testHelper.getKoneksi();
+        } catch (Exception e) {
+            throw new EksepsiKoneksiBasisData("Gagal mendapatkan koneksi test", e);
+        }
     }
 }

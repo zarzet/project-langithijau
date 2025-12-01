@@ -291,6 +291,13 @@ public class PembuatIkon {
     }
 
     /**
+     * Ikon kembali/back arrow
+     */
+    public static Node ikonKembali() {
+        return buat(Material2OutlinedAL.ARROW_BACK, 20);
+    }
+
+    /**
      * Ikon untuk empty state - tidak ada tugas
      */
     public static FontIcon ikonKosongTugas() {

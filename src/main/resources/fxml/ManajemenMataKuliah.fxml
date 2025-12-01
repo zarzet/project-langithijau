@@ -4,96 +4,65 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.studyplanner.kontroler.KontrolerManajemenMataKuliah">
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.studyplanner.kontroler.KontrolerManajemenMataKuliah"
+      spacing="24" styleClass="spa-content">
 
-    <center>
-        <SplitPane dividerPositions="0.3" styleClass="split-pane-custom">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
+    <!-- Tab Navigation -->
+    <HBox spacing="8" styleClass="tab-nav">
+        <ToggleButton fx:id="tabMataKuliah" text="Mata Kuliah" styleClass="tab-btn" selected="true">
+            <toggleGroup>
+                <ToggleGroup fx:id="tabGroup"/>
+            </toggleGroup>
+        </ToggleButton>
+        <ToggleButton fx:id="tabTopik" text="Topik Materi" styleClass="tab-btn" toggleGroup="$tabGroup"/>
+        <ToggleButton fx:id="tabUjian" text="Jadwal Ujian" styleClass="tab-btn" toggleGroup="$tabGroup"/>
+    </HBox>
 
-            <!-- Panel Kiri: Mata Kuliah -->
-            <VBox spacing="15">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
-                </padding>
+    <!-- Content Area -->
+    <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+        
+        <!-- Panel Mata Kuliah -->
+        <VBox fx:id="panelMataKuliah" spacing="16">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Daftar Mata Kuliah" styleClass="panel-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addCourseBtn" text="+ Tambah Mata Kuliah" styleClass="btn-primary"/>
+            </HBox>
+            
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="card-scroll">
+                <FlowPane fx:id="containerMataKuliah" hgap="16" vgap="16" styleClass="card-container"/>
+            </ScrollPane>
+        </VBox>
 
-                <Label text="Daftar Mata Kuliah" styleClass="section-title"/>
+        <!-- Panel Topik -->
+        <VBox fx:id="panelTopik" spacing="16" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Topik Materi" styleClass="panel-title"/>
+                <ComboBox fx:id="filterMataKuliah" promptText="Filter Mata Kuliah" styleClass="filter-combo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addTopicBtn" text="+ Tambah Topik" styleClass="btn-primary"/>
+            </HBox>
+            
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="card-scroll">
+                <FlowPane fx:id="containerTopik" hgap="16" vgap="16" styleClass="card-container"/>
+            </ScrollPane>
+        </VBox>
 
-                <TableView fx:id="tabelMataKuliah" VBox.vgrow="ALWAYS" styleClass="table-view">
-                    <columns>
-                        <TableColumn fx:id="kolomKodeMataKuliah" text="Kode" minWidth="60" prefWidth="80"/>
-                        <TableColumn fx:id="kolomNamaMataKuliah" text="Nama Mata Kuliah" minWidth="120"/>
-                    </columns>
-                </TableView>
+        <!-- Panel Ujian -->
+        <VBox fx:id="panelUjian" spacing="16" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Jadwal Ujian" styleClass="panel-title"/>
+                <ComboBox fx:id="filterMataKuliahUjian" promptText="Filter Mata Kuliah" styleClass="filter-combo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="addExamBtn" text="+ Tambah Ujian" styleClass="btn-primary"/>
+            </HBox>
+            
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="card-scroll">
+                <FlowPane fx:id="containerUjian" hgap="16" vgap="16" styleClass="card-container"/>
+            </ScrollPane>
+        </VBox>
 
-                <HBox spacing="15" alignment="CENTER_LEFT">
-                    <padding>
-                        <Insets top="5" right="0" bottom="0" left="0"/>
-                    </padding>
-                    <Button fx:id="addCourseBtn" text="Tambah" styleClass="btn-success"/>
-                    <Button fx:id="editCourseBtn" text="Edit" styleClass="btn-primary"/>
-                    <Button fx:id="deleteCourseBtn" text="Hapus" styleClass="btn-danger"/>
-                </HBox>
-            </VBox>
+    </StackPane>
 
-            <!-- Panel Kanan: Topik dan Ujian -->
-            <VBox spacing="25">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
-                </padding>
-
-                <!-- Bagian Topik -->
-                <VBox spacing="15" VBox.vgrow="ALWAYS">
-                    <Label text="Topik Materi" styleClass="section-title"/>
-
-                    <TableView fx:id="tabelTopik" minHeight="200" VBox.vgrow="ALWAYS" styleClass="table-view">
-                        <columns>
-                            <TableColumn fx:id="kolomNamaTopik" text="Nama Topik" minWidth="150"/>
-                            <TableColumn fx:id="kolomPrioritasTopik" text="Prioritas" minWidth="70" prefWidth="90"/>
-                            <TableColumn fx:id="kolomKesulitanTopik" text="Kesulitan" minWidth="70" prefWidth="90"/>
-                            <TableColumn fx:id="kolomJumlahUlasanTopik" text="Review" minWidth="60" prefWidth="80"/>
-                        </columns>
-                    </TableView>
-
-                    <HBox spacing="15" alignment="CENTER_LEFT">
-                        <padding>
-                            <Insets top="5" right="0" bottom="0" left="0"/>
-                        </padding>
-                        <Button fx:id="addTopicBtn" text="Tambah" styleClass="btn-success"/>
-                        <Button fx:id="editTopicBtn" text="Edit" styleClass="btn-primary"/>
-                        <Button fx:id="deleteTopicBtn" text="Hapus" styleClass="btn-danger"/>
-                    </HBox>
-                </VBox>
-
-                <Separator styleClass="separator"/>
-
-                <!-- Bagian Ujian -->
-                <VBox spacing="15" VBox.vgrow="ALWAYS">
-                    <Label text="Jadwal Ujian" styleClass="section-title"/>
-
-                    <TableView fx:id="tabelUjian" minHeight="150" VBox.vgrow="ALWAYS" styleClass="table-view">
-                        <columns>
-                            <TableColumn fx:id="kolomJudulUjian" text="Judul" minWidth="120"/>
-                            <TableColumn fx:id="kolomTipeUjian" text="Tipe" minWidth="80" prefWidth="100"/>
-                            <TableColumn fx:id="kolomTanggalUjian" text="Tanggal" minWidth="100" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-
-                    <HBox spacing="15" alignment="CENTER_LEFT">
-                        <padding>
-                            <Insets top="5" right="0" bottom="0" left="0"/>
-                        </padding>
-                        <Button fx:id="addExamBtn" text="Tambah" styleClass="btn-success"/>
-                        <Button fx:id="editExamBtn" text="Edit" styleClass="btn-primary"/>
-                        <Button fx:id="deleteExamBtn" text="Hapus" styleClass="btn-danger"/>
-                    </HBox>
-                </VBox>
-
-            </VBox>
-
-        </SplitPane>
-    </center>
-
-</BorderPane>
+</VBox>

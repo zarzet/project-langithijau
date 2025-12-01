@@ -107,7 +107,7 @@
 }
 
 .schedule-card:hover {
-    -fx-background-color: #f8f9ff;
+    -fx-background-color: #f8f9fa;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0, 0, 3);
     -fx-cursor: hand;
 }
@@ -206,8 +206,9 @@
 }
 
 .today-indicator {
-    -fx-font-size: 16px;
+    -fx-font-size: 8px;
     -fx-text-fill: -color-primary;
+    -fx-padding: 4 0 0 0;
 }
 
 .week-day-card.selected .today-indicator {

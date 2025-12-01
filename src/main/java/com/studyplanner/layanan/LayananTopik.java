@@ -2,6 +2,7 @@ package com.studyplanner.layanan;
 
 import com.studyplanner.algoritma.AlgoritmaSM2;
 import com.studyplanner.basisdata.ManajerBasisData;
+import com.studyplanner.dao.DAOSesiBelajar;
 import com.studyplanner.dao.DAOTopik;
 import com.studyplanner.model.Topik;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ import java.util.List;
 public class LayananTopik {
 
     private final DAOTopik daoTopik;
+    private final DAOSesiBelajar daoSesiBelajar;
     private final AlgoritmaSM2 algoritmaFSRS;
 
     // Batas minimum faktor kemudahan lama untuk menjaga kompatibilitas data
@@ -23,6 +25,7 @@ public class LayananTopik {
 
     public LayananTopik(ManajerBasisData manajerDB) {
         this.daoTopik = new DAOTopik(manajerDB);
+        this.daoSesiBelajar = new DAOSesiBelajar(manajerDB);
         this.algoritmaFSRS = new AlgoritmaSM2();
     }
 
@@ -52,13 +55,16 @@ public class LayananTopik {
     }
 
     /**
-     * Menghapus topik.
+     * Menghapus topik beserta semua sesi belajar terkait (cascade delete).
      *
      * @param idTopik ID topik
      * @return true jika berhasil
      * @throws SQLException jika terjadi kesalahan database
      */
     public boolean hapus(int idTopik) throws SQLException {
+        // Cascade delete: hapus sesi belajar terkait terlebih dahulu
+        daoSesiBelajar.hapusBerdasarkanTopikId(idTopik);
+        
         return daoTopik.hapus(idTopik);
     }
 

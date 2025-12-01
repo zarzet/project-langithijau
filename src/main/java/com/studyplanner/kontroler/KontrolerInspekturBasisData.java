@@ -4,7 +4,7 @@ import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.basisdata.PencatatQuery;
 import com.studyplanner.utilitas.PembuatIkon;
 import java.net.URL;
-import java.sql.SQLException;
+import com.studyplanner.eksepsi.EksepsiAksesBasisData;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -205,7 +205,7 @@ public class KontrolerInspekturBasisData implements Initializable {
             if (searchTableField != null && !searchTableField.getText().isEmpty()) {
                 saringTabel(searchTableField.getText());
             }
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             if (statusLabel != null) statusLabel.setText("Gagal memuat tabel: " + e.getMessage());
         }
     }
@@ -249,12 +249,12 @@ public class KontrolerInspekturBasisData implements Initializable {
                 statusLabel.setText("Sukses: " + java.time.LocalTime.now());
                 statusLabel.setStyle("-fx-text-fill: #10b981;");
             } else {
-                manajerBasisData.jalankanQueryUpdate(sql);
+                manajerBasisData.jalankanKueriUpdate(sql);
                 statusLabel.setText("Pembaruan Berhasil: " + java.time.LocalTime.now());
                 statusLabel.setStyle("-fx-text-fill: #10b981;");
                 muatDaftarTabel();
             }
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             statusLabel.setText("Kesalahan: " + e.getMessage());
             statusLabel.setStyle("-fx-text-fill: #ba1a1a;");
         }
@@ -262,7 +262,7 @@ public class KontrolerInspekturBasisData implements Initializable {
 
     private void jalankanSelectKeTabel(String sql, TableView<Map<String, Object>> tabelTarget, boolean apakahTabelData) {
         try {
-            List<Map<String, Object>> barisBaris = manajerBasisData.jalankanQuerySelect(sql);
+            List<Map<String, Object>> barisBaris = manajerBasisData.jalankanKueriSelect(sql);
 
             tabelTarget.getColumns().clear();
             if (!barisBaris.isEmpty()) {
@@ -285,7 +285,7 @@ public class KontrolerInspekturBasisData implements Initializable {
                 resultCountLabel.setText(barisBaris.size() + " hasil");
             }
 
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             if (statusLabel != null) {
                 statusLabel.setText("Kesalahan Query: " + e.getMessage());
                 statusLabel.setStyle("-fx-text-fill: #ba1a1a;");

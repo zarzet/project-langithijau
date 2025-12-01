@@ -4,7 +4,6 @@ import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.utilitas.ManajerOtentikasi;
-import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PencatatLog;
 import com.studyplanner.utilitas.UtilUI;
 import javafx.application.Platform;
@@ -131,7 +130,7 @@ public class KontrolerLogin {
                 Platform.runLater(() -> {
                     if (user != null) {
                         try {
-                            Map<String, Object> existingUser = manajerBasisData.cariUserByGoogleId(user.getId());
+                            Map<String, Object> existingUser = manajerBasisData.cariUserBerdasarkanGoogleId(user.getId());
                             if (existingUser == null) {
                                 manajerBasisData.tambahUserGoogle(user.getId(), user.getEmail(),
                                         user.getName(), user.getPicture());
@@ -171,7 +170,7 @@ public class KontrolerLogin {
 
         new Thread(() -> {
             try {
-                Map<String, Object> user = manajerBasisData.cariUserByUsername(username);
+                Map<String, Object> user = manajerBasisData.cariUserBerdasarkanUsername(username);
 
                 Platform.runLater(() -> {
                     if (user != null) {
@@ -233,7 +232,7 @@ public class KontrolerLogin {
 
         new Thread(() -> {
             try {
-                Map<String, Object> existingUser = manajerBasisData.cariUserByUsername(username);
+                Map<String, Object> existingUser = manajerBasisData.cariUserBerdasarkanUsername(username);
 
                 Platform.runLater(() -> {
                     if (existingUser != null) {

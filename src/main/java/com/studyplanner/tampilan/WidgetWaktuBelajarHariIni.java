@@ -2,7 +2,7 @@ package com.studyplanner.tampilan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.utilitas.UtilUI;
-import java.sql.SQLException;
+import com.studyplanner.eksepsi.EksepsiAksesBasisData;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -82,7 +82,7 @@ public class WidgetWaktuBelajarHariIni extends VBox {
             menitDasarKemarin = manajerBasisData.ambilWaktuBelajarKemarin();
 
             perbaruiTampilan();
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             menitDasarHariIni = 0;
             menitDasarKemarin = 0;
             detikSesiSaatIni = 0;

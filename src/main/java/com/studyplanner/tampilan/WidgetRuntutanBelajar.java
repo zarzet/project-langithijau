@@ -1,7 +1,7 @@
 package com.studyplanner.tampilan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
-import java.sql.SQLException;
+import com.studyplanner.eksepsi.EksepsiAksesBasisData;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -47,7 +47,7 @@ public class WidgetRuntutanBelajar extends VBox {
             int runtutan = manajerBasisData.ambilRuntutanBelajar();
             labelAngkaRuntutan.setText(String.valueOf(runtutan));
             perbaruiMotivasi(runtutan);
-        } catch (SQLException e) {
+        } catch (EksepsiAksesBasisData e) {
             labelAngkaRuntutan.setText("0");
             labelMotivasi.setText("Mulai perjalananmu!");
         }
