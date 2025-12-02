@@ -1,6 +1,5 @@
 package com.studyplanner.kontroler;
 
-import com.studyplanner.utilitas.AnimasiUtil;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.PembuatIkon;
@@ -8,12 +7,16 @@ import com.studyplanner.utilitas.PreferensiPengguna;
 import com.studyplanner.utilitas.UtilUI;
 import com.google.api.services.oauth2.model.Userinfo;
 import com.studyplanner.algoritma.PembuatJadwal;
-import com.studyplanner.algoritma.PengulanganBerjarak;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.tampilan.DialogPengenalan;
-import com.studyplanner.tampilan.TampilanKosong;
 import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.kontroler.pembantu.ManajerWidgetDashboard;
+import com.studyplanner.kontroler.pembantu.PembantuTema;
+import com.studyplanner.kontroler.pembantu.PembantuAnimasi;
+import com.studyplanner.kontroler.pembantu.PembantuNavigasi;
+import com.studyplanner.kontroler.pembantu.PembantuPengaturan;
+import com.studyplanner.kontroler.pembantu.PembantuDialogOverlay;
+import com.studyplanner.kontroler.pembantu.PembantuDashboard;
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.layanan.LayananMataKuliah;
 import com.studyplanner.layanan.LayananTopik;
@@ -29,12 +32,8 @@ import java.util.Locale;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
-import javafx.animation.ParallelTransition;
-import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -155,13 +154,15 @@ public class KontrolerUtama implements Initializable {
     private boolean isSidebarVisible = true;
     private ManajerWidgetDashboard manajerWidget;
     
-    // Secret dark mode feature (Easter egg)
-    private int hitungKlikProfilPengaturan = 0;
-    private boolean darkModeUnlocked = false;
-    private HBox darkModeRowRef = null; // Reference untuk show/hide
-    private VBox appearanceSectionRef = null; // Reference untuk section tampilan
+    // Helper classes (SOLID - SRP)
+    private PembantuTema pembantuTema;
+    private PembantuAnimasi pembantuAnimasi;
+    private PembantuNavigasi pembantuNavigasi;
+    private PembantuDialogOverlay pembantuDialog;
+    private PembantuDashboard pembantuDashboard;
+    private PembantuPengaturan pembantuPengaturan;
     
-    // State untuk SPA navigation
+    // State untuk SPA navigation (dikelola di sini, bukan di helper)
     private enum HalamanAktif { DASHBOARD, PENGATURAN, MANAJEMEN_MATKUL, LIHAT_JADWAL }
     private HalamanAktif halamanAktif = HalamanAktif.DASHBOARD;
 
@@ -176,9 +177,10 @@ public class KontrolerUtama implements Initializable {
 
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
+        // Inisialisasi helper classes (SOLID - SRP)
+        inisialisasiHelpers();
 
         isDarkMode = PreferensiPengguna.getInstance().isDarkMode();
-        darkModeUnlocked = PreferensiPengguna.getInstance().isDarkModeUnlocked();
 
         siapkanUI();
         loadDashboardData();
@@ -189,6 +191,43 @@ public class KontrolerUtama implements Initializable {
 
         // Cek dan tampilkan onboarding untuk user baru
         periksaDanTampilkanOnboarding();
+    }
+
+    /**
+     * Inisialisasi helper classes untuk Single Responsibility Principle.
+     */
+    private void inisialisasiHelpers() {
+        // Tema helper
+        pembantuTema = new PembantuTema(() -> {
+            if (manajerWidget != null) {
+                manajerWidget.aturModeGelap(pembantuTema.isDarkMode());
+                manajerWidget.setDarkMode(pembantuTema.isDarkMode());
+            }
+        });
+
+        // Animasi helper
+        pembantuAnimasi = new PembantuAnimasi();
+
+        // Navigasi helper
+        pembantuNavigasi = new PembantuNavigasi(scrollPaneUtama, this::loadDashboardData);
+        pembantuNavigasi.setTombolSidebar(tombolKelolaMataKuliah, tombolLihatJadwal, tombolPengaturan);
+
+        // Dialog overlay helper
+        pembantuDialog = new PembantuDialogOverlay(dialogOverlay, dialogContainer);
+
+        // Dashboard helper
+        pembantuDashboard = new PembantuDashboard(
+            layananMataKuliah,
+            layananTopik,
+            layananJadwalUjian,
+            layananSesiBelajar,
+            pembuatJadwal,
+            this::buatJadwalBaru,
+            this::loadDashboardData
+        );
+
+        // Pengaturan helper
+        pembantuPengaturan = new PembantuPengaturan(isDarkMode, this::alihkanModaGelap, this::buatJadwalBaru);
     }
 
     /**
@@ -301,128 +340,49 @@ public class KontrolerUtama implements Initializable {
         autoRefreshTimeline.play();
     }
 
-    /**
-     * Terapkan dark mode pada startup jika user sebelumnya menggunakan dark mode.
-     */
+    // Delegasi ke PembantuTema
     private void terapkanModaGelapPadaStartup() {
         if (!isDarkMode) return;
-        
-        // Tunggu scene tersedia lalu terapkan dark mode
         javafx.application.Platform.runLater(() -> {
-            if (labelSelamatDatang.getScene() != null) {
-                labelSelamatDatang.getScene().getRoot().getStyleClass().add("dark-mode");
-                
-                // Update window decoration
-                Stage stage = (Stage) labelSelamatDatang.getScene().getWindow();
-                if (stage != null) {
-                    DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", isDarkMode);
-                }
-                
-                // Update widget dark mode
-                if (manajerWidget != null) {
-                    manajerWidget.aturModeGelap(isDarkMode);
-                }
-            }
+            pembantuTema.terapkanModaGelap(labelSelamatDatang.getScene(), manajerWidget);
         });
     }
 
     private void alihkanModaGelap() {
-        isDarkMode = !isDarkMode;
-
-        // Simpan preferensi
-        PreferensiPengguna.getInstance().setDarkMode(isDarkMode);
-
-        if (tombolAlihTema != null) {
-            tombolAlihTema.setGraphic(PembuatIkon.ikonModeGelap(isDarkMode));
-            tombolAlihTema.setText(isDarkMode ? "Terang" : "Gelap");
-        }
-
-        if (manajerWidget != null) {
-            manajerWidget.aturModeGelap(isDarkMode);
-            manajerWidget.setDarkMode(isDarkMode);
-        }
-
-        if (tombolKelolaMataKuliah.getScene() != null) {
-            if (isDarkMode) {
-                tombolKelolaMataKuliah
-                        .getScene()
-                        .getRoot()
-                        .getStyleClass()
-                        .add("dark-mode");
-            } else {
-                tombolKelolaMataKuliah
-                        .getScene()
-                        .getRoot()
-                        .getStyleClass()
-                        .remove("dark-mode");
-            }
-
-            javafx.stage.Stage stage = (javafx.stage.Stage) tombolKelolaMataKuliah.getScene().getWindow();
-            if (stage != null) {
-                DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", isDarkMode);
-            }
-        }
+        pembantuTema.alihkanModaGelap(tombolAlihTema, tombolKelolaMataKuliah.getScene(), manajerWidget);
+        isDarkMode = pembantuTema.isDarkMode();
     }
 
     private void loadDashboardData() {
         try {
-            PembuatJadwal.KemajuanBelajar progress = pembuatJadwal.ambilKemajuanBelajar();
-
-            labelTotalTopik.setText(String.valueOf(progress.getTotalTopik()));
-            labelTopikDikuasai.setText(
-                    String.valueOf(progress.getTopikDikuasai()));
-            labelTugasHariIni.setText(String.valueOf(progress.getTotalHariIni()));
-            labelTugasSelesai.setText(
-                    String.valueOf(progress.getSelesaiHariIni()));
-
-            progressKeseluruhan.setProgress(
-                    progress.getKemajuanKeseluruhan() / 100.0);
-            progressHariIni.setProgress(progress.getKemajuanHariIni() / 100.0);
-
-            labelProgressKeseluruhan.setText(
-                    String.format("%.0f%%", progress.getKemajuanKeseluruhan()));
-            labelProgressHariIni.setText(
-                    String.format("%.0f%%", progress.getKemajuanHariIni()));
-
-            loadTodayTasks();
-            loadUpcomingExams();
-
-            refreshUpcomingTasksWidget();
+            // Delegasi ke PembantuDashboard
+            pembantuDashboard.muatDataDashboard(
+                labelTotalTopik, labelTopikDikuasai,
+                labelTugasHariIni, labelTugasSelesai,
+                progressKeseluruhan, progressHariIni,
+                labelProgressKeseluruhan, labelProgressHariIni,
+                wadahTugasHariIni, wadahUjianMendatang
+            );
+            
+            // Refresh widget
             if (manajerWidget != null) {
+                List<SesiBelajar> upcomingSessions = pembantuDashboard.ambilSesiMendatang(4);
+                if (manajerWidget.getUpcomingTasksWidget() != null) {
+                    manajerWidget.getUpcomingTasksWidget().aturSesi(upcomingSessions);
+                }
                 manajerWidget.segarkanSemua();
             }
         } catch (SQLException e) {
             UtilUI.tampilkanKesalahan("Gagal memuat data dashboard: " + e.getMessage());
-            e.printStackTrace();
         }
-    }
-
-    private void refreshUpcomingTasksWidget() throws SQLException {
-        if (manajerWidget == null || manajerWidget.getUpcomingTasksWidget() == null) {
-            return;
-        }
-
-        List<SesiBelajar> upcomingSessions = layananSesiBelajar.ambilSesiMendatang(4);
-        manajerWidget.getUpcomingTasksWidget().aturSesi(upcomingSessions);
     }
 
     private void showUpcomingTasksDetailDialog() {
-        if (manajerWidget == null || manajerWidget.getUpcomingTasksWidget() == null) {
-            return;
-        }
-
         try {
-            List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiMendatang(12);
-
+            List<SesiBelajar> sessions = pembantuDashboard.ambilSesiMendatang(12);
             Dialog<Void> dialog = PembuatDialogMD3.buatDialog("Detail Upcoming Tasks", null);
-            dialog
-                    .getDialogPane()
-                    .getButtonTypes()
-                    .add(PembuatDialogMD3.buatTombolTutup());
-            dialog
-                    .getDialogPane()
-                    .getStylesheets()
-                    .add(getClass().getResource("/css/style.css").toExternalForm());
+            dialog.getDialogPane().getButtonTypes().add(PembuatDialogMD3.buatTombolTutup());
+            dialog.getDialogPane().getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
 
             WidgetTugasMendatang detailWidget = new WidgetTugasMendatang();
             detailWidget.getStyleClass().removeAll("widget-interactive");
@@ -438,232 +398,17 @@ public class KontrolerUtama implements Initializable {
 
             VBox content = new VBox(12);
             content.setPadding(new Insets(20));
-            Label title = new Label("Prioritas 7 Hari Ke Depan");
-            title.getStyleClass().add("section-title");
-            content.getChildren().addAll(title, scrollPane);
-
+            content.getChildren().addAll(new Label("Prioritas 7 Hari Ke Depan"), scrollPane);
             dialog.getDialogPane().setContent(content);
             dialog.showAndWait();
         } catch (SQLException e) {
-            UtilUI.tampilkanKesalahan("Gagal memuat detail upcoming tasks: " + e.getMessage());
+            UtilUI.tampilkanKesalahan("Gagal memuat detail: " + e.getMessage());
         }
     }
 
-    private void loadTodayTasks() throws SQLException {
-        wadahTugasHariIni.getChildren().clear();
-        List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiHariIni();
-
-        if (sessions.isEmpty()) {
-            TampilanKosong tampilanKosong = TampilanKosong.untukTugasKosong(this::buatJadwalBaru);
-            wadahTugasHariIni.getChildren().add(tampilanKosong);
-        } else {
-            for (SesiBelajar session : sessions) {
-                wadahTugasHariIni.getChildren().add(createTaskCard(session));
-            }
-        }
-    }
-
-    private VBox createTaskCard(SesiBelajar session) {
-        VBox card = new VBox(8);
-        card.getStyleClass().add("task-card");
-
-        HBox header = new HBox(10);
-        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-
-        CheckBox checkBox = new CheckBox();
-        checkBox.setSelected(session.isSelesai());
-        checkBox.setOnAction(_ -> markTaskComplete(session, checkBox.isSelected()));
-
-        Label titleLabel = new Label(session.getNamaTopik());
-        titleLabel.getStyleClass().add("task-title");
-        if (session.isSelesai()) {
-            titleLabel.setStyle(
-                    "-fx-text-fill: #888; -fx-strikethrough: true;");
-        }
-
-        header.getChildren().addAll(checkBox, titleLabel);
-
-        Label courseLabel = new Label(session.getNamaMataKuliah());
-        courseLabel.getStyleClass().add("task-course");
-
-        Label typeLabel = new Label(
-                UtilUI.dapatkanLabelTipeSesi(session.getTipeSesi()));
-        typeLabel.getStyleClass().add("task-type");
-        typeLabel
-                .getStyleClass()
-                .add(UtilUI.dapatkanKelasBadge(session.getTipeSesi()));
-
-        Label durationLabel = new Label(
-                session.getDurasiMenit() + " menit");
-        durationLabel.getStyleClass().add("task-duration");
-
-        HBox footer = new HBox(15);
-        footer.getChildren().addAll(typeLabel, durationLabel);
-
-        card.getChildren().addAll(header, courseLabel, footer);
-
-        return card;
-    }
-
-    private void markTaskComplete(SesiBelajar session, boolean completed) {
-        try {
-            session.setSelesai(completed);
-            if (completed) {
-                session.setSelesaiPada(java.time.LocalDateTime.now());
-                showPerformanceRatingDialog(session);
-            } else {
-                session.setSelesaiPada(null);
-                session.setRatingPerforma(0);
-                layananSesiBelajar.perbarui(session);
-            }
-
-            loadDashboardData();
-        } catch (SQLException e) {
-            UtilUI.tampilkanKesalahan("Gagal memperbarui tugas: " + e.getMessage());
-        }
-    }
-
-    private void showPerformanceRatingDialog(SesiBelajar session) {
-        Dialog<Integer> dialog = PembuatDialogMD3.buatDialog("Rating Performa", "Bagaimana performa Anda untuk sesi ini?");
-
-        ButtonType okButtonType = PembuatDialogMD3.buatTombolOK();
-        dialog
-                .getDialogPane()
-                .getButtonTypes()
-                .addAll(okButtonType, ButtonType.CANCEL);
-
-        VBox content = new VBox(10);
-        Label label = new Label("Pilih rating (1-5):");
-
-        ToggleGroup ratingGroup = new ToggleGroup();
-        HBox ratingBox = new HBox(10);
-
-        for (int i = 1; i <= 5; i++) {
-            RadioButton rb = new RadioButton(i + " - " + getRatingLabel(i));
-            rb.setToggleGroup(ratingGroup);
-            rb.setUserData(i);
-            if (i == 3)
-                rb.setSelected(true);
-            ratingBox.getChildren().add(rb);
-        }
-
-        content.getChildren().addAll(label, ratingBox);
-        dialog.getDialogPane().setContent(content);
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButtonType) {
-                RadioButton selected = (RadioButton) ratingGroup.getSelectedToggle();
-                return (Integer) selected.getUserData();
-            }
-            return null;
-        });
-
-        dialog
-                .showAndWait()
-                .ifPresent(rating -> {
-                    try {
-                        session.setRatingPerforma(rating);
-                        layananSesiBelajar.perbarui(session);
-
-                        Topik topic = layananTopik.ambilBerdasarkanId(session.getIdTopik());
-                        if (topic != null) {
-                            if (topic.getTanggalBelajarPertama() == null) {
-                                topic.setTanggalBelajarPertama(LocalDate.now());
-                            }
-
-                            LocalDate nextReview = PengulanganBerjarak.hitungTanggalUlasanBerikutnya(
-                                    topic,
-                                    rating);
-
-                            layananTopik.perbarui(topic);
-
-                            UtilUI.tampilkanToast(
-                                    "Sesi selesai! Review: " + nextReview);
-                        }
-                    } catch (SQLException e) {
-                        UtilUI.tampilkanKesalahan("Gagal menyimpan rating: " + e.getMessage());
-                    }
-                });
-    }
-
-    private String getRatingLabel(int rating) {
-        return switch (rating) {
-            case 1 -> "Sangat Sulit";
-            case 2 -> "Sulit";
-            case 3 -> "Cukup";
-            case 4 -> "Baik";
-            case 5 -> "Sangat Mudah";
-            default -> "";
-        };
-    }
-
-    private void loadUpcomingExams() throws SQLException {
-        wadahUjianMendatang.getChildren().clear();
-        List<JadwalUjian> exams = layananJadwalUjian.ambilUjianMendatang();
-
-        if (exams.isEmpty()) {
-            TampilanKosong tampilanKosong = TampilanKosong.untukUjianKosong(null);
-            wadahUjianMendatang.getChildren().add(tampilanKosong);
-        } else {
-            for (JadwalUjian exam : exams) {
-                wadahUjianMendatang.getChildren().add(createExamCard(exam));
-            }
-        }
-    }
-
-    private VBox createExamCard(JadwalUjian exam) throws SQLException {
-        VBox card = new VBox(5);
-        card.getStyleClass().add("exam-card");
-
-        Label titleLabel = new Label(exam.getJudul());
-        titleLabel.getStyleClass().add("exam-title");
-
-        MataKuliah course = layananMataKuliah.ambilBerdasarkanId(exam.getIdMataKuliah());
-        Label courseLabel = new Label(course != null ? course.getKode() : "");
-        courseLabel.getStyleClass().add("exam-course");
-
-        Label labelTanggal = new Label(exam.getTanggalUjian().toString());
-        labelTanggal.getStyleClass().add("exam-date");
-
-        int daysLeft = exam.getHariMenujuUjian();
-        Label daysLabel = new Label(daysLeft + " hari lagi");
-        daysLabel.getStyleClass().add("exam-days");
-
-        card
-                .getChildren()
-                .addAll(titleLabel, courseLabel, labelTanggal, daysLabel);
-
-        return card;
-    }
-
-    /**
-     * Update state selected pada tombol sidebar.
-     */
+    // Delegasi ke PembantuNavigasi
     private void updateSidebarSelection(Button selected) {
-        // Reset semua tombol
-        resetSidebarButton(tombolKelolaMataKuliah);
-        resetSidebarButton(tombolLihatJadwal);
-        resetSidebarButton(tombolPengaturan);
-        
-        // Tambah selected ke tombol yang aktif
-        if (selected != null) {
-            selected.getStyleClass().add("sidebar-btn-selected");
-            // Set icon warna putih
-            if (selected.getGraphic() instanceof org.kordamp.ikonli.javafx.FontIcon icon) {
-                icon.setIconColor(javafx.scene.paint.Color.WHITE);
-            }
-        }
-    }
-    
-    /**
-     * Reset sidebar button ke state normal.
-     */
-    private void resetSidebarButton(Button button) {
-        button.getStyleClass().remove("sidebar-btn-selected");
-        // Reset icon ke warna default
-        if (button.getGraphic() instanceof org.kordamp.ikonli.javafx.FontIcon icon) {
-            icon.setIconColor(javafx.scene.paint.Color.web("#42474e"));
-        }
+        pembantuNavigasi.updateSidebarSelection(selected);
     }
 
     /**
@@ -810,321 +555,37 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    /**
-     * Buat section profil untuk ditampilkan di pengaturan.
-     * Easter egg: Klik foto profil 10x untuk membuka pengaturan dark mode.
-     */
-    private VBox buatSectionProfil() {
-        VBox section = new VBox(16);
-        section.getStyleClass().add("settings-profile-section");
-        
-        HBox profileCard = new HBox(16);
-        profileCard.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        profileCard.getStyleClass().add("settings-profile-card");
-        profileCard.setPadding(new Insets(16));
-
-        if (ManajerOtentikasi.getInstance().isLoggedIn()) {
-            Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
-            
-            // Avatar dengan click counter untuk Easter egg
-            StackPane avatarContainer = new StackPane();
-            ImageView avatarView = new ImageView();
-            if (user.getPicture() != null) {
-                try {
-                    avatarView.setImage(new Image(user.getPicture(), 56, 56, true, true));
-                } catch (Exception e) {
-                    avatarView.setImage(null);
-                }
-            }
-            avatarView.setFitWidth(56);
-            avatarView.setFitHeight(56);
-            Circle clip = new Circle(28, 28, 28);
-            avatarView.setClip(clip);
-            avatarContainer.getChildren().add(avatarView);
-            avatarContainer.setCursor(javafx.scene.Cursor.HAND);
-            
-            // Easter egg: klik 10x untuk unlock dark mode
-            avatarContainer.setOnMouseClicked(event -> {
-                hitungKlikProfilPengaturan++;
-                
-                // Dapatkan window untuk toast
-                javafx.stage.Window window = avatarContainer.getScene() != null 
-                    ? avatarContainer.getScene().getWindow() : null;
-                
-                if (hitungKlikProfilPengaturan >= 7 && hitungKlikProfilPengaturan < 10) {
-                    // Berikan hint dengan toast (tidak blocking)
-                    int sisa = 10 - hitungKlikProfilPengaturan;
-                    UtilUI.tampilkanToast(window, "* " + sisa + " klik lagi...");
-                } else if (hitungKlikProfilPengaturan == 10 && !darkModeUnlocked) {
-                    // Unlock dark mode!
-                    darkModeUnlocked = true;
-                    PreferensiPengguna.getInstance().setDarkModeUnlocked(true);
-                    
-                    // Tampilkan section tampilan dan dark mode option
-                    if (appearanceSectionRef != null) {
-                        appearanceSectionRef.setVisible(true);
-                        appearanceSectionRef.setManaged(true);
-                    }
-                    if (darkModeRowRef != null) {
-                        darkModeRowRef.setVisible(true);
-                        darkModeRowRef.setManaged(true);
-                    }
-                    
-                    UtilUI.tampilkanToast(window, "Mode Gelap telah dibuka!");
-                    hitungKlikProfilPengaturan = 0;
-                }
-            });
-            
-            // Info
-            VBox infoBox = new VBox(2);
-            HBox.setHgrow(infoBox, javafx.scene.layout.Priority.ALWAYS);
-            
-            Label nameLabel = new Label(user.getName());
-            nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-            
-            infoBox.getChildren().add(nameLabel);
-            
-            // Hanya tampilkan email jika ada
-            if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                Label emailLabel = new Label(user.getEmail());
-                emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
-                infoBox.getChildren().add(emailLabel);
-            }
-            
-            Label providerLabel = new Label("Masuk dengan Google");
-            providerLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
-            infoBox.getChildren().add(providerLabel);
-            
-            profileCard.getChildren().addAll(avatarContainer, infoBox);
-        } else {
-            Label notLoggedIn = new Label("Belum masuk");
-            notLoggedIn.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
-            profileCard.getChildren().add(notLoggedIn);
-        }
-        
-        section.getChildren().add(profileCard);
-        return section;
-    }
 
     /**
-     * Tampilkan pengaturan dengan swap konten (SPA-style).
-     * Tidak membuka window baru, tapi mengganti konten di window yang sama.
+     * Tampilkan pengaturan (delegasi ke PembantuPengaturan).
      */
     private void tampilkanPengaturan() {
-        // Jika bukan di dashboard, kembali dulu
         if (halamanAktif != HalamanAktif.DASHBOARD && halamanAktif != HalamanAktif.PENGATURAN) {
             kembaliKeDashboard();
         }
-        
-        // Jika sudah di pengaturan, tidak perlu buka lagi
         if (halamanAktif == HalamanAktif.PENGATURAN) return;
         
-        // Simpan konten dashboard asli
         if (kontenDashboardAsli == null) {
             kontenDashboardAsli = scrollPaneUtama.getContent();
         }
         halamanAktif = HalamanAktif.PENGATURAN;
-        
-        // Update sidebar selection
         updateSidebarSelection(tombolPengaturan);
 
-        // Buat konten pengaturan
-        VBox settingsContent = new VBox(24);
-        settingsContent.setPadding(new Insets(24));
-        settingsContent.getStyleClass().add("settings-window");
+        // Delegasi ke PembantuPengaturan
+        HBox header = buatHeaderDenganTombolKembali("Pengaturan");
+        VBox settingsContent = pembantuPengaturan.bangunKontenPengaturan(header);
         
-        // === HEADER dengan tombol kembali ===
-        HBox header = new HBox(16);
-        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        
-        Button tombolKembali = new Button();
-        tombolKembali.setGraphic(PembuatIkon.ikonKembali());
-        tombolKembali.getStyleClass().add("btn-icon");
-        tombolKembali.setOnAction(_ -> kembaliKeDashboard());
-        
-        Label judulPengaturan = new Label("Pengaturan");
-        judulPengaturan.getStyleClass().add("section-title");
-        judulPengaturan.setStyle("-fx-font-size: 24px;");
-        
-        header.getChildren().addAll(tombolKembali, judulPengaturan);
-
-        // === SECTION PROFIL ===
-        VBox profileSection = buatSectionProfil();
-
-        // === SECTION TAMPILAN (Dark Mode - Easter egg) ===
-        VBox appearanceSection = createSettingsSection("Tampilan", PembuatIkon.ikonTampilan());
-
-        HBox darkModeRow = createSettingRow(
-            "Mode Gelap",
-            "Ubah tema aplikasi menjadi gelap untuk kenyamanan mata di malam hari"
-        );
-        CheckBox darkModeCheck = new CheckBox();
-        darkModeCheck.setSelected(isDarkMode);
-        darkModeCheck.setOnAction(_ -> alihkanModaGelap());
-        darkModeRow.getChildren().add(darkModeCheck);
-        
-        // Simpan referensi untuk ditampilkan saat Easter egg di-unlock
-        darkModeRowRef = darkModeRow;
-        appearanceSectionRef = appearanceSection;
-        
-        // Sembunyikan jika belum di-unlock (Easter egg)
-        if (!darkModeUnlocked) {
-            darkModeRow.setVisible(false);
-            darkModeRow.setManaged(false);
-            appearanceSection.setVisible(false);
-            appearanceSection.setManaged(false);
-        }
-
-        appearanceSection.getChildren().add(darkModeRow);
-
-        VBox studySection = createSettingsSection("Pembelajaran", PembuatIkon.ikonPembelajaran());
-
-        HBox durationRow = createSettingRow(
-            "Durasi Belajar Default",
-            "Durasi standar untuk sesi belajar baru (dalam menit)"
-        );
-        ComboBox<String> durationCombo = new ComboBox<>();
-        durationCombo.getItems().addAll("30 menit", "45 menit", "60 menit", "90 menit", "120 menit");
-        durationCombo.setValue("60 menit");
-        durationCombo.setStyle("-fx-pref-width: 140px;");
-        durationRow.getChildren().add(durationCombo);
-
-        HBox reminderRow = createSettingRow(
-            "Pengingat Belajar",
-            "Tampilkan notifikasi untuk mengingatkan jadwal belajar"
-        );
-        CheckBox reminderCheck = new CheckBox();
-        reminderCheck.setSelected(true);
-        reminderRow.getChildren().add(reminderCheck);
-
-        HBox generateScheduleRow = createSettingRow(
-            "Generate Jadwal Manual",
-            "Buat ulang jadwal belajar untuk 7 hari ke depan (override)"
-        );
-        Button generateScheduleBtn = new Button("Buat Jadwal");
-        generateScheduleBtn.setGraphic(PembuatIkon.ikonBuatJadwal());
-        generateScheduleBtn.getStyleClass().add("btn-secondary");
-        generateScheduleBtn.setStyle("-fx-pref-width: 140px;");
-        generateScheduleBtn.setOnAction(_ -> buatJadwalBaru());
-        generateScheduleRow.getChildren().add(generateScheduleBtn);
-
-        studySection.getChildren().addAll(durationRow, reminderRow, generateScheduleRow);
-
-        VBox dataSection = createSettingsSection("Data & Backup", PembuatIkon.ikonBackup());
-
-        HBox backupRow = createSettingRow(
-            "Backup Otomatis",
-            "Backup database secara otomatis setiap hari"
-        );
-        CheckBox backupCheck = new CheckBox();
-        backupCheck.setSelected(false);
-        backupRow.getChildren().add(backupCheck);
-
-        HBox exportRow = createSettingRow(
-            "Ekspor Data",
-            "Ekspor semua data Anda ke file JSON"
-        );
-        Button exportBtn = new Button("Ekspor");
-        exportBtn.getStyleClass().add("btn-secondary");
-        exportBtn.setStyle("-fx-pref-width: 100px;");
-        exportRow.getChildren().add(exportBtn);
-
-        dataSection.getChildren().addAll(backupRow, exportRow);
-
-        VBox aboutSection = createSettingsSection("Tentang", PembuatIkon.ikonTentang());
-
-        VBox aboutContent = new VBox(8);
-        aboutContent.getStyleClass().add("settings-about-box");
-
-        Label appName = new Label("Perencana Belajar Adaptif");
-        appName.getStyleClass().add("settings-about-title");
-
-        Label version = new Label("Versi 1.0.0");
-        version.getStyleClass().add("settings-about-version");
-
-        Label description = new Label("Aplikasi manajemen pembelajaran dengan sistem spaced repetition");
-        description.setWrapText(true);
-        description.getStyleClass().add("settings-about-description");
-
-        HBox copyrightBox = new HBox(6);
-        copyrightBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        copyrightBox.getChildren().add(PembuatIkon.ikonCopyright());
-        Label copyright = new Label("2025 - Dibuat dengan JavaFX 25");
-        copyright.getStyleClass().add("settings-about-copyright");
-        copyrightBox.getChildren().add(copyright);
-
-        aboutContent.getChildren().addAll(appName, version, description, copyrightBox);
-        aboutSection.getChildren().add(aboutContent);
-
-        settingsContent.getChildren().addAll(
-            header,
-            profileSection,
-            appearanceSection,
-            studySection,
-            dataSection,
-            aboutSection
-        );
-
-        // Swap konten - seperti React Router!
         scrollPaneUtama.setContent(settingsContent);
-        scrollPaneUtama.setVvalue(0); // Scroll ke atas
+        scrollPaneUtama.setVvalue(0);
     }
 
-    /**
-     * Kembali ke dashboard dari halaman manapun (seperti router.back() di web).
-     */
     private void kembaliKeDashboard() {
         if (halamanAktif == HalamanAktif.DASHBOARD || kontenDashboardAsli == null) return;
-        
-        // Clear sidebar selection saat kembali ke dashboard
         updateSidebarSelection(null);
-        
         scrollPaneUtama.setContent(kontenDashboardAsli);
         scrollPaneUtama.setVvalue(0);
         halamanAktif = HalamanAktif.DASHBOARD;
-        
-        // Refresh data dashboard
         loadDashboardData();
-    }
-
-    private VBox createSettingsSection(String title, Node icon) {
-        VBox section = new VBox(16);
-
-        HBox titleBox = new HBox(10);
-        titleBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        titleBox.setPadding(new Insets(0, 0, 8, 0));
-
-        if (icon != null) {
-            titleBox.getChildren().add(icon);
-        }
-
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("settings-section-title");
-
-        titleBox.getChildren().add(titleLabel);
-        section.getChildren().add(titleBox);
-        return section;
-    }
-
-    private HBox createSettingRow(String title, String description) {
-        HBox row = new HBox(16);
-        row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        row.getStyleClass().add("settings-row");
-
-        VBox textBox = new VBox(4);
-        HBox.setHgrow(textBox, javafx.scene.layout.Priority.ALWAYS);
-
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("settings-row-title");
-
-        Label descLabel = new Label(description);
-        descLabel.setWrapText(true);
-        descLabel.getStyleClass().add("settings-row-description");
-
-        textBox.getChildren().addAll(titleLabel, descLabel);
-        row.getChildren().add(textBox);
-
-        return row;
     }
 
     private void keluar() {
@@ -1224,278 +685,30 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void terapkanAnimasiMasuk() {
-        // Sidebar: slide in dari kiri dengan spring physics
-        if (sidebar != null) {
-            sidebar.setOpacity(0);
-            sidebar.setTranslateX(-50);
-
-            FadeTransition fadeSidebar = new FadeTransition(Duration.millis(400), sidebar);
-            fadeSidebar.setFromValue(0.0);
-            fadeSidebar.setToValue(1.0);
-            fadeSidebar.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            TranslateTransition slideSidebar = new TranslateTransition(Duration.millis(500), sidebar);
-            slideSidebar.setFromX(-50);
-            slideSidebar.setToX(0);
-            slideSidebar.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
-
-            ParallelTransition sidebarAnim = new ParallelTransition(fadeSidebar, slideSidebar);
-            sidebarAnim.play();
-        }
-
-        // Welcome section: fade in dengan easing
-        if (labelSelamatDatang != null && labelSelamatDatang.getParent() != null) {
-            labelSelamatDatang.getParent().setOpacity(0);
-            FadeTransition fadeWelcome = new FadeTransition(Duration.millis(500), labelSelamatDatang.getParent());
-            fadeWelcome.setFromValue(0.0);
-            fadeWelcome.setToValue(1.0);
-            fadeWelcome.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-            fadeWelcome.setDelay(Duration.millis(100));
-            fadeWelcome.play();
-        }
-
-        // Stats grid: slide up dengan spring
-        if (statsGrid != null) {
-            statsGrid.setOpacity(0);
-            statsGrid.setTranslateY(40);
-
-            FadeTransition fadeStats = new FadeTransition(Duration.millis(400), statsGrid);
-            fadeStats.setFromValue(0.0);
-            fadeStats.setToValue(1.0);
-            fadeStats.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            TranslateTransition slideStats = new TranslateTransition(Duration.millis(600), statsGrid);
-            slideStats.setFromY(40);
-            slideStats.setToY(0);
-            slideStats.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
-
-            ParallelTransition statsAnim = new ParallelTransition(fadeStats, slideStats);
-            statsAnim.setDelay(Duration.millis(150));
-            statsAnim.play();
-        }
-
-        // Activity section: fade in
-        if (activitySection != null) {
-            activitySection.setOpacity(0);
-            FadeTransition fadeActivity = new FadeTransition(Duration.millis(500), activitySection);
-            fadeActivity.setFromValue(0.0);
-            fadeActivity.setToValue(1.0);
-            fadeActivity.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-            fadeActivity.setDelay(Duration.millis(300));
-            fadeActivity.play();
-        }
-
-        // Main content: slide up dengan spring
-        if (mainContentGrid != null) {
-            mainContentGrid.setOpacity(0);
-            mainContentGrid.setTranslateY(40);
-
-            FadeTransition fadeContent = new FadeTransition(Duration.millis(400), mainContentGrid);
-            fadeContent.setFromValue(0.0);
-            fadeContent.setToValue(1.0);
-            fadeContent.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            TranslateTransition slideContent = new TranslateTransition(Duration.millis(600), mainContentGrid);
-            slideContent.setFromY(40);
-            slideContent.setToY(0);
-            slideContent.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
-
-            ParallelTransition contentAnim = new ParallelTransition(fadeContent, slideContent);
-            contentAnim.setDelay(Duration.millis(400));
-            contentAnim.play();
-        }
-
-        terapkanAnimasiHoverSidebarButton(tombolKelolaMataKuliah);
-        terapkanAnimasiHoverSidebarButton(tombolLihatJadwal);
-    }
-
-    private void terapkanAnimasiHoverSidebarButton(Button button) {
-        if (button == null) return;
-
-        button.setOnMouseEntered(_ -> {
-            ScaleTransition scaleUp = new ScaleTransition(Duration.millis(200), button);
-            scaleUp.setToX(1.03);
-            scaleUp.setToY(1.03);
-            scaleUp.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            TranslateTransition slideRight = new TranslateTransition(Duration.millis(200), button);
-            slideRight.setToX(6);
-            slideRight.setInterpolator(AnimasiUtil.EASE_OUT_BACK);
-
-            ParallelTransition hoverIn = new ParallelTransition(scaleUp, slideRight);
-            hoverIn.play();
-        });
-
-        button.setOnMouseExited(_ -> {
-            ScaleTransition scaleDown = new ScaleTransition(Duration.millis(250), button);
-            scaleDown.setToX(1.0);
-            scaleDown.setToY(1.0);
-            scaleDown.setInterpolator(AnimasiUtil.SPRING_SNAPPY);
-
-            TranslateTransition slideBack = new TranslateTransition(Duration.millis(250), button);
-            slideBack.setToX(0);
-            slideBack.setInterpolator(AnimasiUtil.SPRING_SNAPPY);
-
-            ParallelTransition hoverOut = new ParallelTransition(scaleDown, slideBack);
-            hoverOut.play();
-        });
-
-        // Press animation untuk feedback responsif
-        button.setOnMousePressed(_ -> {
-            ScaleTransition press = new ScaleTransition(Duration.millis(80), button);
-            press.setToX(0.97);
-            press.setToY(0.97);
-            press.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-            press.play();
-        });
-
-        button.setOnMouseReleased(_ -> {
-            ScaleTransition release = new ScaleTransition(Duration.millis(200), button);
-            release.setToX(1.03);
-            release.setToY(1.03);
-            release.setInterpolator(AnimasiUtil.SPRING_BOUNCY);
-            release.play();
-        });
+        // Delegasi ke PembantuAnimasi
+        Node welcomeParent = (labelSelamatDatang != null) ? labelSelamatDatang.getParent() : null;
+        pembantuAnimasi.terapkanAnimasiMasuk(sidebar, welcomeParent, statsGrid, activitySection, mainContentGrid);
+        pembantuAnimasi.terapkanAnimasiHoverSidebarButton(tombolKelolaMataKuliah);
+        pembantuAnimasi.terapkanAnimasiHoverSidebarButton(tombolLihatJadwal);
     }
 
     private void toggleSidebar() {
-        if (sidebar == null) return;
-
         isSidebarVisible = !isSidebarVisible;
-
-        if (isSidebarVisible) {
-            sidebar.setManaged(true);
-            sidebar.setVisible(true);
-            sidebar.setTranslateX(-240);
-
-            TranslateTransition slideIn = new TranslateTransition(Duration.millis(400), sidebar);
-            slideIn.setFromX(-240);
-            slideIn.setToX(0);
-            slideIn.setInterpolator(AnimasiUtil.SPRING_DEFAULT);
-
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), sidebar);
-            fadeIn.setFromValue(0.0);
-            fadeIn.setToValue(1.0);
-            fadeIn.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            ParallelTransition showAnim = new ParallelTransition(slideIn, fadeIn);
-            showAnim.play();
-        } else {
-            TranslateTransition slideOut = new TranslateTransition(Duration.millis(300), sidebar);
-            slideOut.setFromX(0);
-            slideOut.setToX(-240);
-            slideOut.setInterpolator(AnimasiUtil.EASE_IN_OUT_CUBIC);
-
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(250), sidebar);
-            fadeOut.setFromValue(1.0);
-            fadeOut.setToValue(0.0);
-            fadeOut.setInterpolator(AnimasiUtil.EASE_OUT_CUBIC);
-
-            ParallelTransition hideAnim = new ParallelTransition(slideOut, fadeOut);
-            hideAnim.setOnFinished(_ -> {
-                sidebar.setManaged(false);
-                sidebar.setVisible(false);
-            });
-            hideAnim.play();
-        }
+        pembantuAnimasi.toggleSidebar(sidebar, isSidebarVisible);
     }
 
-    // ============================================
-    // SPA-STYLE DIALOG OVERLAY METHODS
-    // ============================================
-
-    /**
-     * Tampilkan dialog overlay SPA-style dengan konten yang diberikan.
-     * 
-     * @param konten Node yang akan ditampilkan di dalam dialog
-     */
+    // Delegasi ke PembantuDialogOverlay
     public void tampilkanDialogOverlay(Node konten) {
-        if (dialogOverlay == null || dialogContainer == null) return;
-
-        dialogContainer.getChildren().clear();
-        dialogContainer.getChildren().add(konten);
-
-        // Terapkan dark mode jika aktif
-        if (isDarkMode) {
-            dialogOverlay.getStyleClass().add("dark-mode");
-        } else {
-            dialogOverlay.getStyleClass().remove("dark-mode");
-        }
-
-        // Tampilkan dengan animasi fade in
-        dialogOverlay.setVisible(true);
-        dialogOverlay.setManaged(true);
-        dialogOverlay.setOpacity(0);
-
-        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), dialogOverlay);
-        fadeIn.setFromValue(0);
-        fadeIn.setToValue(1);
-        fadeIn.play();
-
-        // Klik di luar dialog untuk menutup
-        dialogOverlay.setOnMouseClicked(event -> {
-            if (event.getTarget() == dialogOverlay) {
-                tutupDialogOverlay();
-            }
-        });
+        pembantuDialog.setDarkMode(isDarkMode);
+        pembantuDialog.tampilkan(konten);
     }
 
-    /**
-     * Tutup dialog overlay dengan animasi fade out.
-     */
     public void tutupDialogOverlay() {
-        if (dialogOverlay == null) return;
-
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), dialogOverlay);
-        fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
-        fadeOut.setOnFinished(_ -> {
-            dialogOverlay.setVisible(false);
-            dialogOverlay.setManaged(false);
-            dialogContainer.getChildren().clear();
-        });
-        fadeOut.play();
+        pembantuDialog.tutup();
     }
 
-    /**
-     * Tampilkan dialog konfirmasi SPA-style.
-     * 
-     * @param judul judul dialog
-     * @param pesan pesan dialog
-     * @param onKonfirmasi callback saat user mengkonfirmasi
-     */
     public void tampilkanKonfirmasi(String judul, String pesan, Runnable onKonfirmasi) {
-        VBox konten = new VBox(16);
-        konten.setAlignment(javafx.geometry.Pos.CENTER);
-        konten.setStyle("-fx-padding: 8;");
-
-        Label labelJudul = new Label(judul);
-        labelJudul.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
-
-        Label labelPesan = new Label(pesan);
-        labelPesan.setWrapText(true);
-        labelPesan.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
-
-        HBox tombolBox = new HBox(12);
-        tombolBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
-        tombolBox.setStyle("-fx-padding: 16 0 0 0;");
-
-        Button tombolBatal = new Button("Batal");
-        tombolBatal.getStyleClass().add("btn-secondary");
-        tombolBatal.setOnAction(_ -> tutupDialogOverlay());
-
-        Button tombolOk = new Button("OK");
-        tombolOk.getStyleClass().add("btn-primary");
-        tombolOk.setOnAction(_ -> {
-            tutupDialogOverlay();
-            if (onKonfirmasi != null) {
-                onKonfirmasi.run();
-            }
-        });
-
-        tombolBox.getChildren().addAll(tombolBatal, tombolOk);
-        konten.getChildren().addAll(labelJudul, labelPesan, tombolBox);
-
-        tampilkanDialogOverlay(konten);
+        pembantuDialog.setDarkMode(isDarkMode);
+        pembantuDialog.tampilkanKonfirmasi(judul, pesan, onKonfirmasi);
     }
 }

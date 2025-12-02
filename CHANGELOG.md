@@ -2,6 +2,32 @@
 
 ## [Unreleased] - 2 Desember 2025
 
+### Refaktor KontrolerUtama (SOLID - SRP)
+
+#### Helper Classes Baru
+Memecah `KontrolerUtama` (1500+ lines) menjadi helper classes yang lebih fokus:
+
+| Class | Tanggung Jawab | Lines |
+|-------|----------------|-------|
+| `PembantuTema` | Dark mode management | ~85 |
+| `PembantuDialogOverlay` | SPA-style dialog overlay | ~135 |
+| `PembantuNavigasi` | SPA routing & sidebar selection | ~190 |
+| `PembantuPengaturan` | Settings UI builder | ~310 |
+| `PembantuAnimasi` | Entry & hover animations | ~210 |
+| `PembantuDashboard` | Dashboard data & task cards | ~280 |
+
+#### Unit Tests Baru
+- **`PembantuTemaTest.java`** — 5 tests untuk dark mode logic
+- **`PembantuNavigasiTest.java`** — 6 tests untuk navigasi SPA
+
+#### Manfaat Refaktor
+- **Single Responsibility**: Setiap class punya satu tanggung jawab jelas
+- **Testability**: Logic bisa di-test tanpa JavaFX toolkit
+- **Maintainability**: Lebih mudah dipahami dan dimodifikasi
+- **Reusability**: Helper bisa digunakan di kontroler lain
+
+---
+
 ### Dark Mode Easter Egg
 
 #### Fitur Tersembunyi
