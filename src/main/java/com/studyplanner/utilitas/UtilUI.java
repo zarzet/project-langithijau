@@ -1,7 +1,17 @@
 package com.studyplanner.utilitas;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.util.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -123,5 +133,90 @@ public final class UtilUI {
     public static void tampilkanInfo(String pesan) {
         Alert alert = PembuatDialogMD3.buatAlert(Alert.AlertType.INFORMATION, "Informasi", pesan);
         alert.showAndWait();
+    }
+
+    /**
+     * Menampilkan toast notification tanpa perlu referensi window.
+     * Mencari window yang aktif secara otomatis.
+     *
+     * @param pesan pesan yang akan ditampilkan
+     */
+    public static void tampilkanToast(String pesan) {
+        // Cari window yang sedang fokus
+        Window owner = Stage.getWindows().stream()
+            .filter(Window::isFocused)
+            .findFirst()
+            .orElse(Stage.getWindows().isEmpty() ? null : Stage.getWindows().get(0));
+        
+        tampilkanToast(owner, pesan);
+    }
+
+    /**
+     * Menampilkan toast notification yang muncul sebentar lalu menghilang.
+     * Tidak memblokir interaksi pengguna. Otomatis menyesuaikan tema.
+     *
+     * @param owner window tempat toast ditampilkan
+     * @param pesan pesan yang akan ditampilkan
+     */
+    public static void tampilkanToast(Window owner, String pesan) {
+        if (owner == null) return;
+        
+        // Cek apakah dark mode aktif
+        boolean isDarkMode = PreferensiPengguna.getInstance().isDarkMode();
+        
+        Popup popup = new Popup();
+        
+        Label label = new Label(pesan);
+        
+        // Style sesuai tema
+        if (isDarkMode) {
+            label.setStyle(
+                "-fx-background-color: rgba(40, 45, 51, 0.95);" +
+                "-fx-text-fill: #e1e2e9;" +
+                "-fx-padding: 12 20;" +
+                "-fx-background-radius: 8;" +
+                "-fx-font-size: 14px;" +
+                "-fx-border-color: #3a4048;" +
+                "-fx-border-radius: 8;" +
+                "-fx-border-width: 1;"
+            );
+        } else {
+            label.setStyle(
+                "-fx-background-color: rgba(255, 255, 255, 0.98);" +
+                "-fx-text-fill: #191c20;" +
+                "-fx-padding: 12 20;" +
+                "-fx-background-radius: 8;" +
+                "-fx-font-size: 14px;" +
+                "-fx-border-color: #c2c7cf;" +
+                "-fx-border-radius: 8;" +
+                "-fx-border-width: 1;" +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);"
+            );
+        }
+        
+        StackPane container = new StackPane(label);
+        container.setAlignment(Pos.CENTER);
+        
+        popup.getContent().add(container);
+        popup.setAutoHide(true);
+        
+        // Posisi di tengah bawah window
+        popup.setOnShown(e -> {
+            popup.setX(owner.getX() + (owner.getWidth() - container.getWidth()) / 2);
+            popup.setY(owner.getY() + owner.getHeight() - 100);
+        });
+        
+        popup.show(owner);
+        
+        // Auto-hide setelah 2 detik dengan fade out
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(e -> {
+            FadeTransition fade = new FadeTransition(Duration.millis(300), container);
+            fade.setFromValue(1.0);
+            fade.setToValue(0.0);
+            fade.setOnFinished(ev -> popup.hide());
+            fade.play();
+        });
+        delay.play();
     }
 }

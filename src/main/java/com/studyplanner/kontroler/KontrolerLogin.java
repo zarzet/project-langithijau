@@ -246,7 +246,7 @@ public class KontrolerLogin {
                                     email.isEmpty() ? null : email, nama, "local");
 
                             if (userId > 0) {
-                                UtilUI.tampilkanInfo("Pendaftaran berhasil! Silakan login.");
+                                UtilUI.tampilkanToast("Pendaftaran berhasil! Silakan login.");
 
                                 registerForm.setVisible(false);
                                 registerForm.setManaged(false);

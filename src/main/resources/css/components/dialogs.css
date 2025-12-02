@@ -2,6 +2,37 @@
    DIALOGS.CSS - Material Design 3 Dialog Styles
    ============================================ */
 
+/* ============================================
+   SPA-STYLE DIALOG OVERLAY
+   ============================================ */
+
+.dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dialog-container {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 24;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 24, 0, 0, 8);
+}
+
+.dark-mode .dialog-container {
+    -fx-background-color: #1e2328;
+    -fx-effect: none;
+    -fx-border-color: #3a4048;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+}
+
+/* ============================================
+   TRADITIONAL DIALOG PANE (Legacy)
+   ============================================ */
+
 /* Dialog Pane Base */
 .md3-dialog-pane {
     -fx-background-color: -color-surface;
@@ -269,103 +300,166 @@
 
 /* ============================================
    DARK MODE SUPPORT
+   Menggunakan selector tanpa spasi karena 
+   dark-mode dan md3-dialog-pane di elemen yang sama
    ============================================ */
 
-.dark-mode .md3-dialog-pane {
+.dark-mode.md3-dialog-pane {
     -fx-background-color: #1e2328;
-    -fx-border-color: #2a3038;
+    -fx-border-color: #3a4048;
+    -fx-border-width: 1;
+    -fx-background-radius: 24;
+    -fx-effect: null;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 24;
 }
 
+.dark-mode.md3-dialog-pane .md3-dialog-header,
 .dark-mode .md3-dialog-header {
     -fx-text-fill: #e1e2e9;
+    -fx-background-color: transparent;
 }
 
+.dark-mode.md3-dialog-pane .header-panel,
+.dark-mode.md3-dialog-pane .header,
+.dark-mode.md3-dialog-pane .content,
+.dark-mode.md3-dialog-pane .button-bar {
+    -fx-background-color: transparent;
+}
+
+/* Header text styling */
+.dark-mode.md3-dialog-pane .header-panel .label,
+.dark-mode.md3-dialog-pane .header .label,
+.dark-mode.md3-dialog-pane > .content > .label,
+.dark-mode.md3-dialog-pane .graphic-container {
+    -fx-text-fill: #94a3b8;
+    -fx-background-color: transparent;
+}
+
+/* GridPane dalam dialog */
+.dark-mode.md3-dialog-pane .grid-pane {
+    -fx-background-color: transparent;
+}
+
+.dark-mode.md3-dialog-pane .md3-dialog-content-label,
 .dark-mode .md3-dialog-content-label {
     -fx-text-fill: #94a3b8;
+    -fx-background-color: transparent;
 }
 
+.dark-mode.md3-dialog-pane .md3-dialog-input,
 .dark-mode .md3-dialog-input {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
     -fx-text-fill: #e1e2e9;
+    -fx-prompt-text-fill: #6b7280;
 }
 
+.dark-mode.md3-dialog-pane .md3-dialog-input:focused,
 .dark-mode .md3-dialog-input:focused {
     -fx-border-color: #8dcdff;
 }
 
-.dark-mode .md3-dialog-pane .label {
+.dark-mode.md3-dialog-pane .label {
     -fx-text-fill: #e1e2e9;
 }
 
-.dark-mode .md3-dialog-pane .text-field {
+.dark-mode.md3-dialog-pane .text-field {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
     -fx-text-fill: #e1e2e9;
+    -fx-prompt-text-fill: #6b7280;
 }
 
-.dark-mode .md3-dialog-pane .text-field:focused {
+.dark-mode.md3-dialog-pane .text-field:focused {
     -fx-border-color: #8dcdff;
 }
 
-.dark-mode .md3-dialog-pane .text-area {
+.dark-mode.md3-dialog-pane .text-area {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8;
 }
 
-.dark-mode .md3-dialog-pane .text-area .content {
+.dark-mode.md3-dialog-pane .text-area .content {
+    -fx-background-color: #282d33;
+    -fx-background-radius: 8;
+}
+
+.dark-mode.md3-dialog-pane .text-area .scroll-pane,
+.dark-mode.md3-dialog-pane .text-area .scroll-pane .viewport {
     -fx-background-color: #282d33;
 }
 
-.dark-mode .md3-dialog-pane .text-area .text {
+.dark-mode.md3-dialog-pane .text-area .text {
     -fx-fill: #e1e2e9;
 }
 
-.dark-mode .md3-dialog-pane .text-area:focused {
+.dark-mode.md3-dialog-pane .text-area:focused {
     -fx-border-color: #8dcdff;
 }
 
-.dark-mode .md3-dialog-pane .spinner {
+.dark-mode.md3-dialog-pane .spinner {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
 }
 
-.dark-mode .md3-dialog-pane .spinner .text-field {
+.dark-mode.md3-dialog-pane .spinner .text-field {
     -fx-text-fill: #e1e2e9;
     -fx-border-color: transparent;
+    -fx-prompt-text-fill: #6b7280;
 }
 
-.dark-mode .md3-dialog-pane .spinner .increment-arrow-button,
-.dark-mode .md3-dialog-pane .spinner .decrement-arrow-button {
+.dark-mode.md3-dialog-pane .spinner .increment-arrow-button,
+.dark-mode.md3-dialog-pane .spinner .decrement-arrow-button {
     -fx-background-color: #3a4048;
 }
 
-.dark-mode .md3-dialog-pane .combo-box {
+.dark-mode.md3-dialog-pane .spinner .increment-arrow-button .increment-arrow,
+.dark-mode.md3-dialog-pane .spinner .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: #e1e2e9;
+}
+
+.dark-mode.md3-dialog-pane .combo-box {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
 }
 
-.dark-mode .md3-dialog-pane .combo-box .list-cell {
+.dark-mode.md3-dialog-pane .combo-box .list-cell {
     -fx-text-fill: #e1e2e9;
 }
 
-.dark-mode .md3-dialog-pane .date-picker {
+.dark-mode.md3-dialog-pane .combo-box .arrow {
+    -fx-background-color: #e1e2e9;
+}
+
+.dark-mode.md3-dialog-pane .date-picker {
     -fx-background-color: #282d33;
     -fx-border-color: #3a4048;
 }
 
-.dark-mode .md3-dialog-pane .date-picker .text-field {
+.dark-mode.md3-dialog-pane .date-picker .text-field {
     -fx-text-fill: #e1e2e9;
+    -fx-prompt-text-fill: #6b7280;
 }
 
-.dark-mode .md3-dialog-btn-primary {
+.dark-mode.md3-dialog-pane .date-picker .arrow-button .arrow {
+    -fx-background-color: #e1e2e9;
+}
+
+.dark-mode .md3-dialog-btn-primary,
+.dark-mode.md3-dialog-pane .md3-dialog-btn-primary {
     -fx-background-color: #0077b6;
 }
 
-.dark-mode .md3-dialog-btn-cancel {
+.dark-mode .md3-dialog-btn-cancel,
+.dark-mode.md3-dialog-pane .md3-dialog-btn-cancel {
     -fx-text-fill: #8dcdff;
 }
 
-.dark-mode .md3-dialog-btn-cancel:hover {
+.dark-mode .md3-dialog-btn-cancel:hover,
+.dark-mode.md3-dialog-pane .md3-dialog-btn-cancel:hover {
     -fx-background-color: rgba(141, 205, 255, 0.08);
 }

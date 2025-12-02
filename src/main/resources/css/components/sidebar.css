@@ -324,6 +324,7 @@
     -fx-background-color: #171c21;
     -fx-border-color: transparent #2b3137 transparent transparent;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0, 2, 0);
+    -fx-background-insets: 0;
 }
 
 .dark-mode .sidebar-title {
@@ -335,12 +336,12 @@
 }
 
 .dark-mode .sidebar-btn {
-    -fx-text-fill: -color-outline-variant;
+    -fx-text-fill: #c2c7cf;
 }
 
 .dark-mode .sidebar-btn:hover {
     -fx-background-color: #1f252b;
-    -fx-text-fill: -color-surface-variant;
+    -fx-text-fill: #e1e2e9;
 }
 
 .dark-mode .sidebar-btn:pressed {
@@ -350,7 +351,7 @@
 .dark-mode .sidebar-btn-primary {
     -fx-background-color: #8dcdff;
     -fx-text-fill: #00344e;
-    -fx-effect: dropshadow(gaussian, rgba(141, 205, 255, 0.3), 6, 0, 0, 2);
+    -fx-effect: none;
 }
 
 .dark-mode .sidebar-btn-primary:hover {
@@ -362,12 +363,12 @@
 }
 
 .dark-mode .toggle-sidebar-btn {
-    -fx-text-fill: -color-outline-variant;
+    -fx-text-fill: #c2c7cf;
 }
 
 .dark-mode .toggle-sidebar-btn:hover {
     -fx-background-color: #1f252b;
-    -fx-text-fill: -color-surface-variant;
+    -fx-text-fill: #e1e2e9;
 }
 
 .dark-mode .toggle-sidebar-btn:pressed {
@@ -406,11 +407,11 @@
 
 /* Dark Mode Sidebar Icons */
 .dark-mode .sidebar-btn .ikonli-font-icon {
-    -fx-icon-color: -color-outline-variant;
+    -fx-icon-color: #c2c7cf;
 }
 
 .dark-mode .sidebar-btn:hover .ikonli-font-icon {
-    -fx-icon-color: -color-surface-variant;
+    -fx-icon-color: #e1e2e9;
 }
 
 .dark-mode .sidebar-btn-primary .ikonli-font-icon {
@@ -418,11 +419,11 @@
 }
 
 .dark-mode .toggle-sidebar-btn .ikonli-font-icon {
-    -fx-icon-color: -color-outline-variant;
+    -fx-icon-color: #c2c7cf;
 }
 
 .dark-mode .toggle-sidebar-btn:hover .ikonli-font-icon {
-    -fx-icon-color: -color-surface-variant;
+    -fx-icon-color: #e1e2e9;
 }
 
 .dark-mode .menu-button .ikonli-font-icon {

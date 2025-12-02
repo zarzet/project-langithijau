@@ -2,12 +2,76 @@
 
 ## [Unreleased] - 2 Desember 2025
 
-### 🧪 Peningkatan Test Coverage (51%)
+### Dark Mode Easter Egg
+
+#### Fitur Tersembunyi
+- **Dark mode** sekarang menjadi Easter egg yang harus di-unlock
+- Klik foto profil **10 kali** di halaman Pengaturan untuk membuka fitur
+- Hint muncul pada klik ke-7, 8, 9: "* X klik lagi..."
+- Status unlock tersimpan permanen di preferensi
+
+#### Perubahan File
+- **`PreferensiPengguna.java`** — Method baru `isDarkModeUnlocked()` dan `setDarkModeUnlocked()`
+- **`KontrolerUtama.java`** — Logic Easter egg di `buatSectionProfil()`
+
+---
+
+### Toast Notification
+
+#### Sistem Toast Baru
+- **`UtilUI.java`** — Method `tampilkanToast()` untuk notifikasi non-blocking
+  - Overload tanpa parameter Window (auto-detect)
+  - Muncul di tengah bawah layar, hilang otomatis setelah 2 detik
+  - Mendukung tema terang dan gelap
+
+#### Dialog Info Diganti Toast
+Semua notifikasi sukses CRUD diganti dari modal dialog ke toast:
+- **`KontrolerManajemenMataKuliah.java`** — Mata kuliah, topik, jadwal ujian
+- **`KontrolerUtama.java`** — Sesi selesai, generate jadwal
+- **`KontrolerLogin.java`** — Pendaftaran berhasil
+
+---
+
+### SPA-Style Dialog Overlay
+
+#### Infrastruktur Overlay
+- **`MainView.fxml`** — Root diganti ke StackPane dengan overlay layer
+- **`dialogs.css`** — CSS untuk `.dialog-overlay` dan `.dialog-container`
+- **`KontrolerUtama.java`** — Method overlay:
+  - `tampilkanDialogOverlay(Node konten)` — Tampilkan konten di overlay
+  - `tutupDialogOverlay()` — Tutup dengan animasi fade
+  - `tampilkanKonfirmasi()` — Dialog konfirmasi SPA-style
+
+#### Dialog Keluar
+- Menggunakan SPA overlay (bukan window terpisah)
+- Klik di luar dialog untuk menutup
+
+---
+
+### Perbaikan Bug Dark Mode
+
+#### Fix Sidebar Icons
+- **`sidebar.css`** — Warna ikon unselected: `#c2c7cf` (terang)
+- Hover: `#e1e2e9` (lebih terang)
+- Hapus shadow pada tombol sidebar selected di dark mode
+
+#### Fix Dialog Background
+- **`dialogs.css`** — CSS selector diperbaiki dari `.dark-mode .md3-dialog-pane` ke `.dark-mode.md3-dialog-pane`
+- Semua elemen form (text-area, spinner, combo-box) mendapat styling dark mode
+- Hapus shadow (`-fx-effect: null`)
+
+#### Fix Logout Error
+- **`KontrolerUtama.java`** — Method `getStage()` untuk mendapatkan Stage dari berbagai node
+- Mencegah NullPointerException saat `labelSelamatDatang.getScene()` null
+
+---
+
+### Peningkatan Test Coverage (51%)
 
 #### Target Coverage Tercapai
 - **Coverage**: 42% → **51%** (dari 49 kelas)
 - **Tests**: 225 → **271 tests** (semua passed)
-- **Metode**: Tanpa exclude kelas non-UI, coverage jujur
+- **Metode**: Tanpa exclude kelas non-UI
 
 #### Test Files Baru
 | File | Deskripsi |
@@ -47,7 +111,7 @@
 
 ---
 
-### 🔄 Refaktor Navigasi Sidebar
+### Refaktor Navigasi Sidebar
 
 #### Pindah Tombol "Buat Jadwal" ke Pengaturan
 - **`MainView.fxml`** — Hapus tombol "Buat Jadwal" dari sidebar
@@ -63,7 +127,7 @@
 
 ---
 
-### 🐛 Perbaikan Bug
+### Perbaikan Bug
 
 #### Fix Navigasi ke Pengaturan
 - **`KontrolerUtama.java`** — `tampilkanPengaturan()` sekarang bisa dipanggil dari halaman manapun
@@ -103,7 +167,7 @@
 
 ---
 
-### 🎨 Perbaikan UI/UX
+### Perbaikan UI/UX
 
 #### Sidebar Selection State
 - **`sidebar.css`** — Styling untuk tombol sidebar yang aktif
@@ -148,7 +212,7 @@
 
 ---
 
-### ✨ Fitur Baru
+### Fitur Baru
 
 #### Sistem Widget Kustomisasi
 - **`KonfigurasiWidget.java`** — Model untuk konfigurasi widget dashboard
@@ -209,7 +273,7 @@
 
 ---
 
-### 🎨 Perbaikan UI/UX
+### Perbaikan UI/UX
 
 #### Window Rounded Corners
 - **`DekoratorJendelaKustom.java`** — Window dengan sudut melengkung
@@ -250,7 +314,7 @@
 
 ---
 
-### 🎯 Styling CSS
+### Styling CSS
 
 #### DatePicker Modern
 - **`forms.css`** — Styling DatePicker komprehensif
@@ -269,7 +333,7 @@
 
 ---
 
-### 🔧 Dialog System
+### Dialog System
 
 #### Material Design 3 Dialogs
 - **`PembuatDialogMD3.java`** — Rewrite lengkap untuk MD3 styling
@@ -292,7 +356,7 @@
 
 ---
 
-### 📁 File yang Diubah
+### File yang Diubah
 
 | File | Tipe | Deskripsi |
 |------|------|-----------|
@@ -323,7 +387,7 @@
 
 ---
 
-### 🎨 Warna Utama
+### Warna Utama
 
 | Mode | Primary | Background | Surface Container |
 |------|---------|------------|-------------------|

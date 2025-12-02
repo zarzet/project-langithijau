@@ -20,6 +20,15 @@
     -fx-background-color: -color-background;
 }
 
+/* MAIN CONTAINER (BorderPane) */
+.main-container {
+    -fx-background-color: -color-background;
+}
+
+.dark-mode .main-container {
+    -fx-background-color: #0f1419;
+}
+
 * {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;

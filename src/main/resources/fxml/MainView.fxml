@@ -4,8 +4,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.studyplanner.kontroler.KontrolerUtama">
+<!-- Root StackPane untuk overlay dialog SPA-style -->
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.studyplanner.kontroler.KontrolerUtama"
+           styleClass="root-container">
+
+<BorderPane styleClass="main-container">
 
     <!-- Sidebar Kiri -->
     <left>
@@ -138,3 +142,10 @@
     </center>
 
 </BorderPane>
+
+<!-- Overlay layer untuk dialog SPA-style (hidden by default) -->
+<StackPane fx:id="dialogOverlay" visible="false" managed="false" styleClass="dialog-overlay" alignment="CENTER">
+    <VBox fx:id="dialogContainer" styleClass="dialog-container" alignment="CENTER" maxWidth="500" maxHeight="400"/>
+</StackPane>
+
+</StackPane>

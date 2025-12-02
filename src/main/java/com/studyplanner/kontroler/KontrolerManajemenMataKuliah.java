@@ -435,7 +435,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananMataKuliah.daftarkan(mataKuliah);
                 muatSemuaData();
-                UtilUI.tampilkanInfo("Mata kuliah berhasil ditambahkan!");
+                UtilUI.tampilkanToast("Mata kuliah berhasil ditambahkan!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menambahkan mata kuliah: " + e.getMessage());
             } catch (IllegalArgumentException | IllegalStateException e) {
@@ -482,7 +482,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananMataKuliah.perbarui(mataKuliah);
                 muatSemuaData();
-                UtilUI.tampilkanInfo("Mata kuliah berhasil diupdate!");
+                UtilUI.tampilkanToast("Mata kuliah berhasil diupdate!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal memperbarui mata kuliah: " + e.getMessage());
             } catch (IllegalArgumentException | IllegalStateException e) {
@@ -503,7 +503,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananMataKuliah.hapus(terpilih.getId());
                 muatSemuaData();
-                UtilUI.tampilkanInfo("Mata kuliah berhasil dihapus!");
+                UtilUI.tampilkanToast("Mata kuliah berhasil dihapus!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menghapus mata kuliah: " + e.getMessage());
             }
@@ -583,7 +583,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananTopik.tambah(topik);
                 muatTopikCards();
-                UtilUI.tampilkanInfo("Topik berhasil ditambahkan!");
+                UtilUI.tampilkanToast("Topik berhasil ditambahkan!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menambahkan topik: " + e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -634,7 +634,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananTopik.perbarui(topik);
                 muatTopikCards();
-                UtilUI.tampilkanInfo("Topik berhasil diupdate!");
+                UtilUI.tampilkanToast("Topik berhasil diupdate!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal memperbarui topik: " + e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -654,7 +654,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananTopik.hapus(terpilih.getId());
                 muatTopikCards();
-                UtilUI.tampilkanInfo("Topik berhasil dihapus!");
+                UtilUI.tampilkanToast("Topik berhasil dihapus!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menghapus topik: " + e.getMessage());
             }
@@ -729,7 +729,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananJadwalUjian.tambah(ujian);
                 muatUjianCards();
-                UtilUI.tampilkanInfo("Jadwal ujian berhasil ditambahkan!");
+                UtilUI.tampilkanToast("Jadwal ujian berhasil ditambahkan!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menambahkan ujian: " + e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -777,7 +777,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananJadwalUjian.perbarui(ujian);
                 muatUjianCards();
-                UtilUI.tampilkanInfo("Jadwal ujian berhasil diupdate!");
+                UtilUI.tampilkanToast("Jadwal ujian berhasil diupdate!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal memperbarui ujian: " + e.getMessage());
             } catch (IllegalArgumentException e) {
@@ -797,7 +797,7 @@ public class KontrolerManajemenMataKuliah implements Initializable {
             try {
                 layananJadwalUjian.hapus(terpilih.getId());
                 muatUjianCards();
-                UtilUI.tampilkanInfo("Jadwal ujian berhasil dihapus!");
+                UtilUI.tampilkanToast("Jadwal ujian berhasil dihapus!");
             } catch (SQLException e) {
                 UtilUI.tampilkanKesalahan("Gagal menghapus ujian: " + e.getMessage());
             }

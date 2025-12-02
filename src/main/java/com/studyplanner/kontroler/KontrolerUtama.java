@@ -136,6 +136,13 @@ public class KontrolerUtama implements Initializable {
     @FXML
     private VBox kontenDashboard;
 
+    // SPA-style dialog overlay
+    @FXML
+    private StackPane dialogOverlay;
+
+    @FXML
+    private VBox dialogContainer;
+
     private ManajerBasisData manajerBasisData;
     private Node kontenDashboardAsli; // Simpan konten dashboard untuk swap
     private LayananMataKuliah layananMataKuliah;
@@ -147,6 +154,12 @@ public class KontrolerUtama implements Initializable {
     private Timeline autoRefreshTimeline;
     private boolean isSidebarVisible = true;
     private ManajerWidgetDashboard manajerWidget;
+    
+    // Secret dark mode feature (Easter egg)
+    private int hitungKlikProfilPengaturan = 0;
+    private boolean darkModeUnlocked = false;
+    private HBox darkModeRowRef = null; // Reference untuk show/hide
+    private VBox appearanceSectionRef = null; // Reference untuk section tampilan
     
     // State untuk SPA navigation
     private enum HalamanAktif { DASHBOARD, PENGATURAN, MANAJEMEN_MATKUL, LIHAT_JADWAL }
@@ -165,6 +178,7 @@ public class KontrolerUtama implements Initializable {
 
 
         isDarkMode = PreferensiPengguna.getInstance().isDarkMode();
+        darkModeUnlocked = PreferensiPengguna.getInstance().isDarkModeUnlocked();
 
         siapkanUI();
         loadDashboardData();
@@ -563,9 +577,8 @@ public class KontrolerUtama implements Initializable {
 
                             layananTopik.perbarui(topic);
 
-                            UtilUI.tampilkanInfo(
-                                    "Sesi berhasil diselesaikan!\nReview berikutnya: " +
-                                            nextReview);
+                            UtilUI.tampilkanToast(
+                                    "Sesi selesai! Review: " + nextReview);
                         }
                     } catch (SQLException e) {
                         UtilUI.tampilkanKesalahan("Gagal menyimpan rating: " + e.getMessage());
@@ -789,8 +802,7 @@ public class KontrolerUtama implements Initializable {
             }
             
             pembuatJadwal.buatDanSimpanJadwal(7);
-            UtilUI.tampilkanInfo(
-                    "Jadwal belajar berhasil di-generate untuk 7 hari ke depan!");
+            UtilUI.tampilkanToast("Jadwal berhasil di-generate untuk 7 hari ke depan!");
             loadDashboardData();
         } catch (SQLException e) {
             UtilUI.tampilkanKesalahan("Gagal membuat jadwal: " + e.getMessage());
@@ -800,6 +812,7 @@ public class KontrolerUtama implements Initializable {
 
     /**
      * Buat section profil untuk ditampilkan di pengaturan.
+     * Easter egg: Klik foto profil 10x untuk membuka pengaturan dark mode.
      */
     private VBox buatSectionProfil() {
         VBox section = new VBox(16);
@@ -813,7 +826,8 @@ public class KontrolerUtama implements Initializable {
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
             Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
             
-            // Avatar
+            // Avatar dengan click counter untuk Easter egg
+            StackPane avatarContainer = new StackPane();
             ImageView avatarView = new ImageView();
             if (user.getPicture() != null) {
                 try {
@@ -826,6 +840,40 @@ public class KontrolerUtama implements Initializable {
             avatarView.setFitHeight(56);
             Circle clip = new Circle(28, 28, 28);
             avatarView.setClip(clip);
+            avatarContainer.getChildren().add(avatarView);
+            avatarContainer.setCursor(javafx.scene.Cursor.HAND);
+            
+            // Easter egg: klik 10x untuk unlock dark mode
+            avatarContainer.setOnMouseClicked(event -> {
+                hitungKlikProfilPengaturan++;
+                
+                // Dapatkan window untuk toast
+                javafx.stage.Window window = avatarContainer.getScene() != null 
+                    ? avatarContainer.getScene().getWindow() : null;
+                
+                if (hitungKlikProfilPengaturan >= 7 && hitungKlikProfilPengaturan < 10) {
+                    // Berikan hint dengan toast (tidak blocking)
+                    int sisa = 10 - hitungKlikProfilPengaturan;
+                    UtilUI.tampilkanToast(window, "* " + sisa + " klik lagi...");
+                } else if (hitungKlikProfilPengaturan == 10 && !darkModeUnlocked) {
+                    // Unlock dark mode!
+                    darkModeUnlocked = true;
+                    PreferensiPengguna.getInstance().setDarkModeUnlocked(true);
+                    
+                    // Tampilkan section tampilan dan dark mode option
+                    if (appearanceSectionRef != null) {
+                        appearanceSectionRef.setVisible(true);
+                        appearanceSectionRef.setManaged(true);
+                    }
+                    if (darkModeRowRef != null) {
+                        darkModeRowRef.setVisible(true);
+                        darkModeRowRef.setManaged(true);
+                    }
+                    
+                    UtilUI.tampilkanToast(window, "Mode Gelap telah dibuka!");
+                    hitungKlikProfilPengaturan = 0;
+                }
+            });
             
             // Info
             VBox infoBox = new VBox(2);
@@ -847,7 +895,7 @@ public class KontrolerUtama implements Initializable {
             providerLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
             infoBox.getChildren().add(providerLabel);
             
-            profileCard.getChildren().addAll(avatarView, infoBox);
+            profileCard.getChildren().addAll(avatarContainer, infoBox);
         } else {
             Label notLoggedIn = new Label("Belum masuk");
             notLoggedIn.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
@@ -903,6 +951,7 @@ public class KontrolerUtama implements Initializable {
         // === SECTION PROFIL ===
         VBox profileSection = buatSectionProfil();
 
+        // === SECTION TAMPILAN (Dark Mode - Easter egg) ===
         VBox appearanceSection = createSettingsSection("Tampilan", PembuatIkon.ikonTampilan());
 
         HBox darkModeRow = createSettingRow(
@@ -913,6 +962,18 @@ public class KontrolerUtama implements Initializable {
         darkModeCheck.setSelected(isDarkMode);
         darkModeCheck.setOnAction(_ -> alihkanModaGelap());
         darkModeRow.getChildren().add(darkModeCheck);
+        
+        // Simpan referensi untuk ditampilkan saat Easter egg di-unlock
+        darkModeRowRef = darkModeRow;
+        appearanceSectionRef = appearanceSection;
+        
+        // Sembunyikan jika belum di-unlock (Easter egg)
+        if (!darkModeUnlocked) {
+            darkModeRow.setVisible(false);
+            darkModeRow.setManaged(false);
+            appearanceSection.setVisible(false);
+            appearanceSection.setManaged(false);
+        }
 
         appearanceSection.getChildren().add(darkModeRow);
 
@@ -1067,32 +1128,51 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void keluar() {
-        Alert confirmation = PembuatDialogMD3.buatAlert(
-                Alert.AlertType.CONFIRMATION,
-                "Konfirmasi Keluar",
-                "Apakah Anda yakin ingin keluar?",
-                "Anda akan logout dari aplikasi.");
-        
-        confirmation.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
+        // Gunakan SPA-style dialog overlay
+        tampilkanKonfirmasi(
+            "Konfirmasi Keluar",
+            "Apakah Anda yakin ingin keluar? Anda akan logout dari aplikasi.",
+            () -> {
                 try {
                     ManajerOtentikasi.getInstance().logout();
                     
-                    Stage stage = (Stage) labelSelamatDatang.getScene().getWindow();
+                    Stage currentStage = getStage();
+                    if (currentStage == null) return;
+                    
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LoginView.fxml"));
                     Parent root = loader.load();
                     
                     Scene scene = new Scene(root, 1000, 700);
                     scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
                     
-                    stage.setScene(scene);
-                    DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", false);
+                    currentStage.setScene(scene);
+                    DekoratorJendelaKustom.dekorasi(currentStage, "Perencana Belajar Adaptif", false);
                 } catch (Exception e) {
                     UtilUI.tampilkanKesalahan("Gagal logout: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
-        });
+        );
+    }
+    
+    /**
+     * Helper method untuk mendapatkan Stage dari berbagai node yang mungkin tersedia.
+     */
+    private Stage getStage() {
+        // Coba dari berbagai node yang mungkin masih terpasang ke scene
+        if (labelSelamatDatang != null && labelSelamatDatang.getScene() != null) {
+            return (Stage) labelSelamatDatang.getScene().getWindow();
+        }
+        if (sidebar != null && sidebar.getScene() != null) {
+            return (Stage) sidebar.getScene().getWindow();
+        }
+        if (scrollPaneUtama != null && scrollPaneUtama.getScene() != null) {
+            return (Stage) scrollPaneUtama.getScene().getWindow();
+        }
+        if (kontenDashboard != null && kontenDashboard.getScene() != null) {
+            return (Stage) kontenDashboard.getScene().getWindow();
+        }
+        return null;
     }
 
     public ManajerBasisData getManajerBasisData() {
@@ -1318,5 +1398,104 @@ public class KontrolerUtama implements Initializable {
             });
             hideAnim.play();
         }
+    }
+
+    // ============================================
+    // SPA-STYLE DIALOG OVERLAY METHODS
+    // ============================================
+
+    /**
+     * Tampilkan dialog overlay SPA-style dengan konten yang diberikan.
+     * 
+     * @param konten Node yang akan ditampilkan di dalam dialog
+     */
+    public void tampilkanDialogOverlay(Node konten) {
+        if (dialogOverlay == null || dialogContainer == null) return;
+
+        dialogContainer.getChildren().clear();
+        dialogContainer.getChildren().add(konten);
+
+        // Terapkan dark mode jika aktif
+        if (isDarkMode) {
+            dialogOverlay.getStyleClass().add("dark-mode");
+        } else {
+            dialogOverlay.getStyleClass().remove("dark-mode");
+        }
+
+        // Tampilkan dengan animasi fade in
+        dialogOverlay.setVisible(true);
+        dialogOverlay.setManaged(true);
+        dialogOverlay.setOpacity(0);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), dialogOverlay);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+
+        // Klik di luar dialog untuk menutup
+        dialogOverlay.setOnMouseClicked(event -> {
+            if (event.getTarget() == dialogOverlay) {
+                tutupDialogOverlay();
+            }
+        });
+    }
+
+    /**
+     * Tutup dialog overlay dengan animasi fade out.
+     */
+    public void tutupDialogOverlay() {
+        if (dialogOverlay == null) return;
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), dialogOverlay);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(_ -> {
+            dialogOverlay.setVisible(false);
+            dialogOverlay.setManaged(false);
+            dialogContainer.getChildren().clear();
+        });
+        fadeOut.play();
+    }
+
+    /**
+     * Tampilkan dialog konfirmasi SPA-style.
+     * 
+     * @param judul judul dialog
+     * @param pesan pesan dialog
+     * @param onKonfirmasi callback saat user mengkonfirmasi
+     */
+    public void tampilkanKonfirmasi(String judul, String pesan, Runnable onKonfirmasi) {
+        VBox konten = new VBox(16);
+        konten.setAlignment(javafx.geometry.Pos.CENTER);
+        konten.setStyle("-fx-padding: 8;");
+
+        Label labelJudul = new Label(judul);
+        labelJudul.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        Label labelPesan = new Label(pesan);
+        labelPesan.setWrapText(true);
+        labelPesan.setStyle("-fx-font-size: 14px; -fx-text-fill: #64748b;");
+
+        HBox tombolBox = new HBox(12);
+        tombolBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        tombolBox.setStyle("-fx-padding: 16 0 0 0;");
+
+        Button tombolBatal = new Button("Batal");
+        tombolBatal.getStyleClass().add("btn-secondary");
+        tombolBatal.setOnAction(_ -> tutupDialogOverlay());
+
+        Button tombolOk = new Button("OK");
+        tombolOk.getStyleClass().add("btn-primary");
+        tombolOk.setOnAction(_ -> {
+            tutupDialogOverlay();
+            if (onKonfirmasi != null) {
+                onKonfirmasi.run();
+            }
+        });
+
+        tombolBox.getChildren().addAll(tombolBatal, tombolOk);
+        konten.getChildren().addAll(labelJudul, labelPesan, tombolBox);
+
+        tampilkanDialogOverlay(konten);
     }
 }

@@ -20,6 +20,7 @@ public class PreferensiPengguna {
     private static final String KEY_DURASI_DEFAULT = "belajar.durasi_default";
     private static final String KEY_REMINDER_AKTIF = "notifikasi.reminder_aktif";
     private static final String KEY_WIDGET_CONFIG = "dashboard.widget_config";
+    private static final String KEY_DARK_MODE_UNLOCKED = "tampilan.dark_mode_unlocked";
 
     private PreferensiPengguna() {
         properties = new Properties();
@@ -93,6 +94,21 @@ public class PreferensiPengguna {
      */
     public void setDarkMode(boolean darkMode) {
         properties.setProperty(KEY_DARK_MODE, String.valueOf(darkMode));
+        simpanPreferensi();
+    }
+
+    /**
+     * Cek apakah fitur dark mode sudah di-unlock (Easter egg).
+     */
+    public boolean isDarkModeUnlocked() {
+        return Boolean.parseBoolean(properties.getProperty(KEY_DARK_MODE_UNLOCKED, "false"));
+    }
+
+    /**
+     * Atur status unlock fitur dark mode.
+     */
+    public void setDarkModeUnlocked(boolean unlocked) {
+        properties.setProperty(KEY_DARK_MODE_UNLOCKED, String.valueOf(unlocked));
         simpanPreferensi();
     }
 
