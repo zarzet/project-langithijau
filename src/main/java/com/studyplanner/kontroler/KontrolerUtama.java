@@ -298,6 +298,12 @@ public class KontrolerUtama implements Initializable {
 
         // Tambah tombol berdasarkan role pengguna
         tambahTombolBerdasarkanRole();
+        
+        // Sembunyikan menu mahasiswa untuk admin dan dosen
+        sembunyikanMenuBerdasarkanRole();
+        
+        // Auto-navigate ke panel sesuai role
+        arahkanKeHalamanSesuaiRole();
 
         if (tombolAlihSidebar != null) {
             tombolAlihSidebar.setGraphic(PembuatIkon.ikonMenu());
@@ -373,6 +379,44 @@ public class KontrolerUtama implements Initializable {
             tombolDosen.setOnAction(_ -> bukaPanelDosen());
             navContainer.getChildren().add(0, tombolDosen);
         }
+    }
+
+    /**
+     * Sembunyikan menu "Kelola Mata Kuliah" dan "Lihat Jadwal" untuk Admin dan Dosen.
+     * Menu ini khusus untuk mahasiswa.
+     */
+    private void sembunyikanMenuBerdasarkanRole() {
+        ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+        
+        // Jika user adalah Admin atau Dosen, sembunyikan menu mahasiswa
+        if (auth.isAdmin() || auth.isDosen()) {
+            if (tombolKelolaMataKuliah != null) {
+                tombolKelolaMataKuliah.setVisible(false);
+                tombolKelolaMataKuliah.setManaged(false);
+            }
+            if (tombolLihatJadwal != null) {
+                tombolLihatJadwal.setVisible(false);
+                tombolLihatJadwal.setManaged(false);
+            }
+        }
+    }
+
+    /**
+     * Auto-navigate ke halaman sesuai role pengguna.
+     * Admin langsung ke Panel Admin, Dosen langsung ke Dashboard Dosen.
+     */
+    private void arahkanKeHalamanSesuaiRole() {
+        ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+        
+        // Gunakan Platform.runLater agar UI sudah siap
+        javafx.application.Platform.runLater(() -> {
+            if (auth.isAdmin()) {
+                bukaPanelAdmin();
+            } else if (auth.isDosen()) {
+                bukaPanelDosen();
+            }
+            // Mahasiswa tetap di dashboard utama
+        });
     }
 
     /**
