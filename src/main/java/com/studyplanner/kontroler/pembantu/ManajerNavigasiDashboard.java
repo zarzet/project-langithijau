@@ -50,7 +50,6 @@ public class ManajerNavigasiDashboard {
 
             Stage stage = buatStage("Manajemen Mata Kuliah & Topik", root, 1000, 700);
             
-            // Set referensi ke kontroler utama jika diperlukan
             Object controller = loader.getController();
             if (controller != null) {
                 try {
@@ -58,7 +57,6 @@ public class ManajerNavigasiDashboard {
                         .getMethod("aturKontrolerUtama", kontrolerUtama.getClass())
                         .invoke(controller, kontrolerUtama);
                 } catch (Exception e) {
-                    // Method tidak ada atau gagal, abaikan
                 }
             }
 

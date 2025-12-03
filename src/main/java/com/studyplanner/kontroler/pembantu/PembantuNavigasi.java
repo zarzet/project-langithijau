@@ -85,7 +85,6 @@ public class PembantuNavigasi {
      * @param konten konten yang akan ditampilkan
      */
     public void navigasiKe(Halaman halaman, Node konten) {
-        // Jika bukan di dashboard, kembali dulu
         if (halamanAktif != Halaman.DASHBOARD) {
             kembaliKeDashboard();
         }
@@ -93,7 +92,6 @@ public class PembantuNavigasi {
         simpanKontenDashboard();
         halamanAktif = halaman;
 
-        // Update sidebar selection
         updateSidebarSelection(halaman);
 
         // Swap konten

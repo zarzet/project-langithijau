@@ -193,11 +193,7 @@ public class KontrolerUtama implements Initializable {
         periksaDanTampilkanOnboarding();
     }
 
-    /**
-     * Inisialisasi helper classes untuk Single Responsibility Principle.
-     */
     private void inisialisasiHelpers() {
-        // Tema helper
         pembantuTema = new PembantuTema(() -> {
             if (manajerWidget != null) {
                 manajerWidget.aturModeGelap(pembantuTema.isDarkMode());
@@ -205,17 +201,13 @@ public class KontrolerUtama implements Initializable {
             }
         });
 
-        // Animasi helper
         pembantuAnimasi = new PembantuAnimasi();
 
-        // Navigasi helper
         pembantuNavigasi = new PembantuNavigasi(scrollPaneUtama, this::loadDashboardData);
         pembantuNavigasi.setTombolSidebar(tombolKelolaMataKuliah, tombolLihatJadwal, tombolPengaturan);
 
-        // Dialog overlay helper
         pembantuDialog = new PembantuDialogOverlay(dialogOverlay, dialogContainer);
 
-        // Dashboard helper
         pembantuDashboard = new PembantuDashboard(
             layananMataKuliah,
             layananTopik,
@@ -226,27 +218,21 @@ public class KontrolerUtama implements Initializable {
             this::loadDashboardData
         );
 
-        // Pengaturan helper
         pembantuPengaturan = new PembantuPengaturan(isDarkMode, this::alihkanModaGelap, this::buatJadwalBaru);
     }
 
-    /**
-     * Cek apakah perlu menampilkan onboarding untuk user baru.
-     */
     private void periksaDanTampilkanOnboarding() {
         int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
         if (userId > 0 && !PreferensiPengguna.getInstance().isOnboardingSelesai(userId)) {
-            // Tampilkan onboarding setelah scene ditampilkan
             javafx.application.Platform.runLater(() -> {
                 try {
-                    Thread.sleep(500); // Tunggu sebentar agar UI siap
+                    Thread.sleep(500);
                     Stage stage = (Stage) labelSelamatDatang.getScene().getWindow();
                     DialogPengenalan pengenalan = new DialogPengenalan(stage, () -> {
                         PreferensiPengguna.getInstance().setOnboardingSelesai(userId, true);
                     });
                     pengenalan.tampilkan();
                 } catch (Exception e) {
-                    // Abaikan error onboarding
                 }
             });
         }
@@ -259,7 +245,6 @@ public class KontrolerUtama implements Initializable {
 
         terapkanAnimasiMasuk();
 
-        // Setup widget system
         siapkanSistemWidget();
 
         tombolKelolaMataKuliah.setGraphic(PembuatIkon.ikonMataKuliah());
@@ -279,7 +264,6 @@ public class KontrolerUtama implements Initializable {
         
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
             String nama = ManajerOtentikasi.getInstance().getCurrentUserName();
-            // Ambil nama depan saja
             String namaDepan = nama != null && nama.contains(" ") ? nama.split(" ")[0] : nama;
             labelSelamatDatang.setText("Selamat Datang, " + (namaDepan != null ? namaDepan : "User") + "!");
         }
@@ -323,27 +307,19 @@ public class KontrolerUtama implements Initializable {
                 if (user != null) {
                     aturFotoProfilHeader(user);
                 } else {
-                    // Untuk local user, gunakan icon default
                     tombolProfilHeader.setGraphic(PembuatIkon.ikonProfil());
                 }
             } else {
                 tombolProfilHeader.setGraphic(PembuatIkon.ikonProfil());
             }
             tombolProfilHeader.setText("");
-            tombolProfilHeader.setOnAction(_ -> tampilkanPengaturan()); // Langsung buka pengaturan
+            tombolProfilHeader.setOnAction(_ -> tampilkanPengaturan());
         }
     }
 
-    /**
-     * Tambah tombol sidebar berdasarkan role pengguna (Admin/Dosen).
-     */
     private void tambahTombolBerdasarkanRole() {
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
         
-        // Debug: cek role
-        System.out.println("[DEBUG] Role user: " + auth.getCurrentUserRole() + ", isAdmin: " + auth.isAdmin() + ", isDosen: " + auth.isDosen());
-        
-        // Cari VBox navigasi di sidebar (child kedua dari sidebar)
         VBox navContainer = null;
         for (Node child : sidebar.getChildren()) {
             if (child instanceof VBox vbox && vbox.getChildren().contains(tombolKelolaMataKuliah)) {
@@ -354,7 +330,6 @@ public class KontrolerUtama implements Initializable {
         
         if (navContainer == null) return;
 
-        // Tombol Admin
         if (auth.isAdmin()) {
             Button tombolAdmin = new Button("Panel Admin");
             tombolAdmin.setGraphic(PembuatIkon.ikonAdmin());
@@ -364,10 +339,9 @@ public class KontrolerUtama implements Initializable {
             tombolAdmin.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
             tombolAdmin.setStyle("-fx-padding: 12 16;");
             tombolAdmin.setOnAction(_ -> bukaPanelAdmin());
-            navContainer.getChildren().add(0, tombolAdmin); // Di atas tombol lainnya
+            navContainer.getChildren().add(0, tombolAdmin);
         }
 
-        // Tombol Dosen
         if (auth.isDosen()) {
             Button tombolDosen = new Button("Dashboard Dosen");
             tombolDosen.setGraphic(PembuatIkon.ikonDosen());
@@ -381,14 +355,9 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    /**
-     * Sembunyikan menu "Kelola Mata Kuliah" dan "Lihat Jadwal" untuk Admin dan Dosen.
-     * Menu ini khusus untuk mahasiswa.
-     */
     private void sembunyikanMenuBerdasarkanRole() {
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
         
-        // Jika user adalah Admin atau Dosen, sembunyikan menu mahasiswa
         if (auth.isAdmin() || auth.isDosen()) {
             if (tombolKelolaMataKuliah != null) {
                 tombolKelolaMataKuliah.setVisible(false);
@@ -401,27 +370,18 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    /**
-     * Auto-navigate ke halaman sesuai role pengguna.
-     * Admin langsung ke Panel Admin, Dosen langsung ke Dashboard Dosen.
-     */
     private void arahkanKeHalamanSesuaiRole() {
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
         
-        // Gunakan Platform.runLater agar UI sudah siap
         javafx.application.Platform.runLater(() -> {
             if (auth.isAdmin()) {
                 bukaPanelAdmin();
             } else if (auth.isDosen()) {
                 bukaPanelDosen();
             }
-            // Mahasiswa tetap di dashboard utama
         });
     }
 
-    /**
-     * Buka Panel Admin.
-     */
     private void bukaPanelAdmin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminView.fxml"));
@@ -434,9 +394,6 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    /**
-     * Buka Panel Dosen.
-     */
     private void bukaPanelDosen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DosenView.fxml"));
@@ -449,10 +406,6 @@ public class KontrolerUtama implements Initializable {
         }
     }
 
-    /**
-     * Setup sistem widget yang dapat dikustomisasi.
-     * Menggunakan ManajerWidgetDashboard untuk mengelola widget.
-     */
     private void siapkanSistemWidget() {
         if (wadahWidgetKontainer == null) return;
         
@@ -656,7 +609,6 @@ public class KontrolerUtama implements Initializable {
 
     private void buatJadwalBaru() {
         try {
-            // Validasi: cek apakah ada mata kuliah
             int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
             var daftarMataKuliah = layananMataKuliah.ambilSemuaByUserId(userId);
             
@@ -667,7 +619,6 @@ public class KontrolerUtama implements Initializable {
                 return;
             }
             
-            // Validasi: cek apakah ada topik
             var daftarTopik = layananTopik.ambilSemuaByUserId(userId);
             
             if (daftarTopik.isEmpty()) {
@@ -687,9 +638,6 @@ public class KontrolerUtama implements Initializable {
     }
 
 
-    /**
-     * Tampilkan pengaturan (delegasi ke PembantuPengaturan).
-     */
     private void tampilkanPengaturan() {
         if (halamanAktif != HalamanAktif.DASHBOARD && halamanAktif != HalamanAktif.PENGATURAN) {
             kembaliKeDashboard();
@@ -702,7 +650,6 @@ public class KontrolerUtama implements Initializable {
         halamanAktif = HalamanAktif.PENGATURAN;
         updateSidebarSelection(tombolPengaturan);
 
-        // Delegasi ke PembantuPengaturan
         HBox header = buatHeaderDenganTombolKembali("Pengaturan");
         VBox settingsContent = pembantuPengaturan.bangunKontenPengaturan(header);
         
@@ -720,7 +667,6 @@ public class KontrolerUtama implements Initializable {
     }
 
     private void keluar() {
-        // Gunakan SPA-style dialog overlay
         tampilkanKonfirmasi(
             "Konfirmasi Keluar",
             "Apakah Anda yakin ingin keluar? Anda akan logout dari aplikasi.",
@@ -747,11 +693,7 @@ public class KontrolerUtama implements Initializable {
         );
     }
     
-    /**
-     * Helper method untuk mendapatkan Stage dari berbagai node yang mungkin tersedia.
-     */
     private Stage getStage() {
-        // Coba dari berbagai node yang mungkin masih terpasang ke scene
         if (labelSelamatDatang != null && labelSelamatDatang.getScene() != null) {
             return (Stage) labelSelamatDatang.getScene().getWindow();
         }

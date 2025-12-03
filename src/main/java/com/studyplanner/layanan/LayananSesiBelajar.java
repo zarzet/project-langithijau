@@ -136,16 +136,13 @@ public class LayananSesiBelajar {
             throw new IllegalArgumentException("Rating performa harus antara 1-5");
         }
 
-        // Ambil data sesi
         SesiBelajar sesi = daoSesiBelajar.ambilBerdasarkanId(idSesi);
         if (sesi == null) {
             throw new IllegalArgumentException("Sesi tidak ditemukan");
         }
 
-        // Tandai sesi selesai
         daoSesiBelajar.tandaiSelesai(idSesi, ratingPerforma, catatan);
 
-        // Update spaced repetition untuk topik terkait (rating 1-5 dipetakan di layanan topik)
         int nilaiKualitas = ratingPerforma;
         layananTopik.prosesHasilReview(sesi.getIdTopik(), nilaiKualitas);
     }
@@ -208,9 +205,6 @@ public class LayananSesiBelajar {
         return jumlahDibuat;
     }
 
-    /**
-     * Validasi data sesi belajar.
-     */
     private void validasiSesiBelajar(SesiBelajar sesi) {
         if (sesi == null) {
             throw new IllegalArgumentException("Data sesi belajar tidak boleh null");

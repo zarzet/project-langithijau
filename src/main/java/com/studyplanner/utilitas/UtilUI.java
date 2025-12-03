@@ -33,7 +33,6 @@ public final class UtilUI {
             DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", LOCALE_ID);
 
     private UtilUI() {
-        // Utility class, tidak perlu diinstansiasi
     }
 
     /**

@@ -292,9 +292,6 @@ public class DAOJadwalUjian implements DAOBase<JadwalUjian, Integer> {
         }
     }
 
-    /**
-     * Helper method untuk mengkonversi ResultSet row ke JadwalUjian.
-     */
     private JadwalUjian mapRowKeJadwalUjian(ResultSet rs) throws SQLException {
         JadwalUjian ujian = new JadwalUjian();
         ujian.setId(rs.getInt("id"));

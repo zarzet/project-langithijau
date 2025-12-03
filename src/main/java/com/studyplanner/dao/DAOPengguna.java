@@ -280,9 +280,6 @@ public class DAOPengguna implements DAOBase<Map<String, Object>, Integer> {
         }
     }
 
-    /**
-     * Helper method untuk mengkonversi ResultSet row ke Map.
-     */
     private Map<String, Object> mapRowKeMap(ResultSet rs) throws SQLException {
         Map<String, Object> pengguna = new HashMap<>();
         pengguna.put("id", rs.getInt("id"));
@@ -295,13 +292,11 @@ public class DAOPengguna implements DAOBase<Map<String, Object>, Integer> {
         pengguna.put("provider", rs.getString("provider"));
         pengguna.put("dibuat_pada", rs.getTimestamp("dibuat_pada"));
         
-        // Kolom baru untuk multi-role support
         try {
             pengguna.put("role", rs.getString("role"));
             pengguna.put("status", rs.getString("status"));
             pengguna.put("login_terakhir", rs.getTimestamp("login_terakhir"));
         } catch (SQLException e) {
-            // Kolom mungkin belum ada pada database lama
             pengguna.put("role", "mahasiswa");
             pengguna.put("status", "active");
         }

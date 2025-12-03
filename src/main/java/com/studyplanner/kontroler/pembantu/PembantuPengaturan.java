@@ -138,7 +138,6 @@ public class PembantuPengaturan {
                     darkModeUnlocked = true;
                     PreferensiPengguna.getInstance().setDarkModeUnlocked(true);
 
-                    // Tampilkan section tampilan
                     if (appearanceSectionRef != null) {
                         appearanceSectionRef.setVisible(true);
                         appearanceSectionRef.setManaged(true);

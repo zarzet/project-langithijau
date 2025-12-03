@@ -45,13 +45,11 @@ public class PembantuTema {
         isDarkMode = !isDarkMode;
         PreferensiPengguna.getInstance().setDarkMode(isDarkMode);
 
-        // Update tombol
         if (tombolAlihTema != null) {
             tombolAlihTema.setGraphic(PembuatIkon.ikonModeGelap(isDarkMode));
             tombolAlihTema.setText(isDarkMode ? "Terang" : "Gelap");
         }
 
-        // Update root node style class
         if (rootNode != null) {
             if (isDarkMode) {
                 rootNode.getStyleClass().add("dark-mode");
@@ -60,12 +58,10 @@ public class PembantuTema {
             }
         }
 
-        // Update window decoration
         if (stage != null) {
             DekoratorJendelaKustom.dekorasi(stage, "Perencana Belajar Adaptif", isDarkMode);
         }
 
-        // Callback untuk update komponen lain
         if (onTemaChanged != null) {
             onTemaChanged.run();
         }

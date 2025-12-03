@@ -56,7 +56,6 @@ public class ManajerWidgetDashboard {
 
         int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
         
-        // Muat konfigurasi widget dari preferensi
         String configStr = PreferensiPengguna.getInstance().getWidgetConfig(userId);
         if (configStr.isEmpty()) {
             konfigurasiWidget = new KonfigurasiWidget();
@@ -64,14 +63,12 @@ public class ManajerWidgetDashboard {
             konfigurasiWidget = KonfigurasiWidget.dariString(configStr);
         }
 
-        // Buat wadah widget dengan drag & drop
         wadahWidget = new WadahWidgetDraggable(
             konfigurasiWidget,
             this::buatWidgetDariJenis,
             this::simpanKonfigurasi
         );
 
-        // Handler untuk buka dialog pemilih widget
         wadahWidget.setOnTambahWidgetClicked(_ -> tampilkanDialogPemilihWidget());
 
         wadahWidgetKontainer.getChildren().clear();

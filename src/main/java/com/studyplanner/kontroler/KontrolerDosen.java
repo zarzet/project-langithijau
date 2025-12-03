@@ -29,21 +29,17 @@ import java.util.ResourceBundle;
  */
 public class KontrolerDosen implements Initializable {
 
-    // Header
     @FXML private Label labelNamaDosen;
 
-    // Statistik
     @FXML private Label labelTotalMahasiswa;
     @FXML private Label labelAktifMingguIni;
     @FXML private Label labelRataProgress;
     @FXML private Label labelPerluPerhatian;
 
-    // Filters
     @FXML private ComboBox<String> filterStatus;
     @FXML private TextField searchField;
     @FXML private Button btnRefresh;
 
-    // Tabel Mahasiswa
     @FXML private TableView<Mahasiswa> tabelMahasiswa;
     @FXML private TableColumn<Mahasiswa, String> kolNama;
     @FXML private TableColumn<Mahasiswa, String> kolNim;

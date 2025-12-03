@@ -7,7 +7,6 @@ package com.studyplanner.konfigurasi;
 public final class KonfigurasiJadwal {
 
     private KonfigurasiJadwal() {
-        // Prevent instantiation
     }
 
     // ============================================

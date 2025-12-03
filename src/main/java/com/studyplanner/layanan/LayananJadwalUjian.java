@@ -158,9 +158,6 @@ public class LayananJadwalUjian {
         return daoJadwalUjian.hitungBerdasarkanMataKuliahId(idMataKuliah);
     }
 
-    /**
-     * Validasi data jadwal ujian.
-     */
     private void validasiJadwalUjian(JadwalUjian ujian) {
         if (ujian == null) {
             throw new IllegalArgumentException("Data jadwal ujian tidak boleh null");

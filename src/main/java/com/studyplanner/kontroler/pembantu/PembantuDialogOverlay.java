@@ -50,7 +50,6 @@ public class PembantuDialogOverlay {
         dialogContainer.getChildren().clear();
         dialogContainer.getChildren().add(konten);
 
-        // Terapkan dark mode jika aktif
         if (isDarkMode) {
             if (!dialogOverlay.getStyleClass().contains("dark-mode")) {
                 dialogOverlay.getStyleClass().add("dark-mode");
@@ -59,7 +58,6 @@ public class PembantuDialogOverlay {
             dialogOverlay.getStyleClass().remove("dark-mode");
         }
 
-        // Tampilkan dengan animasi fade in
         dialogOverlay.setVisible(true);
         dialogOverlay.setManaged(true);
         dialogOverlay.setOpacity(0);
@@ -69,7 +67,6 @@ public class PembantuDialogOverlay {
         fadeIn.setToValue(1);
         fadeIn.play();
 
-        // Klik di luar dialog untuk menutup
         dialogOverlay.setOnMouseClicked(event -> {
             if (event.getTarget() == dialogOverlay) {
                 tutup();

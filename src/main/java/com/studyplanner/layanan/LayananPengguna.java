@@ -45,13 +45,10 @@ public class LayananPengguna {
                             String password, RolePengguna role) throws SQLException {
         validasiDataPengguna(nama, email, username);
 
-        // Simpan ke tabel users
         int userId = daoPengguna.simpanPenggunaLokal(username, password, email, nama);
 
-        // Set role
         daoPengguna.perbaruiRole(userId, role.getKode());
 
-        // Buat entry di tabel role-specific
         switch (role) {
             case MAHASISWA -> {
                 Mahasiswa mhs = new Mahasiswa();
@@ -64,7 +61,6 @@ public class LayananPengguna {
                 daoDosen.simpan(dosen);
             }
             case ADMIN -> {
-                // Admin tidak punya tabel khusus
             }
         }
 
@@ -91,11 +87,9 @@ public class LayananPengguna {
             throw new IllegalArgumentException("NIP sudah digunakan");
         }
 
-        // Simpan ke tabel users
         int userId = daoPengguna.simpanPenggunaLokal(username, password, email, nama);
         daoPengguna.perbaruiRole(userId, RolePengguna.DOSEN.getKode());
 
-        // Simpan ke tabel dosen
         Dosen dosen = new Dosen();
         dosen.setUserId(userId);
         dosen.setNip(nip);
@@ -125,11 +119,9 @@ public class LayananPengguna {
             throw new IllegalArgumentException("NIM sudah digunakan");
         }
 
-        // Simpan ke tabel users
         int userId = daoPengguna.simpanPenggunaLokal(username, password, email, nama);
         daoPengguna.perbaruiRole(userId, RolePengguna.MAHASISWA.getKode());
 
-        // Simpan ke tabel mahasiswa
         Mahasiswa mhs = new Mahasiswa();
         mhs.setUserId(userId);
         mhs.setNim(nim);
@@ -189,14 +181,10 @@ public class LayananPengguna {
         String roleLama = (String) user.get("role");
         if (roleLama == null) roleLama = "mahasiswa";
 
-        // Update role di tabel users
         boolean berhasil = daoPengguna.perbaruiRole(userId, roleBaru.getKode());
 
         if (berhasil) {
-            // Handle tabel role-specific
             RolePengguna enumRoleLama = RolePengguna.dariKode(roleLama);
-
-            // Hapus dari tabel lama jika perlu
             if (enumRoleLama == RolePengguna.MAHASISWA && roleBaru != RolePengguna.MAHASISWA) {
                 Mahasiswa mhs = daoMahasiswa.ambilBerdasarkanUserId(userId);
                 if (mhs != null) {
@@ -209,7 +197,6 @@ public class LayananPengguna {
                 }
             }
 
-            // Buat di tabel baru jika perlu
             if (roleBaru == RolePengguna.MAHASISWA && enumRoleLama != RolePengguna.MAHASISWA) {
                 Mahasiswa mhs = new Mahasiswa();
                 mhs.setUserId(userId);
@@ -284,9 +271,6 @@ public class LayananPengguna {
         );
     }
 
-    /**
-     * Validasi data pengguna baru.
-     */
     private void validasiDataPengguna(String nama, String email, String username) throws SQLException {
         if (nama == null || nama.trim().isEmpty()) {
             throw new IllegalArgumentException("Nama tidak boleh kosong");
@@ -298,7 +282,6 @@ public class LayananPengguna {
             throw new IllegalArgumentException("Username minimal 3 karakter");
         }
 
-        // Cek username unik
         Map<String, Object> existing = daoPengguna.cariBerdasarkanUsername(username);
         if (existing != null) {
             throw new IllegalArgumentException("Username sudah digunakan");

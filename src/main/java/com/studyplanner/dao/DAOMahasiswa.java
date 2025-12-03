@@ -259,7 +259,6 @@ public class DAOMahasiswa {
             while (rs.next()) {
                 Mahasiswa mhs = mapRowKeMahasiswa(rs);
                 
-                // Tambah statistik
                 mhs.setJumlahMataKuliah(rs.getInt("jumlah_mata_kuliah"));
                 mhs.setJumlahTopik(rs.getInt("jumlah_topik"));
                 mhs.setTopikDikuasai(rs.getInt("topik_dikuasai"));
@@ -524,9 +523,6 @@ public class DAOMahasiswa {
         }
     }
 
-    /**
-     * Helper untuk map ResultSet ke Mahasiswa.
-     */
     private Mahasiswa mapRowKeMahasiswa(ResultSet rs) throws SQLException {
         Mahasiswa mhs = new Mahasiswa();
         mhs.setId(rs.getInt("id"));
@@ -544,7 +540,6 @@ public class DAOMahasiswa {
             mhs.setDibuatPada(dibuatPada.toLocalDateTime());
         }
 
-        // Data dari join dengan users
         mhs.setNama(rs.getString("nama"));
         mhs.setEmail(rs.getString("email"));
         mhs.setStatus(StatusPengguna.dariKode(rs.getString("status")));
@@ -554,7 +549,6 @@ public class DAOMahasiswa {
             mhs.setLoginTerakhir(loginTerakhir.toLocalDateTime());
         }
 
-        // Data dari join dengan dosen
         mhs.setNamaDosen(rs.getString("nama_dosen"));
 
         return mhs;

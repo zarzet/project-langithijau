@@ -467,9 +467,6 @@ public class DAOTopik implements DAOBase<Topik, Integer> {
         }
     }
 
-    /**
-     * Helper method untuk mengkonversi ResultSet row ke Topik.
-     */
     private Topik mapRowKeTopik(ResultSet rs) throws SQLException {
         Topik topik = new Topik();
         topik.setId(rs.getInt("id"));

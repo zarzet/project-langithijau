@@ -499,9 +499,6 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
         }
     }
 
-    /**
-     * Helper method untuk mengkonversi ResultSet row ke SesiBelajar.
-     */
     private SesiBelajar mapRowKeSesiBelajar(ResultSet rs) throws SQLException {
         SesiBelajar sesi = new SesiBelajar();
         sesi.setId(rs.getInt("id"));

@@ -39,17 +39,14 @@ import java.util.*;
  */
 public class KontrolerAdmin implements Initializable {
 
-    // Dialog Overlay SPA-style
     @FXML private StackPane dialogOverlay;
     @FXML private VBox dialogContainer;
 
-    // Tab Navigation
     @FXML private ToggleButton tabPengguna;
     @FXML private ToggleButton tabAssignment;
     @FXML private ToggleButton tabStatistik;
     @FXML private ToggleGroup tabGroup;
 
-    // Panel Pengguna (UC-25)
     @FXML private VBox panelPengguna;
     @FXML private ComboBox<String> filterRole;
     @FXML private ComboBox<String> filterStatus;
@@ -64,7 +61,6 @@ public class KontrolerAdmin implements Initializable {
     @FXML private TableColumn<Map<String, Object>, String> kolLoginTerakhir;
     @FXML private TableColumn<Map<String, Object>, Void> kolAksi;
 
-    // Panel Assignment (UC-26)
     @FXML private VBox panelAssignment;
     @FXML private ListView<Dosen> listDosen;
     @FXML private ListView<MahasiswaSelectable> listMahasiswa;
@@ -76,7 +72,6 @@ public class KontrolerAdmin implements Initializable {
     @FXML private ListView<MahasiswaSelectable> listMahasiswaAssigned;
     @FXML private Button btnUnassign;
 
-    // Panel Statistik (UC-28)
     @FXML private VBox panelStatistik;
     @FXML private Label labelTotalPengguna;
     @FXML private Label labelTotalMahasiswa;
@@ -154,10 +149,7 @@ public class KontrolerAdmin implements Initializable {
         searchField.textProperty().addListener((obs, oldVal, newVal) -> filterData());
     }
 
-    // ==================== UC-25: Manajemen Pengguna ====================
-
     private void setupTabelPengguna() {
-        // Set resize policy agar kolom mengisi seluruh lebar
         tabelPengguna.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         kolId.setCellValueFactory(data -> 
@@ -299,7 +291,6 @@ public class KontrolerAdmin implements Initializable {
         nimNip.setPromptText("NIM/NIP (opsional)");
         nimNip.getStyleClass().add("spa-input");
 
-        // Labels + Fields
         konten.getChildren().addAll(
             buatFieldGroup("Nama", nama),
             buatFieldGroup("Email", email),
@@ -309,7 +300,6 @@ public class KontrolerAdmin implements Initializable {
             buatFieldGroup("NIM/NIP", nimNip)
         );
 
-        // Buttons
         HBox tombolContainer = new HBox(12);
         tombolContainer.setAlignment(Pos.CENTER_RIGHT);
 

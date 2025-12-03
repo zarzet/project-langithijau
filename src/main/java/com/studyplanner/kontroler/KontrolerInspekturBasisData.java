@@ -381,17 +381,13 @@ public class KontrolerInspekturBasisData implements Initializable {
         String namaUser = (String) user.get("nama");
 
         try {
-            // Update role di tabel users
             manajerBasisData.jalankanKueriUpdate(
                 "UPDATE users SET role = '" + roleBaru + "' WHERE id = " + userId
             );
 
-            // Sinkronisasi tabel terkait - hapus dari tabel lama, tambah ke tabel baru
             if ("dosen".equals(roleBaru)) {
-                // Hapus dari mahasiswa jika ada
                 manajerBasisData.jalankanKueriUpdate(
                     "DELETE FROM mahasiswa WHERE user_id = " + userId);
-                // Buat entri di tabel dosen jika belum ada
                 var existing = manajerBasisData.jalankanKueriSelect(
                     "SELECT id FROM dosen WHERE user_id = " + userId);
                 if (existing.isEmpty()) {
@@ -400,10 +396,8 @@ public class KontrolerInspekturBasisData implements Initializable {
                     );
                 }
             } else if ("mahasiswa".equals(roleBaru)) {
-                // Hapus dari dosen jika ada
                 manajerBasisData.jalankanKueriUpdate(
                     "DELETE FROM dosen WHERE user_id = " + userId);
-                // Buat entri di tabel mahasiswa jika belum ada
                 var existing = manajerBasisData.jalankanKueriSelect(
                     "SELECT id FROM mahasiswa WHERE user_id = " + userId);
                 if (existing.isEmpty()) {
@@ -412,14 +406,12 @@ public class KontrolerInspekturBasisData implements Initializable {
                     );
                 }
             } else if ("admin".equals(roleBaru)) {
-                // Admin tidak perlu entri di dosen/mahasiswa
                 manajerBasisData.jalankanKueriUpdate(
                     "DELETE FROM mahasiswa WHERE user_id = " + userId);
                 manajerBasisData.jalankanKueriUpdate(
                     "DELETE FROM dosen WHERE user_id = " + userId);
             }
 
-            // Tampilkan alert sukses
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Berhasil");
             alert.setHeaderText(null);
@@ -427,7 +419,6 @@ public class KontrolerInspekturBasisData implements Initializable {
                 "\n\nPengguna perlu login ulang agar perubahan berlaku.");
             alert.showAndWait();
 
-            // Refresh tabel
             muatDaftarPengguna();
         } catch (EksepsiAksesBasisData e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -37,10 +37,8 @@ public class LayananMataKuliah {
      * @throws SQLException jika terjadi kesalahan database
      */
     public int daftarkan(MataKuliah mataKuliah) throws SQLException {
-        // Validasi
         validasiMataKuliah(mataKuliah);
 
-        // Cek duplikat kode untuk user yang sama
         if (mataKuliah.getKode() != null && !mataKuliah.getKode().trim().isEmpty()) {
             MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getUserId(), mataKuliah.getKode());
             if (existing != null) {
@@ -62,7 +60,6 @@ public class LayananMataKuliah {
     public boolean perbarui(MataKuliah mataKuliah) throws SQLException {
         validasiMataKuliah(mataKuliah);
 
-        // Cek duplikat kode untuk user yang sama (kecuali untuk mata kuliah yang sama)
         if (mataKuliah.getKode() != null && !mataKuliah.getKode().trim().isEmpty()) {
             MataKuliah existing = daoMataKuliah.ambilBerdasarkanKode(mataKuliah.getUserId(), mataKuliah.getKode());
             if (existing != null && existing.getId() != mataKuliah.getId()) {
@@ -81,10 +78,8 @@ public class LayananMataKuliah {
      * @throws SQLException jika terjadi kesalahan database
      */
     public boolean hapus(int idMataKuliah) throws SQLException {
-        // Cascade delete: hapus sesi belajar terkait terlebih dahulu
         daoSesiBelajar.hapusBerdasarkanMataKuliahId(idMataKuliah);
         
-        // Foreign key constraints akan menghapus topik dan ujian terkait
         return daoMataKuliah.hapus(idMataKuliah);
     }
 
@@ -190,9 +185,6 @@ public class LayananMataKuliah {
         return !daoJadwalUjian.ambilBerdasarkanMataKuliahId(idMataKuliah).isEmpty();
     }
 
-    /**
-     * Validasi data mata kuliah.
-     */
     private void validasiMataKuliah(MataKuliah mk) {
         if (mk == null) {
             throw new IllegalArgumentException("Data mata kuliah tidak boleh null");

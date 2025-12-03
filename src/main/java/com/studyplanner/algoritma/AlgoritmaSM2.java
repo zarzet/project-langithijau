@@ -32,15 +32,12 @@ public class AlgoritmaSM2 {
         this.bobot = Arrays.copyOf(bobot, PARAMETER_BAWAAN.length);
     }
 
-    /**
-     * Map rating UI (1-5) ke rating FSRS (1-4).
-     */
     public static int petaRatingFsrs(int rating) {
         int r = Math.max(1, Math.min(5, rating));
-        if (r == 1) return 1; // again
-        if (r == 2) return 2; // hard
-        if (r == 5) return 4; // easy
-        return 3; // good
+        if (r == 1) return 1;
+        if (r == 2) return 2;
+        if (r == 5) return 4;
+        return 3;
     }
 
     public OpsiInterval hitungKeadaanBerikutnya(KondisiMemori kondisiSaatIni,

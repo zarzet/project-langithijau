@@ -62,7 +62,6 @@ public class LayananTopik {
      * @throws SQLException jika terjadi kesalahan database
      */
     public boolean hapus(int idTopik) throws SQLException {
-        // Cascade delete: hapus sesi belajar terkait terlebih dahulu
         daoSesiBelajar.hapusBerdasarkanTopikId(idTopik);
         
         return daoTopik.hapus(idTopik);
@@ -247,9 +246,6 @@ public class LayananTopik {
         return daoTopik.hitungDikuasaiByUserId(userId);
     }
 
-    /**
-     * Validasi data topik.
-     */
     private void validasiTopik(Topik topik) {
         if (topik == null) {
             throw new IllegalArgumentException("Data topik tidak boleh null");

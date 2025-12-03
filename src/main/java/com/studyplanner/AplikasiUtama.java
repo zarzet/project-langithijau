@@ -20,7 +20,6 @@ public class AplikasiUtama extends Application {
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
         boolean sesiDipulihkan = auth.cobaPulihkanSesi();
         
-        // Jika sesi dipulihkan (Google), load data user dari DB untuk dapat role
         if (sesiDipulihkan && auth.getCurrentUser() != null) {
             try {
                 ManajerBasisData db = new ManajerBasisData();

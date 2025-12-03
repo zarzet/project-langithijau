@@ -33,10 +33,6 @@ public class ManajerBasisData {
         inisialisasiBasisData();
     }
     
-    /**
-     * Mendapatkan instance singleton dari ManajerBasisData.
-     * Gunakan ini untuk berbagi connection pool di seluruh aplikasi.
-     */
     public static synchronized ManajerBasisData dapatkanInstans() {
         if (instansTunggal == null) {
             instansTunggal = new ManajerBasisData();
@@ -53,7 +49,6 @@ public class ManajerBasisData {
         konfigurasi.setConnectionTimeout(WAKTU_KONEKSI_MAKSIMUM_MS);
         konfigurasi.setPoolName("StudyPlannerPool");
         
-        // Konfigurasi khusus SQLite
         konfigurasi.addDataSourceProperty("cachePrepStmts", "true");
         konfigurasi.addDataSourceProperty("prepStmtCacheSize", "250");
         
@@ -155,7 +150,7 @@ public class ManajerBasisData {
                     )
                 """;
 
-        // Tabel Dosen (harus dibuat sebelum mahasiswa karena ada foreign key)
+        // Tabel Dosen
         String buatTabelDosen = """
                     CREATE TABLE IF NOT EXISTS dosen (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -181,7 +176,7 @@ public class ManajerBasisData {
                     )
                 """;
 
-        // Tabel Rekomendasi (dari dosen ke mahasiswa)
+        // Tabel Rekomendasi
         String buatTabelRekomendasi = """
                     CREATE TABLE IF NOT EXISTS rekomendasi (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -212,16 +207,13 @@ public class ManajerBasisData {
             stmt.execute(buatTabelRekomendasi);
         }
 
-        // Migrasi kolom untuk topik
         tambahKolomJikaBelumAda(koneksi, "topik", "stabilitas_fsrs", "REAL DEFAULT 0");
         tambahKolomJikaBelumAda(koneksi, "topik", "kesulitan_fsrs", "REAL DEFAULT 0");
         tambahKolomJikaBelumAda(koneksi, "topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
         tambahKolomJikaBelumAda(koneksi, "topik", "peluruhan_fsrs", "REAL DEFAULT 0.1542");
 
-        // Migrasi: tambah user_id ke mata_kuliah untuk multi-user support
         tambahKolomJikaBelumAda(koneksi, "mata_kuliah", "user_id", "INTEGER NOT NULL DEFAULT 1");
 
-        // Migrasi: tambah role dan status ke users untuk multi-role support
         tambahKolomJikaBelumAda(koneksi, "users", "role", "TEXT DEFAULT 'mahasiswa'");
         tambahKolomJikaBelumAda(koneksi, "users", "status", "TEXT DEFAULT 'active'");
         tambahKolomJikaBelumAda(koneksi, "users", "login_terakhir", "TIMESTAMP");
@@ -384,16 +376,11 @@ public class ManajerBasisData {
             topik.setRetensiDiinginkan(rs.getDouble("retensi_diinginkan"));
             topik.setPeluruhanFsrs(rs.getDouble("peluruhan_fsrs"));
         } catch (SQLException ignored) {
-            // kolom baru mungkin belum ada pada DB lama
         }
 
         return topik;
     }
 
-    /**
-     * Menutup connection pool dan melepaskan semua sumber daya.
-     * Panggil ini saat aplikasi ditutup.
-     */
     public void tutup() {
         if (sumberData != null && !sumberData.isClosed()) {
             sumberData.close();
@@ -401,9 +388,6 @@ public class ManajerBasisData {
         }
     }
     
-    /**
-     * Memeriksa apakah connection pool masih aktif.
-     */
     public boolean apakahAktif() {
         return sumberData != null && !sumberData.isClosed();
     }
@@ -572,13 +556,6 @@ public class ManajerBasisData {
         }
     }
 
-    /**
-     * Memberikan akses ke Connection dari pool untuk DAO classes.
-     * Connection ini HARUS ditutup setelah digunakan (gunakan try-with-resources).
-     * 
-     * @return Connection dari connection pool
-     * @throws EksepsiKoneksiBasisData jika gagal mendapatkan koneksi
-     */
     public Connection bukaKoneksi() {
         try {
             return sumberData.getConnection();
@@ -587,9 +564,6 @@ public class ManajerBasisData {
         }
     }
     
-    /**
-     * Mendapatkan statistik connection pool untuk monitoring.
-     */
     public String dapatkanStatistikPool() {
         if (sumberData == null) {
             return "Pool tidak aktif";

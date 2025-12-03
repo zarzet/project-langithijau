@@ -514,7 +514,6 @@ public class KontrolerManajemenMataKuliah implements Initializable {
     // ==================== CRUD TOPIK ====================
 
     private void tambahTopik() {
-        // Dialog untuk pilih mata kuliah dulu
         if (daftarMataKuliah == null || daftarMataKuliah.isEmpty()) {
             UtilUI.tampilkanPeringatan("Tambah mata kuliah terlebih dahulu!");
             return;

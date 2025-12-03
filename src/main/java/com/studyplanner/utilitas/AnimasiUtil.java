@@ -12,17 +12,8 @@ import javafx.util.Duration;
 public final class AnimasiUtil {
 
     private AnimasiUtil() {
-        // Utility class
     }
 
-    // ============================================
-    // CUSTOM INTERPOLATORS - Easing Curves
-    // ============================================
-
-    /**
-     * Ease Out Cubic - Mulai cepat, melambat di akhir.
-     * Ideal untuk elemen yang "mendarat" dengan lembut.
-     */
     public static final Interpolator EASE_OUT_CUBIC = new Interpolator() {
         @Override
         protected double curve(double t) {
@@ -30,10 +21,6 @@ public final class AnimasiUtil {
         }
     };
 
-    /**
-     * Ease In Out Cubic - Smooth di awal dan akhir.
-     * Ideal untuk transisi halaman atau panel.
-     */
     public static final Interpolator EASE_IN_OUT_CUBIC = new Interpolator() {
         @Override
         protected double curve(double t) {
@@ -43,10 +30,6 @@ public final class AnimasiUtil {
         }
     };
 
-    /**
-     * Ease Out Quart - Lebih dramatis dari cubic.
-     * Ideal untuk elemen yang "menabrak" posisi akhir.
-     */
     public static final Interpolator EASE_OUT_QUART = new Interpolator() {
         @Override
         protected double curve(double t) {
@@ -54,10 +37,6 @@ public final class AnimasiUtil {
         }
     };
 
-    /**
-     * Ease Out Back - Sedikit melewati target lalu kembali.
-     * Memberikan efek "bouncy" yang subtle.
-     */
     public static final Interpolator EASE_OUT_BACK = new Interpolator() {
         private static final double C1 = 1.70158;
         private static final double C3 = C1 + 1;
@@ -68,10 +47,6 @@ public final class AnimasiUtil {
         }
     };
 
-    /**
-     * Ease Out Elastic - Efek elastis seperti pegas.
-     * Ideal untuk notifikasi atau elemen yang muncul.
-     */
     public static final Interpolator EASE_OUT_ELASTIC = new Interpolator() {
         private static final double C4 = (2 * Math.PI) / 3;
 
@@ -83,17 +58,6 @@ public final class AnimasiUtil {
         }
     };
 
-    // ============================================
-    // SPRING PHYSICS INTERPOLATOR
-    // ============================================
-
-    /**
-     * Membuat interpolator dengan fisika pegas.
-     *
-     * @param stiffness Kekakuan pegas (100-500 untuk hasil natural)
-     * @param damping   Redaman (10-30 untuk hasil natural)
-     * @return Interpolator dengan efek spring
-     */
     public static Interpolator spring(double stiffness, double damping) {
         return new SpringInterpolator(stiffness, damping);
     }

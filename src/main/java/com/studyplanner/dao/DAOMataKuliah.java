@@ -91,7 +91,6 @@ public class DAOMataKuliah implements DAOBase<MataKuliah, Integer> {
 
     @Override
     public List<MataKuliah> ambilSemua() throws SQLException {
-        // Method ini tetap ada untuk backward compatibility, tapi sebaiknya gunakan ambilSemuaByUserId
         String sql = "SELECT * FROM mata_kuliah ORDER BY nama";
         List<MataKuliah> daftarMataKuliah = new ArrayList<>();
 
@@ -227,16 +226,12 @@ public class DAOMataKuliah implements DAOBase<MataKuliah, Integer> {
         }
     }
 
-    /**
-     * Helper method untuk mengkonversi ResultSet row ke MataKuliah.
-     */
     private MataKuliah mapRowKeMataKuliah(ResultSet rs) throws SQLException {
         MataKuliah mk = new MataKuliah();
         mk.setId(rs.getInt("id"));
         try {
             mk.setUserId(rs.getInt("user_id"));
         } catch (SQLException e) {
-            // Kolom user_id mungkin belum ada di database lama
             mk.setUserId(1);
         }
         mk.setNama(rs.getString("nama"));

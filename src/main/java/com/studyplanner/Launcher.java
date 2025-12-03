@@ -12,7 +12,6 @@ package com.studyplanner;
 public class Launcher {
 
     public static void main(String[] args) {
-        // Panggil main method dari AplikasiUtama
         AplikasiUtama.main(args);
     }
 }

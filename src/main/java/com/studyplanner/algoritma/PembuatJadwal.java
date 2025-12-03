@@ -162,7 +162,6 @@ public class PembuatJadwal {
     }
 
     public KemajuanBelajar ambilKemajuanBelajar() throws SQLException {
-        // Return empty progress jika user belum login
         if (!ManajerOtentikasi.getInstance().isLoggedIn()) {
             return new KemajuanBelajar();
         }

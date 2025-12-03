@@ -32,33 +32,24 @@ public class PembuatDialogMD3 {
     private static final String KELAS_TOMBOL_SEKUNDER = "md3-dialog-btn-secondary";
     private static final String KELAS_TOMBOL_BATAL = "md3-dialog-btn-cancel";
 
-    /**
-     * Terapkan gaya MD3 ke DialogPane menggunakan CSS classes.
-     */
     public static void terapkanGayaMD3(DialogPane dialogPane) {
-        // Load stylesheet ke dialog
         String stylesheet = PembuatDialogMD3.class.getResource("/css/style.css").toExternalForm();
         dialogPane.getStylesheets().add(stylesheet);
         
-        // Tambah CSS class untuk styling dari dialogs.css
         dialogPane.getStyleClass().add(KELAS_DIALOG_PANE);
         
-        // Apply dark mode jika aktif
         if (PreferensiPengguna.getInstance().isDarkMode()) {
             dialogPane.getStyleClass().add("dark-mode");
         }
 
-        // Style header jika ada
         if (dialogPane.getHeader() != null) {
             dialogPane.getHeader().getStyleClass().add(KELAS_DIALOG_HEADER);
         }
 
-        // Style content dengan CSS classes
         if (dialogPane.getContent() != null) {
             terapkanKelasCSSKonten(dialogPane.getContent());
         }
 
-        // Style buttons dengan CSS classes
         dialogPane.getButtonTypes().forEach(buttonType -> {
             Button button = (Button) dialogPane.lookupButton(buttonType);
             if (button != null) {
@@ -66,7 +57,6 @@ public class PembuatDialogMD3 {
             }
         });
 
-        // Listener untuk style buttons setelah mereka ditambahkan
         dialogPane.getButtonTypes().addListener((javafx.collections.ListChangeListener<ButtonType>) c -> {
             while (c.next()) {
                 for (ButtonType bt : c.getAddedSubList()) {
@@ -79,9 +69,6 @@ public class PembuatDialogMD3 {
         });
     }
 
-    /**
-     * Terapkan CSS classes ke konten dialog secara rekursif.
-     */
     private static void terapkanKelasCSSKonten(Node node) {
         if (node instanceof Label label) {
             label.getStyleClass().add(KELAS_KONTEN_LABEL);
@@ -102,9 +89,6 @@ public class PembuatDialogMD3 {
         }
     }
 
-    /**
-     * Terapkan CSS class ke button berdasarkan tipe button.
-     */
     private static void terapkanKelasCSSButton(Button button, ButtonType buttonType) {
         ButtonBar.ButtonData data = buttonType.getButtonData();
         
@@ -115,7 +99,6 @@ public class PembuatDialogMD3 {
             KELAS_TOMBOL_BATAL
         );
         
-        // Tentukan class berdasarkan tipe button
         switch (data) {
             case OK_DONE, YES, APPLY -> button.getStyleClass().add(KELAS_TOMBOL_PRIMER);
             case CANCEL_CLOSE, NO -> button.getStyleClass().add(KELAS_TOMBOL_BATAL);
@@ -123,9 +106,6 @@ public class PembuatDialogMD3 {
         }
     }
 
-    /**
-     * Terapkan gaya MD3 ke Dialog
-     */
     public static <T> void terapkanGayaMD3(Dialog<T> dialog) {
         try {
             dialog.initStyle(StageStyle.TRANSPARENT);
@@ -136,7 +116,6 @@ public class PembuatDialogMD3 {
         DialogPane dialogPane = dialog.getDialogPane();
         terapkanGayaMD3(dialogPane);
         
-        // Set scene fill to transparent
         dialogPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setFill(Color.TRANSPARENT);
@@ -144,9 +123,6 @@ public class PembuatDialogMD3 {
         });
     }
 
-    /**
-     * Terapkan gaya MD3 ke Alert
-     */
     public static void terapkanGayaMD3(Alert alert) {
         try {
             alert.initStyle(StageStyle.TRANSPARENT);
@@ -157,21 +133,16 @@ public class PembuatDialogMD3 {
         DialogPane dialogPane = alert.getDialogPane();
         terapkanGayaMD3(dialogPane);
         
-        // Set scene fill to transparent
         dialogPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
             if (newScene != null) {
                 newScene.setFill(Color.TRANSPARENT);
             }
         });
 
-        // Ganti icon default dengan icon Material Design
         Node customIcon = buatIkonAlert(alert.getAlertType());
         dialogPane.setGraphic(customIcon);
     }
 
-    /**
-     * Buat ikon custom untuk Alert berdasarkan tipe
-     */
     private static Node buatIkonAlert(Alert.AlertType tipe) {
         FontIcon icon;
         String bgColor;
@@ -208,7 +179,6 @@ public class PembuatDialogMD3 {
         icon.setIconSize(28);
         icon.setIconColor(Color.web(iconColor));
 
-        // Background circle
         Circle circle = new Circle(24);
         circle.setFill(Color.web(bgColor));
 
@@ -218,9 +188,6 @@ public class PembuatDialogMD3 {
         return iconContainer;
     }
 
-    /**
-     * Buat Alert dengan gaya MD3
-     */
     public static Alert buatAlert(Alert.AlertType tipe, String judul, String konten) {
         Alert alert = new Alert(tipe);
         alert.setTitle(judul);
@@ -230,9 +197,6 @@ public class PembuatDialogMD3 {
         return alert;
     }
 
-    /**
-     * Buat Alert dengan header dan konten
-     */
     public static Alert buatAlert(Alert.AlertType tipe, String judul, String header, String konten) {
         Alert alert = new Alert(tipe);
         alert.setTitle(judul);
@@ -242,9 +206,6 @@ public class PembuatDialogMD3 {
         return alert;
     }
 
-    /**
-     * Buat Dialog generik dengan gaya MD3
-     */
     public static <T> Dialog<T> buatDialog(String judul, String header) {
         Dialog<T> dialog = new Dialog<>();
         dialog.setTitle(judul);
@@ -255,9 +216,6 @@ public class PembuatDialogMD3 {
         return dialog;
     }
 
-    /**
-     * Buat ButtonType untuk dialog
-     */
     public static ButtonType buatTombolSimpan() {
         return new ButtonType("Simpan", ButtonBar.ButtonData.OK_DONE);
     }
