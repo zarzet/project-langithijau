@@ -148,7 +148,7 @@ class LayananJadwalUjianTest {
             layananJadwalUjian.tambah(buatJadwal("UTS", LocalDate.now().plusDays(7)));
             layananJadwalUjian.tambah(buatJadwal("UAS", LocalDate.now().plusDays(30)));
             
-            List<JadwalUjian> hasil = layananJadwalUjian.ambilUjianMendatang();
+            List<JadwalUjian> hasil = layananJadwalUjian.ambilUjianMendatang(1);
             
             assertNotNull(hasil);
         }

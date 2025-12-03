@@ -78,13 +78,14 @@ public class LayananJadwalUjian {
     }
 
     /**
-     * Mengambil semua ujian mendatang.
+     * Mengambil semua ujian mendatang untuk user tertentu.
      *
+     * @param userId ID pengguna
      * @return List ujian mendatang
      * @throws SQLException jika terjadi kesalahan database
      */
-    public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
-        return daoJadwalUjian.ambilUjianMendatang();
+    public List<JadwalUjian> ambilUjianMendatang(int userId) throws SQLException {
+        return daoJadwalUjian.ambilUjianMendatang(userId);
     }
 
     /**

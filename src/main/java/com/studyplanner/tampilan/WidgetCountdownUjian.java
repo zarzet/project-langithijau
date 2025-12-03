@@ -2,6 +2,7 @@ package com.studyplanner.tampilan;
 
 import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.layanan.LayananJadwalUjian;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.model.JadwalUjian;
 import com.studyplanner.utilitas.PembuatIkon;
 import javafx.geometry.Insets;
@@ -86,7 +87,8 @@ public class WidgetCountdownUjian extends VBox {
      */
     public void segarkan() {
         try {
-            List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang();
+            int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+            List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang(userId);
 
             if (ujianMendatang.isEmpty()) {
                 tampilkanKosong();

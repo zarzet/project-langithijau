@@ -33,7 +33,7 @@ public class PembuatJadwal {
                 .orElseThrow(() -> new IllegalStateException("User belum login"));
         List<MataKuliah> daftarMataKuliah = layananMataKuliah.ambilSemuaByUserId(userId);
         List<Topik> semuaTopik = layananTopik.ambilSemuaByUserId(userId);
-        List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang();
+        List<JadwalUjian> ujianMendatang = layananJadwalUjian.ambilUjianMendatang(userId);
 
         Map<Integer, JadwalUjian> ujianPerMataKuliah = new HashMap<>();
         for (JadwalUjian ujian : ujianMendatang) {

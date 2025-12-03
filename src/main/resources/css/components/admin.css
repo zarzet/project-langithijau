@@ -403,3 +403,358 @@
     -fx-background-color: rgba(168, 85, 247, 0.2);
     -fx-text-fill: #c084fc;
 }
+
+/* ============================================
+   DATA TABLE (MD3 Style)
+   ============================================ */
+
+.data-table {
+    -fx-background-color: transparent;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.data-table .column-header-background {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.data-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 16;
+}
+
+.data-table .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #64748b;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.data-table .table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0;
+}
+
+.data-table .table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.data-table .table-row-cell:selected {
+    -fx-background-color: rgba(59, 130, 246, 0.1);
+}
+
+.data-table .table-cell {
+    -fx-padding: 12 16;
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.data-table .placeholder .label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #94a3b8;
+}
+
+/* Dark Mode Table */
+.dark-mode .data-table {
+    -fx-border-color: #334155;
+}
+
+.dark-mode .data-table .column-header-background {
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .data-table .column-header {
+    -fx-border-color: transparent transparent #334155 transparent;
+}
+
+.dark-mode .data-table .column-header .label {
+    -fx-text-fill: #94a3b8;
+}
+
+.dark-mode .data-table .table-row-cell {
+    -fx-background-color: #0f172a;
+    -fx-border-color: transparent transparent #1e293b transparent;
+}
+
+.dark-mode .data-table .table-row-cell:hover {
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .data-table .table-row-cell:selected {
+    -fx-background-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-mode .data-table .table-cell {
+    -fx-text-fill: #e2e8f0;
+}
+
+.dark-mode .data-table .placeholder .label {
+    -fx-text-fill: #64748b;
+}
+
+/* ============================================
+   DIALOG STYLING (MD3)
+   ============================================ */
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-padding: 24;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 16 0;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 18px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1e293b;
+}
+
+.dialog-pane .content {
+    -fx-padding: 0;
+}
+
+.dialog-pane .content .label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+    -fx-padding: 0 0 4 0;
+}
+
+.dialog-pane .content .text-field,
+.dialog-pane .content .password-field {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 10 12;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.dialog-pane .content .text-field:focused,
+.dialog-pane .content .password-field:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #ffffff;
+}
+
+.dialog-pane .content .combo-box {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 6 8;
+}
+
+.dialog-pane .button-bar {
+    -fx-padding: 16 0 0 0;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.dialog-pane .button-bar .button:default {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button:default:hover {
+    -fx-background-color: #2563eb;
+}
+
+.dialog-pane .button-bar .button:cancel {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+}
+
+.dialog-pane .button-bar .button:cancel:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+/* Dark Mode Dialog */
+.dark-mode .dialog-pane {
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .dialog-pane .header-panel .label {
+    -fx-text-fill: #e2e8f0;
+}
+
+.dark-mode .dialog-pane .content .label {
+    -fx-text-fill: #94a3b8;
+}
+
+.dark-mode .dialog-pane .content .text-field,
+.dark-mode .dialog-pane .content .password-field {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #64748b;
+}
+
+.dark-mode .dialog-pane .content .text-field:focused,
+.dark-mode .dialog-pane .content .password-field:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .dialog-pane .content .combo-box {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+}
+
+.dark-mode .dialog-pane .button-bar .button:cancel {
+    -fx-background-color: #334155;
+    -fx-text-fill: #e2e8f0;
+}
+
+.dark-mode .dialog-pane .button-bar .button:cancel:hover {
+    -fx-background-color: #475569;
+}
+
+/* ============================================
+   SPA DIALOG OVERLAY (MD3)
+   ============================================ */
+
+.dialog-overlay {
+    -fx-background-color: transparent;
+}
+
+.dialog-container {
+    -fx-alignment: center;
+}
+
+.spa-dialog-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-padding: 24 28;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 20, 0, 0, 8);
+}
+
+.spa-dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #1e293b;
+}
+
+.spa-dialog-content {
+    -fx-padding: 8 0 0 0;
+}
+
+.spa-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: #475569;
+}
+
+.spa-input {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 12 14;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.spa-input:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #ffffff;
+}
+
+.spa-combo {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+}
+
+.spa-btn {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-padding: 12 24;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.spa-btn-primary {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.spa-btn-primary:hover {
+    -fx-background-color: #2563eb;
+}
+
+.spa-btn-secondary {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
+}
+
+.spa-btn-secondary:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+/* Dark Mode SPA Dialog */
+.dark-mode .dialog-overlay {
+    -fx-background-color: transparent;
+}
+
+.dark-mode .spa-dialog-card {
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .spa-dialog-title {
+    -fx-text-fill: #f1f5f9;
+}
+
+.dark-mode .spa-label {
+    -fx-text-fill: #94a3b8;
+}
+
+.dark-mode .spa-input {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+    -fx-text-fill: #f1f5f9;
+    -fx-prompt-text-fill: #64748b;
+}
+
+.dark-mode .spa-input:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #1e293b;
+}
+
+.dark-mode .spa-combo {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #334155;
+}
+
+.dark-mode .spa-btn-secondary {
+    -fx-background-color: #334155;
+    -fx-text-fill: #f1f5f9;
+}
+
+.dark-mode .spa-btn-secondary:hover {
+    -fx-background-color: #475569;
+}

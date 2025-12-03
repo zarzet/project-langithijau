@@ -21,7 +21,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import javafx.geometry.Pos;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -35,8 +39,9 @@ import java.util.*;
  */
 public class KontrolerAdmin implements Initializable {
 
-    // Header
-    @FXML private Label labelStatistik;
+    // Dialog Overlay SPA-style
+    @FXML private StackPane dialogOverlay;
+    @FXML private VBox dialogContainer;
 
     // Tab Navigation
     @FXML private ToggleButton tabPengguna;
@@ -152,6 +157,9 @@ public class KontrolerAdmin implements Initializable {
     // ==================== UC-25: Manajemen Pengguna ====================
 
     private void setupTabelPengguna() {
+        // Set resize policy agar kolom mengisi seluruh lebar
+        tabelPengguna.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
         kolId.setCellValueFactory(data -> 
             new SimpleStringProperty(String.valueOf(data.getValue().get("id"))));
         kolNama.setCellValueFactory(data -> 
@@ -262,105 +270,97 @@ public class KontrolerAdmin implements Initializable {
     }
 
     private void tampilkanDialogTambahPengguna() {
-        Dialog<Map<String, Object>> dialog = new Dialog<>();
-        dialog.setTitle("Tambah Pengguna Baru");
-        dialog.setHeaderText("Masukkan data pengguna baru");
+        VBox konten = new VBox(16);
+        konten.getStyleClass().add("spa-dialog-content");
 
-        ButtonType simpanBtn = new ButtonType("Simpan", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(simpanBtn, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
+        // Form fields
         TextField nama = new TextField();
         nama.setPromptText("Nama Lengkap");
+        nama.getStyleClass().add("spa-input");
+
         TextField email = new TextField();
         email.setPromptText("Email");
+        email.getStyleClass().add("spa-input");
+
         TextField username = new TextField();
         username.setPromptText("Username");
+        username.getStyleClass().add("spa-input");
+
         PasswordField password = new PasswordField();
         password.setPromptText("Password");
+        password.getStyleClass().add("spa-input");
+
         ComboBox<String> role = new ComboBox<>(FXCollections.observableArrayList("Mahasiswa", "Dosen", "Admin"));
         role.setValue("Mahasiswa");
+        role.getStyleClass().add("spa-combo");
+        role.setMaxWidth(Double.MAX_VALUE);
+
         TextField nimNip = new TextField();
         nimNip.setPromptText("NIM/NIP (opsional)");
+        nimNip.getStyleClass().add("spa-input");
 
-        grid.add(new Label("Nama:"), 0, 0);
-        grid.add(nama, 1, 0);
-        grid.add(new Label("Email:"), 0, 1);
-        grid.add(email, 1, 1);
-        grid.add(new Label("Username:"), 0, 2);
-        grid.add(username, 1, 2);
-        grid.add(new Label("Password:"), 0, 3);
-        grid.add(password, 1, 3);
-        grid.add(new Label("Role:"), 0, 4);
-        grid.add(role, 1, 4);
-        grid.add(new Label("NIM/NIP:"), 0, 5);
-        grid.add(nimNip, 1, 5);
+        // Labels + Fields
+        konten.getChildren().addAll(
+            buatFieldGroup("Nama", nama),
+            buatFieldGroup("Email", email),
+            buatFieldGroup("Username", username),
+            buatFieldGroup("Password", password),
+            buatFieldGroup("Role", role),
+            buatFieldGroup("NIM/NIP", nimNip)
+        );
 
-        dialog.getDialogPane().setContent(grid);
+        // Buttons
+        HBox tombolContainer = new HBox(12);
+        tombolContainer.setAlignment(Pos.CENTER_RIGHT);
 
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == simpanBtn) {
-                Map<String, Object> result = new HashMap<>();
-                result.put("nama", nama.getText());
-                result.put("email", email.getText());
-                result.put("username", username.getText());
-                result.put("password", password.getText());
-                result.put("role", role.getValue());
-                result.put("nimNip", nimNip.getText());
-                return result;
-            }
-            return null;
-        });
+        Button btnBatal = new Button("Batal");
+        btnBatal.getStyleClass().addAll("spa-btn", "spa-btn-secondary");
+        btnBatal.setOnAction(e -> tutupDialogSPA());
 
-        dialog.showAndWait().ifPresent(data -> {
+        Button btnSimpan = new Button("Simpan");
+        btnSimpan.getStyleClass().addAll("spa-btn", "spa-btn-primary");
+        btnSimpan.setOnAction(e -> {
             try {
-                String roleStr = (String) data.get("role");
+                String roleStr = role.getValue();
                 RolePengguna rolePengguna = switch (roleStr) {
                     case "Dosen" -> RolePengguna.DOSEN;
                     case "Admin" -> RolePengguna.ADMIN;
                     default -> RolePengguna.MAHASISWA;
                 };
 
-                String hashedPassword = hashPassword((String) data.get("password"));
+                String hashedPassword = hashPassword(password.getText());
 
                 if (rolePengguna == RolePengguna.DOSEN) {
-                    layananPengguna.buatDosen(
-                        (String) data.get("nama"),
-                        (String) data.get("email"),
-                        (String) data.get("username"),
-                        hashedPassword,
-                        (String) data.get("nimNip"),
-                        30
-                    );
+                    layananPengguna.buatDosen(nama.getText(), email.getText(), username.getText(),
+                        hashedPassword, nimNip.getText(), 30);
                 } else if (rolePengguna == RolePengguna.MAHASISWA) {
-                    layananPengguna.buatMahasiswa(
-                        (String) data.get("nama"),
-                        (String) data.get("email"),
-                        (String) data.get("username"),
-                        hashedPassword,
-                        (String) data.get("nimNip"),
-                        1
-                    );
+                    layananPengguna.buatMahasiswa(nama.getText(), email.getText(), username.getText(),
+                        hashedPassword, nimNip.getText(), 1);
                 } else {
-                    layananPengguna.buatPengguna(
-                        (String) data.get("nama"),
-                        (String) data.get("email"),
-                        (String) data.get("username"),
-                        hashedPassword,
-                        rolePengguna
-                    );
+                    layananPengguna.buatPengguna(nama.getText(), email.getText(), username.getText(),
+                        hashedPassword, rolePengguna);
                 }
 
+                tutupDialogSPA();
                 tampilkanInfo("Pengguna berhasil ditambahkan!");
                 muatDataPengguna();
-            } catch (Exception e) {
-                tampilkanError("Gagal menambah pengguna: " + e.getMessage());
+            } catch (Exception ex) {
+                tampilkanError("Gagal menambah pengguna: " + ex.getMessage());
             }
         });
+
+        tombolContainer.getChildren().addAll(btnBatal, btnSimpan);
+        konten.getChildren().add(tombolContainer);
+
+        tampilkanDialogSPA("Tambah Pengguna Baru", konten);
+    }
+
+    private VBox buatFieldGroup(String label, javafx.scene.Node field) {
+        VBox group = new VBox(6);
+        Label lbl = new Label(label);
+        lbl.getStyleClass().add("spa-label");
+        group.getChildren().addAll(lbl, field);
+        return group;
     }
 
     private void tampilkanDialogEditPengguna(Map<String, Object> user) {
@@ -671,6 +671,9 @@ public class KontrolerAdmin implements Initializable {
     // ==================== UC-28: Statistik ====================
 
     private void setupPanelStatistik() {
+        // Set resize policy agar kolom mengisi seluruh lebar
+        tabelDistribusi.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        
         kolDosenNama.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNama()));
         kolDosenNip.setCellValueFactory(data -> new SimpleStringProperty(
             data.getValue().getNip() != null ? data.getValue().getNip() : "-"));
@@ -703,12 +706,7 @@ public class KontrolerAdmin implements Initializable {
     }
 
     private void perbaruiStatistik() {
-        try {
-            Map<String, Integer> stats = layananPengguna.hitungStatistikPengguna();
-            labelStatistik.setText("Total: " + stats.get("total") + " pengguna");
-        } catch (SQLException e) {
-            labelStatistik.setText("");
-        }
+        // Label statistik dihapus dari header, tidak perlu update
     }
 
     private String hashPassword(String password) {
@@ -743,6 +741,50 @@ public class KontrolerAdmin implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(pesan);
         alert.showAndWait();
+    }
+
+    // ==================== SPA Dialog Methods ====================
+
+    private void tampilkanDialogSPA(String judul, VBox konten) {
+        if (dialogOverlay == null || dialogContainer == null) return;
+
+        // Header
+        Label labelJudul = new Label(judul);
+        labelJudul.getStyleClass().add("spa-dialog-title");
+
+        // Langsung masukkan ke dialogContainer (sudah ada style spa-dialog-card)
+        dialogContainer.getChildren().clear();
+        dialogContainer.getChildren().addAll(labelJudul, konten);
+
+        // Tampilkan dengan animasi
+        dialogOverlay.setVisible(true);
+        dialogOverlay.setManaged(true);
+        dialogOverlay.setOpacity(0);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(200), dialogOverlay);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+        fadeIn.play();
+
+        // Klik di luar untuk tutup
+        dialogOverlay.setOnMouseClicked(event -> {
+            if (event.getTarget() == dialogOverlay) {
+                tutupDialogSPA();
+            }
+        });
+    }
+
+    private void tutupDialogSPA() {
+        if (dialogOverlay == null) return;
+
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(150), dialogOverlay);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> {
+            dialogOverlay.setVisible(false);
+            dialogOverlay.setManaged(false);
+        });
+        fadeOut.play();
     }
 
     // Helper class untuk checkbox list

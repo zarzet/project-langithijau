@@ -4,14 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.studyplanner.kontroler.KontrolerAdmin"
-      spacing="24" styleClass="spa-content">
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.studyplanner.kontroler.KontrolerAdmin">
 
-    <!-- Header Statistics -->
-    <HBox alignment="CENTER_RIGHT">
-        <Label fx:id="labelStatistik" styleClass="stat-label"/>
-    </HBox>
+<VBox spacing="20" styleClass="spa-content">
 
     <!-- Tab Navigation -->
     <HBox spacing="8" styleClass="tab-nav">
@@ -40,13 +36,13 @@
             
             <TableView fx:id="tabelPengguna" VBox.vgrow="ALWAYS" styleClass="data-table">
                 <columns>
-                    <TableColumn fx:id="kolId" text="ID" prefWidth="50"/>
-                    <TableColumn fx:id="kolNama" text="Nama" prefWidth="180"/>
-                    <TableColumn fx:id="kolEmail" text="Email" prefWidth="200"/>
-                    <TableColumn fx:id="kolRole" text="Role" prefWidth="120"/>
-                    <TableColumn fx:id="kolStatus" text="Status" prefWidth="100"/>
-                    <TableColumn fx:id="kolLoginTerakhir" text="Login Terakhir" prefWidth="150"/>
-                    <TableColumn fx:id="kolAksi" text="Aksi" prefWidth="150"/>
+                    <TableColumn fx:id="kolId" text="ID" minWidth="50"/>
+                    <TableColumn fx:id="kolNama" text="Nama" minWidth="150"/>
+                    <TableColumn fx:id="kolEmail" text="Email" minWidth="180"/>
+                    <TableColumn fx:id="kolRole" text="Role" minWidth="100"/>
+                    <TableColumn fx:id="kolStatus" text="Status" minWidth="80"/>
+                    <TableColumn fx:id="kolLoginTerakhir" text="Login Terakhir" minWidth="130"/>
+                    <TableColumn fx:id="kolAksi" text="Aksi" minWidth="120"/>
                 </columns>
             </TableView>
         </VBox>
@@ -119,11 +115,11 @@
                 <Label text="Distribusi Mahasiswa per Dosen" styleClass="sub-title"/>
                 <TableView fx:id="tabelDistribusi" VBox.vgrow="ALWAYS" styleClass="data-table">
                     <columns>
-                        <TableColumn fx:id="kolDosenNama" text="Nama Dosen" prefWidth="200"/>
-                        <TableColumn fx:id="kolDosenNip" text="NIP" prefWidth="120"/>
-                        <TableColumn fx:id="kolJumlahMahasiswa" text="Jumlah Mahasiswa" prefWidth="150"/>
-                        <TableColumn fx:id="kolKuota" text="Kuota" prefWidth="80"/>
-                        <TableColumn fx:id="kolSisaKuota" text="Sisa Kuota" prefWidth="100"/>
+                        <TableColumn fx:id="kolDosenNama" text="Nama Dosen" minWidth="150"/>
+                        <TableColumn fx:id="kolDosenNip" text="NIP" minWidth="100"/>
+                        <TableColumn fx:id="kolJumlahMahasiswa" text="Jumlah Mahasiswa" minWidth="130"/>
+                        <TableColumn fx:id="kolKuota" text="Kuota" minWidth="70"/>
+                        <TableColumn fx:id="kolSisaKuota" text="Sisa Kuota" minWidth="90"/>
                     </columns>
                 </TableView>
             </VBox>
@@ -132,3 +128,11 @@
     </StackPane>
 
 </VBox>
+
+<!-- Dialog Overlay SPA-style (full screen) -->
+<StackPane fx:id="dialogOverlay" visible="false" managed="false" styleClass="dialog-overlay" alignment="CENTER"
+           StackPane.alignment="CENTER">
+    <VBox fx:id="dialogContainer" styleClass="spa-dialog-card" alignment="TOP_LEFT" maxWidth="450" spacing="16"/>
+</StackPane>
+
+</StackPane>

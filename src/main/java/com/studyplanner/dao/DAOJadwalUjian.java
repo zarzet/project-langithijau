@@ -94,18 +94,26 @@ public class DAOJadwalUjian implements DAOBase<JadwalUjian, Integer> {
     }
 
     /**
-     * Mengambil ujian mendatang (yang belum lewat dari hari ini).
+     * Mengambil ujian mendatang (yang belum lewat dari hari ini) untuk user tertentu.
      *
+     * @param userId ID pengguna
      * @return List jadwal ujian mendatang
      * @throws SQLException jika terjadi kesalahan database
      */
-    public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
-        String sql = "SELECT * FROM jadwal_ujian WHERE tanggal_ujian >= date('now') ORDER BY tanggal_ujian";
+    public List<JadwalUjian> ambilUjianMendatang(int userId) throws SQLException {
+        String sql = """
+            SELECT ju.* FROM jadwal_ujian ju
+            JOIN mata_kuliah mk ON ju.id_mata_kuliah = mk.id
+            WHERE mk.user_id = ?
+            ORDER BY ju.tanggal_ujian
+            """;
         List<JadwalUjian> daftarUjian = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 daftarUjian.add(mapRowKeJadwalUjian(rs));
@@ -113,6 +121,14 @@ public class DAOJadwalUjian implements DAOBase<JadwalUjian, Integer> {
         }
 
         return daftarUjian;
+    }
+
+    /**
+     * Mengambil ujian mendatang (deprecated - gunakan versi dengan userId).
+     */
+    @Deprecated
+    public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
+        return ambilUjianMendatang(-1); // Fallback
     }
 
     /**

@@ -272,11 +272,12 @@ public class KontrolerManajemenMataKuliah implements Initializable {
         try {
             MataKuliah filter = filterMataKuliahUjian != null ? filterMataKuliahUjian.getValue() : null;
             List<JadwalUjian> daftarUjian;
+            int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
             
             if (filter != null) {
                 daftarUjian = layananJadwalUjian.ambilBerdasarkanMataKuliah(filter.getId());
             } else {
-                daftarUjian = layananJadwalUjian.ambilUjianMendatang();
+                daftarUjian = layananJadwalUjian.ambilUjianMendatang(userId);
             }
             
             if (daftarUjian.isEmpty()) {

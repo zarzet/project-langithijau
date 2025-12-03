@@ -11,6 +11,7 @@ import com.studyplanner.model.MataKuliah;
 import com.studyplanner.model.SesiBelajar;
 import com.studyplanner.model.Topik;
 import com.studyplanner.tampilan.TampilanKosong;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PembuatDialogMD3;
 import com.studyplanner.utilitas.UtilUI;
 import javafx.geometry.Pos;
@@ -123,7 +124,8 @@ public class PembantuDashboard {
      */
     public void muatUjianMendatang(VBox wadahUjianMendatang) throws SQLException {
         wadahUjianMendatang.getChildren().clear();
-        List<JadwalUjian> exams = layananJadwalUjian.ambilUjianMendatang();
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+        List<JadwalUjian> exams = layananJadwalUjian.ambilUjianMendatang(userId);
 
         if (exams.isEmpty()) {
             TampilanKosong tampilanKosong = TampilanKosong.untukUjianKosong(null);
