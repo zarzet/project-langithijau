@@ -8,6 +8,7 @@ import com.studyplanner.tampilan.WidgetRuntutanBelajar;
 import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
 import com.studyplanner.tampilan.WidgetWaktuBelajarHariIni;
+import com.studyplanner.tampilan.WidgetCountdownUjian;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PreferensiPengguna;
 import javafx.geometry.Pos;
@@ -35,6 +36,7 @@ public class ManajerWidgetDashboard {
     private WidgetWaktuBelajarHariIni studyTimeWidget;
     private WidgetUlasanBerikutnya nextReviewWidget;
     private WidgetTugasMendatang upcomingTasksWidget;
+    private WidgetCountdownUjian countdownUjianWidget;
     private JamAnalog analogClock;
 
     public ManajerWidgetDashboard(
@@ -117,6 +119,11 @@ public class ManajerWidgetDashboard {
                 });
                 yield upcomingTasksWidget;
             }
+            case COUNTDOWN_UJIAN -> {
+                countdownUjianWidget = new WidgetCountdownUjian();
+                terapkanUkuranKompak(countdownUjianWidget);
+                yield countdownUjianWidget;
+            }
         };
     }
 
@@ -154,7 +161,8 @@ public class ManajerWidgetDashboard {
             isDarkMode,
             configBaru -> {
                 simpanKonfigurasi(configBaru);
-                wadahWidget.refreshWidgets();
+                // Perbaikan bug: update konfigurasi di wadah, bukan hanya refresh
+                wadahWidget.updateKonfigurasi(configBaru);
             }
         );
         dialog.tampilkan();

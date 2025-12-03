@@ -351,7 +351,7 @@
 .dark-mode .sidebar-btn-primary {
     -fx-background-color: #8dcdff;
     -fx-text-fill: #00344e;
-    -fx-effect: none;
+    -fx-effect: dropshadow(gaussian, rgba(141, 205, 255, 0.3), 6, 0, 0, 2);
 }
 
 .dark-mode .sidebar-btn-primary:hover {

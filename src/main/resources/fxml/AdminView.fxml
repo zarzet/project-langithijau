@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.studyplanner.kontroler.KontrolerAdmin"
+      spacing="24" styleClass="spa-content">
+
+    <!-- Header Statistics -->
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="labelStatistik" styleClass="stat-label"/>
+    </HBox>
+
+    <!-- Tab Navigation -->
+    <HBox spacing="8" styleClass="tab-nav">
+        <ToggleButton fx:id="tabPengguna" text="Manajemen Pengguna" styleClass="tab-btn" selected="true">
+            <toggleGroup>
+                <ToggleGroup fx:id="tabGroup"/>
+            </toggleGroup>
+        </ToggleButton>
+        <ToggleButton fx:id="tabAssignment" text="Assign Dosen" styleClass="tab-btn" toggleGroup="$tabGroup"/>
+        <ToggleButton fx:id="tabStatistik" text="Statistik Sistem" styleClass="tab-btn" toggleGroup="$tabGroup"/>
+    </HBox>
+
+    <!-- Content Area -->
+    <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+        
+        <!-- Panel Manajemen Pengguna (UC-25) -->
+        <VBox fx:id="panelPengguna" spacing="16">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Daftar Pengguna" styleClass="panel-title"/>
+                <ComboBox fx:id="filterRole" promptText="Semua Role" styleClass="filter-combo"/>
+                <ComboBox fx:id="filterStatus" promptText="Semua Status" styleClass="filter-combo"/>
+                <TextField fx:id="searchField" promptText="Cari nama/email..." styleClass="search-field" prefWidth="200"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnTambahPengguna" text="+ Tambah Pengguna" styleClass="btn-primary"/>
+            </HBox>
+            
+            <TableView fx:id="tabelPengguna" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="kolId" text="ID" prefWidth="50"/>
+                    <TableColumn fx:id="kolNama" text="Nama" prefWidth="180"/>
+                    <TableColumn fx:id="kolEmail" text="Email" prefWidth="200"/>
+                    <TableColumn fx:id="kolRole" text="Role" prefWidth="120"/>
+                    <TableColumn fx:id="kolStatus" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="kolLoginTerakhir" text="Login Terakhir" prefWidth="150"/>
+                    <TableColumn fx:id="kolAksi" text="Aksi" prefWidth="150"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Panel Assign Dosen (UC-26) -->
+        <VBox fx:id="panelAssignment" spacing="16" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Assign Dosen ke Mahasiswa" styleClass="panel-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnBulkAssign" text="Bulk Assign" styleClass="btn-secondary"/>
+            </HBox>
+
+            <HBox spacing="24" VBox.vgrow="ALWAYS">
+                <!-- Panel Dosen -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="assignment-panel">
+                    <Label text="Daftar Dosen" styleClass="sub-title"/>
+                    <ListView fx:id="listDosen" VBox.vgrow="ALWAYS" styleClass="assignment-list"/>
+                    <Label fx:id="labelInfoDosen" styleClass="info-label" wrapText="true"/>
+                </VBox>
+
+                <!-- Panel Mahasiswa Tanpa Dosen -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="assignment-panel">
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label text="Mahasiswa Tanpa Dosen" styleClass="sub-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <CheckBox fx:id="checkSelectAll" text="Pilih Semua"/>
+                    </HBox>
+                    <ListView fx:id="listMahasiswa" VBox.vgrow="ALWAYS" styleClass="assignment-list"/>
+                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                        <Label fx:id="labelTerpilih" text="0 mahasiswa terpilih"/>
+                        <Button fx:id="btnAssign" text="Assign ke Dosen Terpilih" styleClass="btn-primary" disable="true"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Panel Mahasiswa Sudah Di-assign -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="assignment-panel">
+                    <Label text="Mahasiswa Dosen Terpilih" styleClass="sub-title"/>
+                    <ListView fx:id="listMahasiswaAssigned" VBox.vgrow="ALWAYS" styleClass="assignment-list"/>
+                    <HBox spacing="8" alignment="CENTER_RIGHT">
+                        <Button fx:id="btnUnassign" text="Unassign Terpilih" styleClass="btn-danger" disable="true"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Panel Statistik Sistem (UC-28) -->
+        <VBox fx:id="panelStatistik" spacing="16" visible="false" managed="false">
+            <Label text="Statistik Sistem" styleClass="panel-title"/>
+            
+            <HBox spacing="16">
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Total Pengguna" styleClass="stat-card-title"/>
+                    <Label fx:id="labelTotalPengguna" text="0" styleClass="stat-card-value"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Total Mahasiswa" styleClass="stat-card-title"/>
+                    <Label fx:id="labelTotalMahasiswa" text="0" styleClass="stat-card-value"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Total Dosen" styleClass="stat-card-title"/>
+                    <Label fx:id="labelTotalDosen" text="0" styleClass="stat-card-value"/>
+                </VBox>
+                <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                    <Label text="Mahasiswa Tanpa Dosen" styleClass="stat-card-title"/>
+                    <Label fx:id="labelTanpaDosen" text="0" styleClass="stat-card-value-warning"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="12" VBox.vgrow="ALWAYS">
+                <Label text="Distribusi Mahasiswa per Dosen" styleClass="sub-title"/>
+                <TableView fx:id="tabelDistribusi" VBox.vgrow="ALWAYS" styleClass="data-table">
+                    <columns>
+                        <TableColumn fx:id="kolDosenNama" text="Nama Dosen" prefWidth="200"/>
+                        <TableColumn fx:id="kolDosenNip" text="NIP" prefWidth="120"/>
+                        <TableColumn fx:id="kolJumlahMahasiswa" text="Jumlah Mahasiswa" prefWidth="150"/>
+                        <TableColumn fx:id="kolKuota" text="Kuota" prefWidth="80"/>
+                        <TableColumn fx:id="kolSisaKuota" text="Sisa Kuota" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+
+    </StackPane>
+
+</VBox>

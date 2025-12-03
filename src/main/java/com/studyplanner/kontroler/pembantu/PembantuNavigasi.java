@@ -26,7 +26,9 @@ public class PembantuNavigasi {
         DASHBOARD,
         PENGATURAN,
         MANAJEMEN_MATKUL,
-        LIHAT_JADWAL
+        LIHAT_JADWAL,
+        PANEL_ADMIN,
+        PANEL_DOSEN
     }
 
     private final ScrollPane scrollPaneUtama;

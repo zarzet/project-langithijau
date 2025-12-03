@@ -155,14 +155,64 @@ public class ManajerBasisData {
                     )
                 """;
 
+        // Tabel Dosen (harus dibuat sebelum mahasiswa karena ada foreign key)
+        String buatTabelDosen = """
+                    CREATE TABLE IF NOT EXISTS dosen (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL UNIQUE,
+                        nip TEXT UNIQUE,
+                        max_mahasiswa INTEGER DEFAULT 30,
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                    )
+                """;
+
+        // Tabel Mahasiswa
+        String buatTabelMahasiswa = """
+                    CREATE TABLE IF NOT EXISTS mahasiswa (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL UNIQUE,
+                        nim TEXT UNIQUE,
+                        semester INTEGER DEFAULT 1,
+                        dosen_id INTEGER,
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                        FOREIGN KEY (dosen_id) REFERENCES dosen(id) ON DELETE SET NULL
+                    )
+                """;
+
+        // Tabel Rekomendasi (dari dosen ke mahasiswa)
+        String buatTabelRekomendasi = """
+                    CREATE TABLE IF NOT EXISTS rekomendasi (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        dosen_id INTEGER NOT NULL,
+                        mahasiswa_id INTEGER NOT NULL,
+                        id_mata_kuliah INTEGER,
+                        nama_topik TEXT NOT NULL,
+                        deskripsi TEXT,
+                        prioritas_saran INTEGER DEFAULT 3,
+                        kesulitan_saran INTEGER DEFAULT 3,
+                        url_sumber TEXT,
+                        status TEXT DEFAULT 'pending',
+                        dibuat_pada TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (dosen_id) REFERENCES dosen(id) ON DELETE CASCADE,
+                        FOREIGN KEY (mahasiswa_id) REFERENCES mahasiswa(id) ON DELETE CASCADE,
+                        FOREIGN KEY (id_mata_kuliah) REFERENCES mata_kuliah(id) ON DELETE SET NULL
+                    )
+                """;
+
         try (Statement stmt = koneksi.createStatement()) {
             stmt.execute(buatTabelUsers);
+            stmt.execute(buatTabelDosen);
+            stmt.execute(buatTabelMahasiswa);
             stmt.execute(buatTabelMataKuliah);
             stmt.execute(buatTabelTopik);
             stmt.execute(buatTabelJadwalUjian);
             stmt.execute(buatTabelSesiBelajar);
+            stmt.execute(buatTabelRekomendasi);
         }
 
+        // Migrasi kolom untuk topik
         tambahKolomJikaBelumAda(koneksi, "topik", "stabilitas_fsrs", "REAL DEFAULT 0");
         tambahKolomJikaBelumAda(koneksi, "topik", "kesulitan_fsrs", "REAL DEFAULT 0");
         tambahKolomJikaBelumAda(koneksi, "topik", "retensi_diinginkan", "REAL DEFAULT 0.9");
@@ -170,6 +220,11 @@ public class ManajerBasisData {
 
         // Migrasi: tambah user_id ke mata_kuliah untuk multi-user support
         tambahKolomJikaBelumAda(koneksi, "mata_kuliah", "user_id", "INTEGER NOT NULL DEFAULT 1");
+
+        // Migrasi: tambah role dan status ke users untuk multi-role support
+        tambahKolomJikaBelumAda(koneksi, "users", "role", "TEXT DEFAULT 'mahasiswa'");
+        tambahKolomJikaBelumAda(koneksi, "users", "status", "TEXT DEFAULT 'active'");
+        tambahKolomJikaBelumAda(koneksi, "users", "login_terakhir", "TIMESTAMP");
     }
 
     private void catatKueri(String sql) {
@@ -434,6 +489,8 @@ public class ManajerBasisData {
                 user.put("nama", rs.getString("nama"));
                 user.put("foto_profil", rs.getString("foto_profil"));
                 user.put("provider", rs.getString("provider"));
+                user.put("role", rs.getString("role"));
+                user.put("status", rs.getString("status"));
                 return user;
             }
         } catch (SQLException e) {

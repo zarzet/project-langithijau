@@ -16,7 +16,8 @@ public class KonfigurasiWidget {
         JAM_ANALOG("Jam", "Tampilkan jam analog", "clock"),
         WAKTU_BELAJAR("Waktu Belajar Hari Ini", "Lihat total waktu belajar hari ini", "study_time"),
         ULASAN_BERIKUTNYA("Ulasan Berikutnya", "Topik yang perlu diulang", "next_review"),
-        TUGAS_MENDATANG("Tugas Mendatang", "Daftar tugas dalam beberapa hari ke depan", "upcoming_tasks");
+        TUGAS_MENDATANG("Tugas Mendatang", "Daftar tugas dalam beberapa hari ke depan", "upcoming_tasks"),
+        COUNTDOWN_UJIAN("Countdown Ujian", "Hitung mundur ke ujian terdekat", "exam_countdown");
 
         private final String namaDisplay;
         private final String deskripsi;

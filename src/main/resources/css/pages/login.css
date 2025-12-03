@@ -2,13 +2,52 @@
    LOGIN.CSS - Login Screen Styles
    ============================================ */
 
-/* LOGIN ROOT */
+/* LOGIN ROOT - ScrollPane */
 .login-root {
+    -fx-background-color: #fafbff;
+    -fx-background: #fafbff;
+}
+
+.login-root > .viewport {
+    -fx-background-color: #fafbff;
+}
+
+.login-root .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.login-root .scroll-bar .thumb {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-background-radius: 4;
+}
+
+.login-root .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.3);
+}
+
+.login-root-inner {
     -fx-background-color: #fafbff;
 }
 
 .dark-mode .login-root {
     -fx-background-color: #171c21;
+    -fx-background: #171c21;
+}
+
+.dark-mode .login-root > .viewport {
+    -fx-background-color: #171c21;
+}
+
+.dark-mode .login-root-inner {
+    -fx-background-color: #171c21;
+}
+
+.dark-mode .login-root .scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .login-root .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* LEFT PANEL - BRANDING */
@@ -317,6 +356,29 @@
 
 .dark-mode .register-form-title {
     -fx-text-fill: -color-surface-variant;
+}
+
+/* TAB SCROLL PANE */
+.tab-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.tab-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.tab-scroll-pane .scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.tab-scroll-pane .scroll-bar .thumb {
+    -fx-background-color: rgba(0, 0, 0, 0.15);
+    -fx-background-radius: 4;
+}
+
+.tab-scroll-pane .scroll-bar .thumb:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.25);
 }
 
 /* FOOTER */

@@ -120,7 +120,12 @@ public class ManajerOtentikasi {
 
     public void setCurrentLocalUser(java.util.Map<String, Object> user) {
         this.currentLocalUser = user;
-        this.currentUser = null;
+        // Jangan set currentUser = null jika ini adalah Google user 
+        // (currentUser sudah berisi Userinfo dari Google)
+        // Hanya set null jika ini pure local login
+        if (user != null && !"google".equals(user.get("provider"))) {
+            this.currentUser = null;
+        }
     }
 
     public boolean isLoggedIn() {
@@ -143,6 +148,42 @@ public class ManajerOtentikasi {
             return (String) currentLocalUser.get("provider");
         }
         return null;
+    }
+
+    /**
+     * Mendapatkan role pengguna yang sedang login.
+     * 
+     * @return Role pengguna (mahasiswa/dosen/admin), default mahasiswa
+     */
+    public String getCurrentUserRole() {
+        if (currentLocalUser != null) {
+            Object role = currentLocalUser.get("role");
+            if (role != null) {
+                return role.toString();
+            }
+        }
+        return "mahasiswa"; // default
+    }
+
+    /**
+     * Cek apakah pengguna adalah mahasiswa.
+     */
+    public boolean isMahasiswa() {
+        return "mahasiswa".equals(getCurrentUserRole());
+    }
+
+    /**
+     * Cek apakah pengguna adalah dosen.
+     */
+    public boolean isDosen() {
+        return "dosen".equals(getCurrentUserRole());
+    }
+
+    /**
+     * Cek apakah pengguna adalah admin.
+     */
+    public boolean isAdmin() {
+        return "admin".equals(getCurrentUserRole());
     }
 
     /**

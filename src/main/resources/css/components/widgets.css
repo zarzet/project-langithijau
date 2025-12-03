@@ -97,12 +97,47 @@
 
 /* ACHIEVEMENT & UPCOMING WIDGETS */
 .achievement-widget,
-.upcoming-widget {
+.upcoming-widget,
+.countdown-widget {
     -fx-background-color: -color-surface-container;
     -fx-background-radius: 16;
     -fx-padding: 16;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 1, 0, 0, 1);
     -fx-border-width: 0;
+}
+
+/* COUNTDOWN UJIAN WIDGET */
+.countdown-exam-name {
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+}
+
+.countdown-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-primary;
+    -fx-text-alignment: center;
+}
+
+.countdown-number.countdown-urgent {
+    -fx-text-fill: #ef4444;
+}
+
+.countdown-number.countdown-warning {
+    -fx-text-fill: #f59e0b;
+}
+
+.countdown-number.countdown-safe {
+    -fx-text-fill: #22c55e;
+}
+
+.countdown-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-outline;
+    -fx-text-alignment: center;
 }
 
 .widget-interactive {
@@ -283,7 +318,8 @@
 .dark-mode .next-review-widget,
 .dark-mode .clock-container,
 .dark-mode .achievement-widget,
-.dark-mode .upcoming-widget {
+.dark-mode .upcoming-widget,
+.dark-mode .countdown-widget {
     -fx-background-color: #171c21;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 1, 0, 0, 1);
 }

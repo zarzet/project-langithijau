@@ -126,7 +126,40 @@
                 </SplitPane>
             </Tab>
 
-            <!-- Tab 3: SQL Editor -->
+            <!-- Tab 3: Kelola Pengguna -->
+            <Tab fx:id="userTab" text="Kelola Pengguna" closable="false" styleClass="inspektur-tab">
+                <VBox spacing="16" styleClass="tab-content-card">
+                    <padding>
+                        <Insets top="24" right="24" bottom="24" left="24"/>
+                    </padding>
+
+                    <!-- Header -->
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="Daftar Pengguna" styleClass="section-title-modern"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="refreshUsersBtn" text="Segarkan" styleClass="btn-secondary-modern"/>
+                    </HBox>
+
+                    <!-- User Table -->
+                    <TableView fx:id="userTableView" VBox.vgrow="ALWAYS" styleClass="data-table-modern">
+                        <columns>
+                            <TableColumn fx:id="kolUserId" text="ID" prefWidth="50"/>
+                            <TableColumn fx:id="kolUserNama" text="Nama" prefWidth="180"/>
+                            <TableColumn fx:id="kolUserEmail" text="Email" prefWidth="200"/>
+                            <TableColumn fx:id="kolUserRole" text="Role" prefWidth="120"/>
+                            <TableColumn fx:id="kolUserStatus" text="Status" prefWidth="100"/>
+                            <TableColumn fx:id="kolUserAksi" text="Ubah Role" prefWidth="200"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Info -->
+                    <HBox spacing="8" alignment="CENTER_LEFT" styleClass="info-footer">
+                        <Label text="Klik tombol untuk mengubah role pengguna. Perubahan akan berlaku setelah pengguna login ulang." styleClass="info-text"/>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- Tab 4: SQL Editor -->
             <Tab fx:id="sqlTab" text="Eksekusi SQL" closable="false" styleClass="inspektur-tab">
                 <VBox spacing="16" styleClass="tab-content-card">
                     <padding>

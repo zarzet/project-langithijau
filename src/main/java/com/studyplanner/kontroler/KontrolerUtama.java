@@ -278,8 +278,10 @@ public class KontrolerUtama implements Initializable {
         }
         
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
-            Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
-            labelSelamatDatang.setText("Selamat Datang, " + user.getGivenName() + "!");
+            String nama = ManajerOtentikasi.getInstance().getCurrentUserName();
+            // Ambil nama depan saja
+            String namaDepan = nama != null && nama.contains(" ") ? nama.split(" ")[0] : nama;
+            labelSelamatDatang.setText("Selamat Datang, " + (namaDepan != null ? namaDepan : "User") + "!");
         }
         
         if (tombolPengaturan != null) {
@@ -293,6 +295,9 @@ public class KontrolerUtama implements Initializable {
             tombolKeluar.setGraphicTextGap(8);
             tombolKeluar.setOnAction(_ -> keluar());
         }
+
+        // Tambah tombol berdasarkan role pengguna
+        tambahTombolBerdasarkanRole();
 
         if (tombolAlihSidebar != null) {
             tombolAlihSidebar.setGraphic(PembuatIkon.ikonMenu());
@@ -309,12 +314,94 @@ public class KontrolerUtama implements Initializable {
         if (tombolProfilHeader != null) {
             if (ManajerOtentikasi.getInstance().isLoggedIn()) {
                 Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
-                aturFotoProfilHeader(user);
+                if (user != null) {
+                    aturFotoProfilHeader(user);
+                } else {
+                    // Untuk local user, gunakan icon default
+                    tombolProfilHeader.setGraphic(PembuatIkon.ikonProfil());
+                }
             } else {
                 tombolProfilHeader.setGraphic(PembuatIkon.ikonProfil());
             }
             tombolProfilHeader.setText("");
             tombolProfilHeader.setOnAction(_ -> tampilkanPengaturan()); // Langsung buka pengaturan
+        }
+    }
+
+    /**
+     * Tambah tombol sidebar berdasarkan role pengguna (Admin/Dosen).
+     */
+    private void tambahTombolBerdasarkanRole() {
+        ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+        
+        // Debug: cek role
+        System.out.println("[DEBUG] Role user: " + auth.getCurrentUserRole() + ", isAdmin: " + auth.isAdmin() + ", isDosen: " + auth.isDosen());
+        
+        // Cari VBox navigasi di sidebar (child kedua dari sidebar)
+        VBox navContainer = null;
+        for (Node child : sidebar.getChildren()) {
+            if (child instanceof VBox vbox && vbox.getChildren().contains(tombolKelolaMataKuliah)) {
+                navContainer = vbox;
+                break;
+            }
+        }
+        
+        if (navContainer == null) return;
+
+        // Tombol Admin
+        if (auth.isAdmin()) {
+            Button tombolAdmin = new Button("Panel Admin");
+            tombolAdmin.setGraphic(PembuatIkon.ikonAdmin());
+            tombolAdmin.setGraphicTextGap(8);
+            tombolAdmin.getStyleClass().add("sidebar-btn");
+            tombolAdmin.setMaxWidth(Double.MAX_VALUE);
+            tombolAdmin.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            tombolAdmin.setStyle("-fx-padding: 12 16;");
+            tombolAdmin.setOnAction(_ -> bukaPanelAdmin());
+            navContainer.getChildren().add(0, tombolAdmin); // Di atas tombol lainnya
+        }
+
+        // Tombol Dosen
+        if (auth.isDosen()) {
+            Button tombolDosen = new Button("Dashboard Dosen");
+            tombolDosen.setGraphic(PembuatIkon.ikonDosen());
+            tombolDosen.setGraphicTextGap(8);
+            tombolDosen.getStyleClass().add("sidebar-btn");
+            tombolDosen.setMaxWidth(Double.MAX_VALUE);
+            tombolDosen.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            tombolDosen.setStyle("-fx-padding: 12 16;");
+            tombolDosen.setOnAction(_ -> bukaPanelDosen());
+            navContainer.getChildren().add(0, tombolDosen);
+        }
+    }
+
+    /**
+     * Buka Panel Admin.
+     */
+    private void bukaPanelAdmin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminView.fxml"));
+            Parent konten = loader.load();
+            
+            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Panel Administrator", konten);
+            pembantuNavigasi.navigasiKe(PembantuNavigasi.Halaman.PANEL_ADMIN, wrapper);
+        } catch (IOException e) {
+            UtilUI.tampilkanKesalahan("Gagal membuka Panel Admin: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Buka Panel Dosen.
+     */
+    private void bukaPanelDosen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DosenView.fxml"));
+            Parent konten = loader.load();
+            
+            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Dashboard Dosen", konten);
+            pembantuNavigasi.navigasiKe(PembantuNavigasi.Halaman.PANEL_DOSEN, wrapper);
+        } catch (IOException e) {
+            UtilUI.tampilkanKesalahan("Gagal membuka Dashboard Dosen: " + e.getMessage());
         }
     }
 
@@ -526,7 +613,7 @@ public class KontrolerUtama implements Initializable {
     private void buatJadwalBaru() {
         try {
             // Validasi: cek apakah ada mata kuliah
-            int userId = ManajerOtentikasi.getInstance().getCurrentUserId();
+            int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
             var daftarMataKuliah = layananMataKuliah.ambilSemuaByUserId(userId);
             
             if (daftarMataKuliah.isEmpty()) {

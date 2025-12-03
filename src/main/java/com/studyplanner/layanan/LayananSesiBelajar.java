@@ -79,6 +79,17 @@ public class LayananSesiBelajar {
     }
 
     /**
+     * Mengambil sesi belajar hari ini untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return List sesi hari ini milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiHariIniByUserId(int userId) throws SQLException {
+        return daoSesiBelajar.ambilSesiHariIniByUserId(userId);
+    }
+
+    /**
      * Mengambil sesi belajar mendatang yang belum selesai.
      *
      * @return List sesi mendatang

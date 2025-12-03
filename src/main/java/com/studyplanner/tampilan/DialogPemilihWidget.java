@@ -147,20 +147,25 @@ public class DialogPemilihWidget {
             case WAKTU_BELAJAR -> PembuatIkon.ikonWaktuBelajar();
             case ULASAN_BERIKUTNYA -> PembuatIkon.ikonUlasan();
             case TUGAS_MENDATANG -> PembuatIkon.ikonTugasMendatang();
+            case COUNTDOWN_UJIAN -> PembuatIkon.ikonCountdownUjian();
         };
     }
 
     private void simpan() {
         // Update konfigurasi berdasarkan checkbox
-        konfigurasi.getWidgetAktif().clear();
+        // Buat list baru untuk menghindari bug clear() pada copy
+        java.util.List<JenisWidget> widgetBaru = new java.util.ArrayList<>();
         
         // Iterasi sesuai urutan enum untuk konsistensi
         for (JenisWidget jenis : JenisWidget.values()) {
             CheckBox cb = checkBoxMap.get(jenis);
             if (cb != null && cb.isSelected()) {
-                konfigurasi.tambahWidget(jenis);
+                widgetBaru.add(jenis);
             }
         }
+        
+        // Set langsung ke konfigurasi (bukan clear + tambah satu-satu)
+        konfigurasi.setWidgetAktif(widgetBaru);
 
         if (callback != null) {
             callback.onKonfigurasiDisimpan(konfigurasi);

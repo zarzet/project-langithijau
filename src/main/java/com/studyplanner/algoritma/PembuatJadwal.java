@@ -162,8 +162,18 @@ public class PembuatJadwal {
     }
 
     public KemajuanBelajar ambilKemajuanBelajar() throws SQLException {
-        List<Topik> semuaTopik = layananTopik.ambilSemua();
-        List<SesiBelajar> sesiHariIni = layananSesiBelajar.ambilSesiHariIni();
+        // Return empty progress jika user belum login
+        if (!ManajerOtentikasi.getInstance().isLoggedIn()) {
+            return new KemajuanBelajar();
+        }
+        
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+        if (userId < 0) {
+            return new KemajuanBelajar();
+        }
+        
+        List<Topik> semuaTopik = layananTopik.ambilSemuaByUserId(userId);
+        List<SesiBelajar> sesiHariIni = layananSesiBelajar.ambilSesiHariIniByUserId(userId);
 
         int totalTopik = semuaTopik.size();
         int topikDikuasai = (int) semuaTopik.stream().filter(Topik::isDikuasai).count();

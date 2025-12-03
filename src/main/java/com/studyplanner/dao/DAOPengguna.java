@@ -294,6 +294,127 @@ public class DAOPengguna implements DAOBase<Map<String, Object>, Integer> {
         pengguna.put("foto_profil", rs.getString("foto_profil"));
         pengguna.put("provider", rs.getString("provider"));
         pengguna.put("dibuat_pada", rs.getTimestamp("dibuat_pada"));
+        
+        // Kolom baru untuk multi-role support
+        try {
+            pengguna.put("role", rs.getString("role"));
+            pengguna.put("status", rs.getString("status"));
+            pengguna.put("login_terakhir", rs.getTimestamp("login_terakhir"));
+        } catch (SQLException e) {
+            // Kolom mungkin belum ada pada database lama
+            pengguna.put("role", "mahasiswa");
+            pengguna.put("status", "active");
+        }
+        
         return pengguna;
+    }
+
+    /**
+     * Mengambil semua pengguna berdasarkan role.
+     *
+     * @param role Role yang dicari (mahasiswa/dosen/admin)
+     * @return List pengguna dengan role tersebut
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<Map<String, Object>> ambilBerdasarkanRole(String role) throws SQLException {
+        String sql = "SELECT * FROM users WHERE role = ? ORDER BY nama ASC";
+        List<Map<String, Object>> daftarPengguna = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, role);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarPengguna.add(mapRowKeMap(rs));
+            }
+        }
+
+        return daftarPengguna;
+    }
+
+    /**
+     * Memperbarui role pengguna.
+     *
+     * @param userId ID pengguna
+     * @param role Role baru
+     * @return true jika berhasil
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public boolean perbaruiRole(int userId, String role) throws SQLException {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, role);
+            pstmt.setInt(2, userId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Memperbarui status pengguna (active/inactive/suspended).
+     *
+     * @param userId ID pengguna
+     * @param status Status baru
+     * @return true jika berhasil
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public boolean perbaruiStatus(int userId, String status) throws SQLException {
+        String sql = "UPDATE users SET status = ? WHERE id = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, status);
+            pstmt.setInt(2, userId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Update waktu login terakhir.
+     *
+     * @param userId ID pengguna
+     * @return true jika berhasil
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public boolean perbaruiLoginTerakhir(int userId) throws SQLException {
+        String sql = "UPDATE users SET login_terakhir = CURRENT_TIMESTAMP WHERE id = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
+     * Menghitung jumlah pengguna berdasarkan role.
+     *
+     * @param role Role yang dihitung
+     * @return Jumlah pengguna
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungBerdasarkanRole(String role) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE role = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, role);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+            return 0;
+        }
     }
 }

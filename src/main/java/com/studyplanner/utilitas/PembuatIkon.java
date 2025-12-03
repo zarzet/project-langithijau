@@ -433,6 +433,13 @@ public class PembuatIkon {
     }
 
     /**
+     * Ikon untuk widget countdown ujian
+     */
+    public static FontIcon ikonCountdownUjian() {
+        return buat(Material2OutlinedAL.ALARM, 24, "#ef4444");
+    }
+
+    /**
      * Ikon untuk tambah widget
      */
     public static FontIcon ikonTambahWidget() {
@@ -444,5 +451,19 @@ public class PembuatIkon {
      */
     public static FontIcon ikonDragHandle() {
         return buat(Material2OutlinedAL.DRAG_INDICATOR, 20, "#94a3b8");
+    }
+
+    /**
+     * Ikon untuk panel admin
+     */
+    public static FontIcon ikonAdmin() {
+        return buat(Material2OutlinedAL.ADMIN_PANEL_SETTINGS, 20, "#6366f1");
+    }
+
+    /**
+     * Ikon untuk panel dosen
+     */
+    public static FontIcon ikonDosen() {
+        return buat(Material2OutlinedMZ.SCHOOL, 20, "#0ea5e9");
     }
 }

@@ -35,7 +35,18 @@ public class KontrolerInspekturBasisData implements Initializable {
 
     @FXML private Tab logTab;
     @FXML private Tab tableTab;
+    @FXML private Tab userTab;
     @FXML private Tab sqlTab;
+
+    // User Management Tab
+    @FXML private Button refreshUsersBtn;
+    @FXML private TableView<Map<String, Object>> userTableView;
+    @FXML private TableColumn<Map<String, Object>, String> kolUserId;
+    @FXML private TableColumn<Map<String, Object>, String> kolUserNama;
+    @FXML private TableColumn<Map<String, Object>, String> kolUserEmail;
+    @FXML private TableColumn<Map<String, Object>, String> kolUserRole;
+    @FXML private TableColumn<Map<String, Object>, String> kolUserStatus;
+    @FXML private TableColumn<Map<String, Object>, Void> kolUserAksi;
 
     @FXML private Button clearLogBtn;
     @FXML private TextArea logArea;
@@ -98,6 +109,8 @@ public class KontrolerInspekturBasisData implements Initializable {
     public void setManajerBasisData(ManajerBasisData mb) {
         this.manajerBasisData = mb;
         muatDaftarTabel();
+        setupTabelPengguna();
+        muatDaftarPengguna();
     }
 
     private void setupIkon() {
@@ -135,6 +148,7 @@ public class KontrolerInspekturBasisData implements Initializable {
 
         logTab.setGraphic(PembuatIkon.buat(Material2OutlinedAL.LIST_ALT, 18));
         tableTab.setGraphic(PembuatIkon.buat(Material2OutlinedMZ.TABLE_VIEW, 18));
+        userTab.setGraphic(PembuatIkon.buat(Material2OutlinedMZ.PEOPLE, 18));
         sqlTab.setGraphic(PembuatIkon.buat(Material2OutlinedAL.CODE, 18));
 
         HBox clearBtnContent = new HBox(8);
@@ -291,5 +305,154 @@ public class KontrolerInspekturBasisData implements Initializable {
                 statusLabel.setStyle("-fx-text-fill: #ba1a1a;");
             }
         }
+    }
+
+    // ==================== User Management ====================
+
+    private void setupTabelPengguna() {
+        if (userTableView == null) return;
+
+        kolUserId.setCellValueFactory(data -> 
+            new SimpleStringProperty(String.valueOf(data.getValue().get("id"))));
+        kolUserNama.setCellValueFactory(data -> 
+            new SimpleStringProperty((String) data.getValue().get("nama")));
+        kolUserEmail.setCellValueFactory(data -> {
+            Object email = data.getValue().get("email");
+            return new SimpleStringProperty(email != null ? email.toString() : "-");
+        });
+        kolUserRole.setCellValueFactory(data -> {
+            String role = (String) data.getValue().get("role");
+            return new SimpleStringProperty(formatRole(role));
+        });
+        kolUserStatus.setCellValueFactory(data -> {
+            String status = (String) data.getValue().get("status");
+            return new SimpleStringProperty(formatStatus(status));
+        });
+
+        // Setup kolom aksi dengan tombol
+        kolUserAksi.setCellFactory(col -> new TableCell<>() {
+            private final Button btnMahasiswa = new Button("Mahasiswa");
+            private final Button btnDosen = new Button("Dosen");
+            private final Button btnAdmin = new Button("Admin");
+            private final HBox container = new HBox(4, btnMahasiswa, btnDosen, btnAdmin);
+
+            {
+                btnMahasiswa.setStyle("-fx-font-size: 10px; -fx-padding: 4 8; -fx-background-color: #3b82f6; -fx-text-fill: white; -fx-background-radius: 12; -fx-cursor: hand;");
+                btnDosen.setStyle("-fx-font-size: 10px; -fx-padding: 4 8; -fx-background-color: #0ea5e9; -fx-text-fill: white; -fx-background-radius: 12; -fx-cursor: hand;");
+                btnAdmin.setStyle("-fx-font-size: 10px; -fx-padding: 4 8; -fx-background-color: #a855f7; -fx-text-fill: white; -fx-background-radius: 12; -fx-cursor: hand;");
+
+                btnMahasiswa.setOnAction(e -> ubahRole(getIndex(), "mahasiswa"));
+                btnDosen.setOnAction(e -> ubahRole(getIndex(), "dosen"));
+                btnAdmin.setOnAction(e -> ubahRole(getIndex(), "admin"));
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : container);
+            }
+        });
+
+        if (refreshUsersBtn != null) {
+            refreshUsersBtn.setOnAction(e -> muatDaftarPengguna());
+        }
+    }
+
+    private void muatDaftarPengguna() {
+        if (manajerBasisData == null || userTableView == null) return;
+
+        try {
+            List<Map<String, Object>> users = manajerBasisData.jalankanKueriSelect(
+                "SELECT id, nama, email, role, status FROM users ORDER BY id"
+            );
+            userTableView.setItems(FXCollections.observableArrayList(users));
+        } catch (EksepsiAksesBasisData e) {
+            if (statusLabel != null) {
+                statusLabel.setText("Gagal memuat pengguna: " + e.getMessage());
+            }
+        }
+    }
+
+    private void ubahRole(int rowIndex, String roleBaru) {
+        if (manajerBasisData == null) return;
+
+        Map<String, Object> user = userTableView.getItems().get(rowIndex);
+        int userId = ((Number) user.get("id")).intValue();
+        String namaUser = (String) user.get("nama");
+
+        try {
+            // Update role di tabel users
+            manajerBasisData.jalankanKueriUpdate(
+                "UPDATE users SET role = '" + roleBaru + "' WHERE id = " + userId
+            );
+
+            // Sinkronisasi tabel terkait - hapus dari tabel lama, tambah ke tabel baru
+            if ("dosen".equals(roleBaru)) {
+                // Hapus dari mahasiswa jika ada
+                manajerBasisData.jalankanKueriUpdate(
+                    "DELETE FROM mahasiswa WHERE user_id = " + userId);
+                // Buat entri di tabel dosen jika belum ada
+                var existing = manajerBasisData.jalankanKueriSelect(
+                    "SELECT id FROM dosen WHERE user_id = " + userId);
+                if (existing.isEmpty()) {
+                    manajerBasisData.jalankanKueriUpdate(
+                        "INSERT INTO dosen (user_id, max_mahasiswa) VALUES (" + userId + ", 30)"
+                    );
+                }
+            } else if ("mahasiswa".equals(roleBaru)) {
+                // Hapus dari dosen jika ada
+                manajerBasisData.jalankanKueriUpdate(
+                    "DELETE FROM dosen WHERE user_id = " + userId);
+                // Buat entri di tabel mahasiswa jika belum ada
+                var existing = manajerBasisData.jalankanKueriSelect(
+                    "SELECT id FROM mahasiswa WHERE user_id = " + userId);
+                if (existing.isEmpty()) {
+                    manajerBasisData.jalankanKueriUpdate(
+                        "INSERT INTO mahasiswa (user_id) VALUES (" + userId + ")"
+                    );
+                }
+            } else if ("admin".equals(roleBaru)) {
+                // Admin tidak perlu entri di dosen/mahasiswa
+                manajerBasisData.jalankanKueriUpdate(
+                    "DELETE FROM mahasiswa WHERE user_id = " + userId);
+                manajerBasisData.jalankanKueriUpdate(
+                    "DELETE FROM dosen WHERE user_id = " + userId);
+            }
+
+            // Tampilkan alert sukses
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Berhasil");
+            alert.setHeaderText(null);
+            alert.setContentText("Role " + namaUser + " berhasil diubah menjadi " + formatRole(roleBaru) + 
+                "\n\nPengguna perlu login ulang agar perubahan berlaku.");
+            alert.showAndWait();
+
+            // Refresh tabel
+            muatDaftarPengguna();
+        } catch (EksepsiAksesBasisData e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Gagal mengubah role: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    private String formatRole(String role) {
+        if (role == null) return "Mahasiswa";
+        return switch (role.toLowerCase()) {
+            case "admin" -> "Administrator";
+            case "dosen" -> "Dosen Pembimbing";
+            default -> "Mahasiswa";
+        };
+    }
+
+    private String formatStatus(String status) {
+        if (status == null) return "Aktif";
+        return switch (status.toLowerCase()) {
+            case "inactive" -> "Tidak Aktif";
+            case "suspended" -> "Ditangguhkan";
+            default -> "Aktif";
+        };
     }
 }

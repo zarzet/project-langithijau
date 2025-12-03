@@ -1,5 +1,6 @@
 package com.studyplanner;
 
+import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import javafx.application.Application;
@@ -17,7 +18,20 @@ public class AplikasiUtama extends Application {
         primaryStage = stage;
 
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
-        auth.cobaPulihkanSesi();
+        boolean sesiDipulihkan = auth.cobaPulihkanSesi();
+        
+        // Jika sesi dipulihkan (Google), load data user dari DB untuk dapat role
+        if (sesiDipulihkan && auth.getCurrentUser() != null) {
+            try {
+                ManajerBasisData db = new ManajerBasisData();
+                var userData = db.cariUserBerdasarkanGoogleId(auth.getCurrentUser().getId());
+                if (userData != null) {
+                    auth.setCurrentLocalUser(userData);
+                }
+            } catch (Exception e) {
+                System.err.println("Gagal load user data: " + e.getMessage());
+            }
+        }
 
         boolean isLoggedIn = auth.isLoggedIn();
         String fxmlFile = isLoggedIn ? "/fxml/MainView.fxml" : "/fxml/LoginView.fxml";

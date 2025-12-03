@@ -117,6 +117,33 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
     }
 
     /**
+     * Mengambil sesi belajar hari ini untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return List sesi belajar hari ini milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiHariIniByUserId(int userId) throws SQLException {
+        String sql = SELECT_SESI_DENGAN_JOIN + 
+                "WHERE s.tanggal_jadwal = ? AND mk.user_id = ? ORDER BY s.tipe_sesi, mk.kode";
+        List<SesiBelajar> daftarSesi = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarSesi.add(mapRowKeSesiBelajar(rs));
+            }
+        }
+
+        return daftarSesi;
+    }
+
+    /**
      * Mengambil sesi belajar mendatang yang belum selesai.
      *
      * @return List sesi belajar mendatang

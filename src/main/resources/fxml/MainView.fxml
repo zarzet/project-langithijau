@@ -145,7 +145,7 @@
 
 <!-- Overlay layer untuk dialog SPA-style (hidden by default) -->
 <StackPane fx:id="dialogOverlay" visible="false" managed="false" styleClass="dialog-overlay" alignment="CENTER">
-    <VBox fx:id="dialogContainer" styleClass="dialog-container" alignment="CENTER" maxWidth="500" maxHeight="400"/>
+    <VBox fx:id="dialogContainer" styleClass="dialog-container" alignment="CENTER" maxWidth="380" maxHeight="250"/>
 </StackPane>
 
 </StackPane>

@@ -49,6 +49,9 @@ public class KontrolerLogin {
     private VBox registerForm;
 
     @FXML
+    private ScrollPane registerScrollPane;
+
+    @FXML
     private TextField namaRegField;
 
     @FXML
@@ -94,15 +97,15 @@ public class KontrolerLogin {
         showRegisterBtn.setOnMouseClicked(_ -> {
             loginForm.setVisible(false);
             loginForm.setManaged(false);
-            registerForm.setVisible(true);
-            registerForm.setManaged(true);
+            registerScrollPane.setVisible(true);
+            registerScrollPane.setManaged(true);
         });
 
         registerBtn.setOnAction(_ -> handleRegister());
 
         backToLoginBtn.setOnMouseClicked(_ -> {
-            registerForm.setVisible(false);
-            registerForm.setManaged(false);
+            registerScrollPane.setVisible(false);
+            registerScrollPane.setManaged(false);
             loginForm.setVisible(true);
             loginForm.setManaged(true);
         });
@@ -134,6 +137,13 @@ public class KontrolerLogin {
                             if (existingUser == null) {
                                 manajerBasisData.tambahUserGoogle(user.getId(), user.getEmail(),
                                         user.getName(), user.getPicture());
+                                // Ambil ulang user yang baru dibuat
+                                existingUser = manajerBasisData.cariUserBerdasarkanGoogleId(user.getId());
+                            }
+                            
+                            // Set data user lengkap (termasuk role) ke ManajerOtentikasi
+                            if (existingUser != null) {
+                                auth.setCurrentLocalUser(existingUser);
                             }
                         } catch (Exception e) {
                             PencatatLog.error("Gagal menyimpan user Google: " + e.getMessage());
