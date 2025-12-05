@@ -18,10 +18,10 @@
 
 /* SIDEBAR */
 .sidebar {
-    -fx-background-color: -color-surface-container;
-    -fx-border-color: transparent #dde0e8 transparent transparent;
+    -fx-background-color: #dce8f2;
+    -fx-border-color: transparent #c5d8e8 transparent transparent;
     -fx-border-width: 0 1 0 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 8, 0, 2, 0);
+    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.06), 8, 0, 2, 0);
 }
 
 .sidebar-title {
@@ -51,9 +51,12 @@
 }
 
 .sidebar-btn:hover {
-    -fx-background-color: -color-primary;
+    -fx-background-color: #006495;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.4), 6, 0, 0, 3);
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 100;
+    -fx-effect: none;
 }
 
 .sidebar-btn:hover .ikonli-font-icon {
@@ -62,13 +65,16 @@
 }
 
 .sidebar-btn:pressed {
-    -fx-background-color: #00538b;
+    -fx-background-color: #00527a;
 }
 
 /* SIDEBAR BUTTON SELECTED/ACTIVE STATE */
 .sidebar-btn-selected {
-    -fx-background-color: -color-primary;
+    -fx-background-color: #006495;
     -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 100;
     -fx-effect: none;
 }
 
@@ -78,8 +84,8 @@
 }
 
 .sidebar-btn-selected:hover {
-    -fx-background-color: -color-primary;
-    -fx-effect: dropshadow(gaussian, rgba(0, 100, 149, 0.4), 6, 0, 0, 3);
+    -fx-background-color: #00527a;
+    -fx-effect: none;
 }
 
 /* SIDEBAR MENU BUTTON */

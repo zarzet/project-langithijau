@@ -101,6 +101,8 @@ public class ManajerOtentikasi {
             if (tokens.exists()) {
                 deleteDirectory(tokens);
             }
+            // Hapus session lokal
+            PreferensiPengguna.getInstance().hapusSessionLokal();
             currentUser = null;
             currentLocalUser = null;
             oauth2Service = null;
@@ -108,6 +110,31 @@ public class ManajerOtentikasi {
         } catch (Exception e) {
             PencatatLog.error("Gagal logout: " + e.getMessage());
         }
+    }
+
+    /**
+     * Coba memulihkan session login lokal dari preferensi.
+     * @param manajerDB ManajerBasisData untuk query user
+     * @return true jika session berhasil dipulihkan
+     */
+    public boolean cobaPulihkanSesiLokal(com.studyplanner.basisdata.ManajerBasisData manajerDB) {
+        try {
+            PreferensiPengguna pref = PreferensiPengguna.getInstance();
+            if (pref.adaSessionLokalAktif()) {
+                int userId = pref.getSessionUserId();
+                if (userId > 0) {
+                    java.util.Map<String, Object> user = manajerDB.cariUserBerdasarkanId(userId);
+                    if (user != null) {
+                        setCurrentLocalUser(user);
+                        PencatatLog.info("Session lokal dipulihkan untuk user ID: " + userId);
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            PencatatLog.error("Gagal memulihkan session lokal: " + e.getMessage());
+        }
+        return false;
     }
 
     public Userinfo getCurrentUser() {

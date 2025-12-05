@@ -107,6 +107,34 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
     }
 
     /**
+     * Mengambil sesi belajar berdasarkan tanggal untuk user tertentu.
+     *
+     * @param tanggal Tanggal jadwal
+     * @param userId ID user
+     * @return List sesi belajar pada tanggal tersebut milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilBerdasarkanTanggalByUserId(LocalDate tanggal, int userId) throws SQLException {
+        String sql = SELECT_SESI_DENGAN_JOIN + 
+                "WHERE s.tanggal_jadwal = ? AND mk.user_id = ? ORDER BY s.tipe_sesi, mk.kode";
+        List<SesiBelajar> daftarSesi = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(tanggal));
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarSesi.add(mapRowKeSesiBelajar(rs));
+            }
+        }
+
+        return daftarSesi;
+    }
+
+    /**
      * Mengambil sesi belajar hari ini.
      *
      * @return List sesi belajar hari ini
@@ -151,13 +179,15 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      */
     public List<SesiBelajar> ambilSesiMendatang() throws SQLException {
         String sql = SELECT_SESI_DENGAN_JOIN +
-                "WHERE s.tanggal_jadwal > DATE('now') AND s.selesai = 0 " +
+                "WHERE s.tanggal_jadwal > ? AND s.selesai = 0 " +
                 "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 daftarSesi.add(mapRowKeSesiBelajar(rs));
@@ -176,14 +206,45 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      */
     public List<SesiBelajar> ambilSesiMendatang(int batas) throws SQLException {
         String sql = SELECT_SESI_DENGAN_JOIN +
-                "WHERE s.tanggal_jadwal > DATE('now') AND s.selesai = 0 " +
+                "WHERE s.tanggal_jadwal > ? AND s.selesai = 0 " +
                 "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi LIMIT ?";
         List<SesiBelajar> daftarSesi = new ArrayList<>();
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, batas);
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.setInt(2, batas);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarSesi.add(mapRowKeSesiBelajar(rs));
+            }
+        }
+
+        return daftarSesi;
+    }
+
+    /**
+     * Mengambil sesi belajar mendatang dengan batas tertentu untuk user tertentu.
+     *
+     * @param batas Jumlah maksimal sesi yang akan diambil
+     * @param userId ID user
+     * @return List sesi belajar mendatang milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiMendatangByUserId(int batas, int userId) throws SQLException {
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.tanggal_jadwal > ? AND s.selesai = 0 AND mk.user_id = ? " +
+                "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi LIMIT ?";
+        List<SesiBelajar> daftarSesi = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.setInt(2, userId);
+            pstmt.setInt(3, batas);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -437,11 +498,13 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
      */
     public int hitungSesiSelesaiHariIni() throws SQLException {
         String sql = "SELECT COUNT(*) FROM sesi_belajar " +
-                     "WHERE tanggal_jadwal = DATE('now') AND selesai = 1";
+                     "WHERE tanggal_jadwal = ? AND selesai = 1";
 
         try (Connection conn = manajerDB.bukaKoneksi();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 return rs.getInt(1);
@@ -540,4 +603,66 @@ public class DAOSesiBelajar implements DAOBase<SesiBelajar, Integer> {
 
         return sesi;
     }
+
+    /**
+     * Menghitung jumlah sesi yang selesai pada tanggal tertentu untuk user tertentu.
+     *
+     * @param tanggal Tanggal yang dicari
+     * @param userId ID user
+     * @return Jumlah sesi selesai
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungSesiSelesaiByTanggal(LocalDate tanggal, int userId) throws SQLException {
+        // Gunakan tanggal_jadwal karena selesai_pada bisa null atau format berbeda
+        String sql = """
+            SELECT COUNT(*) FROM sesi_belajar s
+            INNER JOIN mata_kuliah mk ON s.id_mata_kuliah = mk.id
+            WHERE s.selesai = 1 AND s.tanggal_jadwal = ? AND mk.user_id = ?
+            """;
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(tanggal)); // Gunakan Date.valueOf untuk konsistensi
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Mengambil sesi belajar yang terlambat (belum selesai dan tanggal jadwal sudah lewat) untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return List sesi belajar yang terlambat
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiTerlambatByUserId(int userId) throws SQLException {
+        // Gunakan parameter Java LocalDate.now() untuk konsistensi dengan cara tanggal disimpan
+        String sql = SELECT_SESI_DENGAN_JOIN +
+                "WHERE s.tanggal_jadwal < ? AND s.selesai = 0 AND mk.user_id = ? " +
+                "ORDER BY s.tanggal_jadwal ASC, s.tipe_sesi";
+        List<SesiBelajar> daftarSesi = new ArrayList<>();
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDate(1, Date.valueOf(LocalDate.now())); // Gunakan format yang sama dengan penyimpanan
+            pstmt.setInt(2, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                daftarSesi.add(mapRowKeSesiBelajar(rs));
+            }
+        }
+
+        return daftarSesi;
+    }
 }
+
+

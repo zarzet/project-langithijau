@@ -103,18 +103,32 @@ public class PembantuDashboard {
     }
 
     /**
-     * Muat tugas hari ini.
+     * Muat tugas hari ini termasuk tugas yang terlambat.
      */
     public void muatTugasHariIni(VBox wadahTugasHariIni) throws SQLException {
         wadahTugasHariIni.getChildren().clear();
-        List<SesiBelajar> sessions = layananSesiBelajar.ambilSesiHariIni();
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+        
+        // Ambil tugas terlambat (belum selesai, jadwal sudah lewat)
+        List<SesiBelajar> sesiTerlambat = layananSesiBelajar.ambilSesiTerlambatByUserId(userId);
+        
+        // Ambil tugas hari ini
+        List<SesiBelajar> sesiHariIni = layananSesiBelajar.ambilSesiHariIniByUserId(userId);
 
-        if (sessions.isEmpty()) {
+        boolean adaTugas = !sesiTerlambat.isEmpty() || !sesiHariIni.isEmpty();
+        
+        if (!adaTugas) {
             TampilanKosong tampilanKosong = TampilanKosong.untukTugasKosong(onBuatJadwalBaru);
             wadahTugasHariIni.getChildren().add(tampilanKosong);
         } else {
-            for (SesiBelajar session : sessions) {
-                wadahTugasHariIni.getChildren().add(buatKartuTugas(session));
+            // Tampilkan tugas terlambat terlebih dahulu dengan badge "Terlambat"
+            for (SesiBelajar session : sesiTerlambat) {
+                wadahTugasHariIni.getChildren().add(buatKartuTugas(session, true));
+            }
+            
+            // Tampilkan tugas hari ini
+            for (SesiBelajar session : sesiHariIni) {
+                wadahTugasHariIni.getChildren().add(buatKartuTugas(session, false));
             }
         }
     }
@@ -138,11 +152,26 @@ public class PembantuDashboard {
     }
 
     /**
-     * Buat kartu tugas.
+     * Buat kartu tugas (overload untuk backward compatibility).
      */
     private VBox buatKartuTugas(SesiBelajar session) {
+        return buatKartuTugas(session, false);
+    }
+
+    /**
+     * Buat kartu tugas dengan indikasi terlambat.
+     * 
+     * @param session Data sesi belajar
+     * @param terlambat true jika tugas sudah melewati jadwal
+     */
+    private VBox buatKartuTugas(SesiBelajar session, boolean terlambat) {
         VBox card = new VBox(8);
         card.getStyleClass().add("task-card");
+        
+        // Tambahkan style khusus untuk tugas terlambat
+        if (terlambat) {
+            card.getStyleClass().add("task-card-overdue");
+        }
 
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -158,6 +187,13 @@ public class PembantuDashboard {
         }
 
         header.getChildren().addAll(checkBox, titleLabel);
+        
+        // Tambahkan badge "Terlambat" jika tugas terlambat
+        if (terlambat) {
+            Label labelTerlambat = new Label("Terlambat");
+            labelTerlambat.getStyleClass().addAll("task-type", "badge-overdue");
+            header.getChildren().add(labelTerlambat);
+        }
 
         Label courseLabel = new Label(session.getNamaMataKuliah());
         courseLabel.getStyleClass().add("task-course");
@@ -169,8 +205,17 @@ public class PembantuDashboard {
         Label durationLabel = new Label(session.getDurasiMenit() + " menit");
         durationLabel.getStyleClass().add("task-duration");
 
+        // Tampilkan tanggal jadwal untuk tugas terlambat
         HBox footer = new HBox(15);
+        footer.setAlignment(Pos.CENTER_LEFT);
         footer.getChildren().addAll(typeLabel, durationLabel);
+        
+        if (terlambat && session.getTanggalJadwal() != null) {
+            Label dateLabel = new Label("Jadwal: " + session.getTanggalJadwal().format(
+                java.time.format.DateTimeFormatter.ofPattern("dd MMM", java.util.Locale.of("id", "ID"))));
+            dateLabel.getStyleClass().add("task-date-overdue");
+            footer.getChildren().add(dateLabel);
+        }
 
         card.getChildren().addAll(header, courseLabel, footer);
         return card;
@@ -298,6 +343,7 @@ public class PembantuDashboard {
      * Ambil sesi mendatang untuk widget.
      */
     public List<SesiBelajar> ambilSesiMendatang(int limit) throws SQLException {
-        return layananSesiBelajar.ambilSesiMendatang(limit);
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+        return layananSesiBelajar.ambilSesiMendatangByUserId(limit, userId);
     }
 }

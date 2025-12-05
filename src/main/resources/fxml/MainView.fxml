@@ -3,6 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.shape.*?>
 
 <!-- Root StackPane untuk overlay dialog SPA-style -->
 <StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
@@ -62,58 +64,65 @@
                 <!-- Stats Overview Cards -->
                 <GridPane fx:id="statsGrid" hgap="16" vgap="16">
                     <columnConstraints>
-                        <ColumnConstraints percentWidth="50" minWidth="200"/>
-                        <ColumnConstraints percentWidth="50" minWidth="200"/>
+                        <ColumnConstraints percentWidth="50" minWidth="280"/>
+                        <ColumnConstraints percentWidth="50" minWidth="280"/>
                     </columnConstraints>
 
-                    <!-- Kartu Progress Keseluruhan -->
-                    <VBox spacing="12" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                        <Label text="Progress Keseluruhan" styleClass="stat-title" style="-fx-font-size: 15px; -fx-font-weight: 600;"/>
-                        <HBox spacing="20" alignment="CENTER_LEFT">
-                            <VBox spacing="6" HBox.hgrow="ALWAYS">
-                                <Label text="Total Topik" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
-                                <Label fx:id="labelTotalTopik" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
-                            </VBox>
-                            <VBox spacing="6" HBox.hgrow="ALWAYS">
-                                <Label text="Dikuasai" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
-                                <Label fx:id="labelTopikDikuasai" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
+                    <!-- Kartu Statistik Hari Ini dengan Donut Chart -->
+                    <VBox spacing="16" styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-padding: 20;">
+                        <Label text="Statistik Hari Ini" styleClass="stat-title" style="-fx-font-size: 16px; -fx-font-weight: 700;"/>
+                        <HBox spacing="24" alignment="CENTER_LEFT">
+                            <!-- Donut Chart Container -->
+                            <StackPane fx:id="donutChartContainer" prefWidth="120" prefHeight="120"/>
+                            
+                            <!-- Legend -->
+                            <VBox spacing="12" alignment="CENTER_LEFT">
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Circle radius="6" fill="#4CAF50"/>
+                                    <VBox spacing="2">
+                                        <Label text="Selesai" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                                        <Label fx:id="labelStatSelesai" text="0 Sesi" style="-fx-text-fill: #666; -fx-font-size: 11px;"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <Circle radius="6" fill="#FF9800"/>
+                                    <VBox spacing="2">
+                                        <Label text="Tertunda" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                                        <Label fx:id="labelStatTertunda" text="0 Sesi" style="-fx-text-fill: #666; -fx-font-size: 11px;"/>
+                                    </VBox>
+                                </HBox>
                             </VBox>
                         </HBox>
-                        <VBox spacing="8">
-                            <ProgressBar fx:id="progressKeseluruhan" progress="0" maxWidth="Infinity" style="-fx-pref-height: 8px;"/>
-                            <Label fx:id="labelProgressKeseluruhan" text="0%" styleClass="progress-label" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
-                        </VBox>
                     </VBox>
 
-                    <!-- Kartu Progress Hari Ini -->
-                    <VBox spacing="12" styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                        <Label text="Progress Hari Ini" styleClass="stat-title" style="-fx-font-size: 15px; -fx-font-weight: 600;"/>
-                        <HBox spacing="20" alignment="CENTER_LEFT">
-                            <VBox spacing="6" HBox.hgrow="ALWAYS">
-                                <Label text="Total Tugas" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
-                                <Label fx:id="labelTugasHariIni" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
-                            </VBox>
-                            <VBox spacing="6" HBox.hgrow="ALWAYS">
-                                <Label text="Selesai" style="-fx-text-fill: #666; -fx-font-size: 11px; -fx-font-weight: 500;"/>
-                                <Label fx:id="labelTugasSelesai" text="0" styleClass="stat-number" style="-fx-font-size: 32px; -fx-font-weight: 600;"/>
-                            </VBox>
-                        </HBox>
-                        <VBox spacing="8">
-                            <ProgressBar fx:id="progressHariIni" progress="0" maxWidth="Infinity" style="-fx-pref-height: 8px;"/>
-                            <Label fx:id="labelProgressHariIni" text="0%" styleClass="progress-label" style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
-                        </VBox>
+                    <!-- Kartu Aktivitas Mingguan dengan Bar Chart -->
+                    <VBox spacing="16" styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0" style="-fx-padding: 20;">
+                        <Label text="Aktivitas Mingguan" styleClass="stat-title" style="-fx-font-size: 16px; -fx-font-weight: 700;"/>
+                        <BarChart fx:id="chartAktivitasMingguan" legendVisible="false" animated="false" 
+                                  prefHeight="140" categoryGap="8" barGap="2">
+                            <xAxis>
+                                <CategoryAxis fx:id="xAxisHari" side="BOTTOM"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxisJumlah" side="LEFT" autoRanging="true"/>
+                            </yAxis>
+                        </BarChart>
                     </VBox>
                 </GridPane>
+                
+                <!-- Hidden elements untuk kompatibilitas -->
+                <HBox visible="false" managed="false">
+                    <Label fx:id="labelTotalTopik" text="0"/>
+                    <Label fx:id="labelTopikDikuasai" text="0"/>
+                    <Label fx:id="labelTugasHariIni" text="0"/>
+                    <Label fx:id="labelTugasSelesai" text="0"/>
+                    <ProgressBar fx:id="progressKeseluruhan" progress="0"/>
+                    <ProgressBar fx:id="progressHariIni" progress="0"/>
+                    <Label fx:id="labelProgressKeseluruhan" text="0%"/>
+                    <Label fx:id="labelProgressHariIni" text="0%"/>
+                </HBox>
 
-                <!-- Activity Widgets Grid (Customizable) -->
-                <VBox fx:id="activitySection" spacing="12">
-                    <Label text="Aktivitas" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
-                    <ScrollPane fitToHeight="true" vbarPolicy="NEVER" hbarPolicy="AS_NEEDED" styleClass="widget-scroll-pane" style="-fx-background-color: transparent;">
-                        <HBox fx:id="wadahWidgetKontainer" spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 8 0;"/>
-                    </ScrollPane>
-                </VBox>
-
-                <!-- Main Content Grid -->
+                <!-- Main Content Grid (Tugas Hari Ini + Ujian Mendatang) -->
                 <GridPane fx:id="mainContentGrid" hgap="16" vgap="16">
                     <columnConstraints>
                         <ColumnConstraints percentWidth="60" minWidth="400"/>
@@ -136,6 +145,14 @@
                         </ScrollPane>
                     </VBox>
                 </GridPane>
+
+                <!-- Activity Widgets Grid (Customizable) -->
+                <VBox fx:id="activitySection" spacing="12">
+                    <Label text="Aktivitas" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                    <ScrollPane fitToHeight="true" vbarPolicy="NEVER" hbarPolicy="AS_NEEDED" styleClass="widget-scroll-pane" style="-fx-background-color: transparent;">
+                        <HBox fx:id="wadahWidgetKontainer" spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 8 0;"/>
+                    </ScrollPane>
+                </VBox>
 
             </VBox>
         </ScrollPane>

@@ -14,10 +14,49 @@
 /* STAT CARD */
 .stat-card {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
+    -fx-background-radius: 16;
     -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 4, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
     -fx-border-width: 0;
+}
+
+/* CHART STYLES */
+.chart {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines,
+.chart-horizontal-grid-lines {
+    -fx-stroke: #e5e7eb;
+    -fx-stroke-width: 0.5;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+}
+
+.axis {
+    -fx-tick-label-fill: #666666;
+    -fx-font-size: 10px;
+}
+
+.axis-label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 11px;
+}
+
+.chart-bar {
+    -fx-bar-fill: #2196F3;
+    -fx-background-radius: 4 4 0 0;
+}
+
+.chart-legend {
+    -fx-background-color: transparent;
 }
 
 /* TASK CARD */
@@ -160,6 +199,32 @@
 .badge-practice {
     -fx-background-color: #e8ddff;
     -fx-text-fill: #1e1835;
+}
+
+/* OVERDUE TASK STYLES - Material Design 3 */
+.task-card-overdue {
+    -fx-background-color: #fff8f6;
+    -fx-border-color: #ffb4a9;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.task-card-overdue:hover {
+    -fx-background-color: #ffede9;
+    -fx-border-color: #ff897a;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 2, 0, 0, 1);
+}
+
+.badge-overdue {
+    -fx-background-color: #ffdad4;
+    -fx-text-fill: #930006;
+    -fx-font-weight: 500;
+}
+
+.task-date-overdue {
+    -fx-font-size: 11px;
+    -fx-text-fill: #ba1b1b;
+    -fx-font-weight: 500;
 }
 
 /* WEEK CALENDAR CARDS */
@@ -345,6 +410,26 @@
 .dark-mode .badge-practice {
     -fx-background-color: #4a4563;
     -fx-text-fill: #e8ddff;
+}
+
+/* Dark Mode - Overdue Task - Material Design 3 */
+.dark-mode .task-card-overdue {
+    -fx-background-color: #2d2220;
+    -fx-border-color: #93000a;
+}
+
+.dark-mode .task-card-overdue:hover {
+    -fx-background-color: #3d2b28;
+    -fx-border-color: #ffb4a9;
+}
+
+.dark-mode .badge-overdue {
+    -fx-background-color: #93000a;
+    -fx-text-fill: #ffdad4;
+}
+
+.dark-mode .task-date-overdue {
+    -fx-text-fill: #ffb4a9;
 }
 
 /* Dark Mode - Week Calendar Cards */

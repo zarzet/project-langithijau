@@ -18,21 +18,32 @@ public class AplikasiUtama extends Application {
         primaryStage = stage;
 
         ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
-        boolean sesiDipulihkan = auth.cobaPulihkanSesi();
+        ManajerBasisData db = new ManajerBasisData();
         
-        if (sesiDipulihkan && auth.getCurrentUser() != null) {
+        // Coba pulihkan session Google OAuth
+        boolean sesiGoogleDipulihkan = auth.cobaPulihkanSesi();
+        System.out.println("[DEBUG] Session Google dipulihkan: " + sesiGoogleDipulihkan);
+        
+        if (sesiGoogleDipulihkan && auth.getCurrentUser() != null) {
             try {
-                ManajerBasisData db = new ManajerBasisData();
                 var userData = db.cariUserBerdasarkanGoogleId(auth.getCurrentUser().getId());
                 if (userData != null) {
                     auth.setCurrentLocalUser(userData);
                 }
             } catch (Exception e) {
-                System.err.println("Gagal load user data: " + e.getMessage());
+                System.err.println("Gagal load user data Google: " + e.getMessage());
             }
+        }
+        
+        // Jika tidak ada session Google, coba pulihkan session lokal
+        if (!auth.isLoggedIn()) {
+            System.out.println("[DEBUG] Mencoba pulihkan session lokal...");
+            boolean sesiLokalDipulihkan = auth.cobaPulihkanSesiLokal(db);
+            System.out.println("[DEBUG] Session lokal dipulihkan: " + sesiLokalDipulihkan);
         }
 
         boolean isLoggedIn = auth.isLoggedIn();
+        System.out.println("[DEBUG] isLoggedIn: " + isLoggedIn);
         String fxmlFile = isLoggedIn ? "/fxml/MainView.fxml" : "/fxml/LoginView.fxml";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));

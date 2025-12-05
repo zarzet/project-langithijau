@@ -69,6 +69,18 @@ public class LayananSesiBelajar {
     }
 
     /**
+     * Mengambil sesi belajar berdasarkan tanggal untuk user tertentu.
+     *
+     * @param tanggal Tanggal jadwal
+     * @param userId ID user
+     * @return List sesi belajar milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilBerdasarkanTanggalByUserId(LocalDate tanggal, int userId) throws SQLException {
+        return daoSesiBelajar.ambilBerdasarkanTanggalByUserId(tanggal, userId);
+    }
+
+    /**
      * Mengambil sesi belajar hari ini.
      *
      * @return List sesi hari ini
@@ -108,6 +120,18 @@ public class LayananSesiBelajar {
      */
     public List<SesiBelajar> ambilSesiMendatang(int batas) throws SQLException {
         return daoSesiBelajar.ambilSesiMendatang(batas);
+    }
+
+    /**
+     * Mengambil sesi belajar mendatang dengan batas tertentu untuk user tertentu.
+     *
+     * @param batas Jumlah maksimal sesi yang akan diambil
+     * @param userId ID user
+     * @return List sesi mendatang milik user
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiMendatangByUserId(int batas, int userId) throws SQLException {
+        return daoSesiBelajar.ambilSesiMendatangByUserId(batas, userId);
     }
 
     /**
@@ -218,5 +242,28 @@ public class LayananSesiBelajar {
         if (sesi.getIdMataKuliah() <= 0) {
             throw new IllegalArgumentException("ID mata kuliah tidak valid");
         }
+    }
+
+    /**
+     * Menghitung jumlah sesi yang selesai pada tanggal tertentu untuk user tertentu.
+     *
+     * @param tanggal Tanggal yang dicari
+     * @param userId ID user
+     * @return Jumlah sesi selesai
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public int hitungSesiSelesaiByTanggal(LocalDate tanggal, int userId) throws SQLException {
+        return daoSesiBelajar.hitungSesiSelesaiByTanggal(tanggal, userId);
+    }
+
+    /**
+     * Mengambil sesi belajar yang terlambat (belum selesai dan tanggal jadwal sudah lewat) untuk user tertentu.
+     *
+     * @param userId ID user
+     * @return List sesi belajar yang terlambat
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public List<SesiBelajar> ambilSesiTerlambatByUserId(int userId) throws SQLException {
+        return daoSesiBelajar.ambilSesiTerlambatByUserId(userId);
     }
 }

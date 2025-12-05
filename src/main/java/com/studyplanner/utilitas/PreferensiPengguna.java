@@ -21,11 +21,16 @@ public class PreferensiPengguna {
     private static final String KEY_REMINDER_AKTIF = "notifikasi.reminder_aktif";
     private static final String KEY_WIDGET_CONFIG = "dashboard.widget_config";
     private static final String KEY_DARK_MODE_UNLOCKED = "tampilan.dark_mode_unlocked";
+    private static final String KEY_SESSION_USER_ID = "session.user_id";
+    private static final String KEY_SESSION_USERNAME = "session.username";
+    private static final String KEY_SESSION_AKTIF = "session.aktif";
 
     private PreferensiPengguna() {
         properties = new Properties();
         filePath = Paths.get(System.getProperty("user.home"), ".studyplanner", "preferences.properties");
+        System.out.println("[DEBUG] Preferences file path: " + filePath.toAbsolutePath());
         muatPreferensi();
+        System.out.println("[DEBUG] Properties loaded: " + properties.size() + " items");
     }
 
     public static synchronized PreferensiPengguna getInstance() {
@@ -182,5 +187,62 @@ public class PreferensiPengguna {
     public boolean sudahAturWidget(int userId) {
         String key = KEY_WIDGET_CONFIG + "." + userId;
         return properties.containsKey(key);
+    }
+
+    // ===== SESSION LOGIN LOKAL =====
+
+    /**
+     * Simpan session login lokal.
+     * @param userId ID user dari database
+     * @param username Username pengguna
+     */
+    public void simpanSessionLokal(int userId, String username) {
+        properties.setProperty(KEY_SESSION_USER_ID, String.valueOf(userId));
+        properties.setProperty(KEY_SESSION_USERNAME, username);
+        properties.setProperty(KEY_SESSION_AKTIF, "true");
+        simpanPreferensi();
+        PencatatLog.info("Session lokal disimpan untuk user: " + username);
+    }
+
+    /**
+     * Hapus session login lokal (logout).
+     */
+    public void hapusSessionLokal() {
+        properties.remove(KEY_SESSION_USER_ID);
+        properties.remove(KEY_SESSION_USERNAME);
+        properties.setProperty(KEY_SESSION_AKTIF, "false");
+        simpanPreferensi();
+        PencatatLog.info("Session lokal dihapus");
+    }
+
+    /**
+     * Cek apakah ada session login lokal yang aktif.
+     */
+    public boolean adaSessionLokalAktif() {
+        String value = properties.getProperty(KEY_SESSION_AKTIF, "false");
+        boolean aktif = Boolean.parseBoolean(value);
+        System.out.println("[DEBUG] Session aktif check: " + value + " -> " + aktif);
+        System.out.println("[DEBUG] Session user ID: " + properties.getProperty(KEY_SESSION_USER_ID, "tidak ada"));
+        return aktif;
+    }
+
+    /**
+     * Dapatkan user ID dari session yang tersimpan.
+     * @return User ID atau -1 jika tidak ada session
+     */
+    public int getSessionUserId() {
+        String idStr = properties.getProperty(KEY_SESSION_USER_ID, "-1");
+        try {
+            return Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    /**
+     * Dapatkan username dari session yang tersimpan.
+     */
+    public String getSessionUsername() {
+        return properties.getProperty(KEY_SESSION_USERNAME, "");
     }
 }

@@ -5,6 +5,7 @@ import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.tampilan.DekoratorJendelaKustom;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PencatatLog;
+import com.studyplanner.utilitas.PreferensiPengguna;
 import com.studyplanner.utilitas.UtilUI;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -189,6 +190,9 @@ public class KontrolerLogin {
 
                         if (storedPassword.equals(hashedPassword)) {
                             ManajerOtentikasi.getInstance().setCurrentLocalUser(user);
+                            // Simpan session login lokal
+                            int userId = (Integer) user.get("id");
+                            PreferensiPengguna.getInstance().simpanSessionLokal(userId, username);
                             PencatatLog.info("Login Berhasil: " + username);
                             bukaAplikasiUtama();
                         } else {

@@ -46,6 +46,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -141,6 +148,25 @@ public class KontrolerUtama implements Initializable {
 
     @FXML
     private VBox dialogContainer;
+    
+    // Chart elements
+    @FXML
+    private StackPane donutChartContainer;
+    
+    @FXML
+    private Label labelStatSelesai;
+    
+    @FXML
+    private Label labelStatTertunda;
+    
+    @FXML
+    private BarChart<String, Number> chartAktivitasMingguan;
+    
+    @FXML
+    private CategoryAxis xAxisHari;
+    
+    @FXML
+    private NumberAxis yAxisJumlah;
 
     private ManajerBasisData manajerBasisData;
     private Node kontenDashboardAsli; // Simpan konten dashboard untuk swap
@@ -151,6 +177,13 @@ public class KontrolerUtama implements Initializable {
     private boolean isDarkMode = false;
     private PembuatJadwal pembuatJadwal;
     private Timeline autoRefreshTimeline;
+    
+    // Donut chart components - untuk animasi dari nilai sebelumnya
+    private Arc arcSelesaiLuar;
+    private Arc arcTertundaDalam;
+    private javafx.scene.Group groupLuar;
+    private javafx.scene.Group groupDalam;
+    private boolean donutChartInitialized = false;
     private boolean isSidebarVisible = true;
     private ManajerWidgetDashboard manajerWidget;
     
@@ -180,14 +213,16 @@ public class KontrolerUtama implements Initializable {
         // Inisialisasi helper classes (SOLID - SRP)
         inisialisasiHelpers();
 
-        isDarkMode = PreferensiPengguna.getInstance().isDarkMode();
+        // Dark mode adalah easter egg - selalu mulai dengan light mode
+        // Fitur dark mode belum siap, jadi tidak persist antar sesi
+        isDarkMode = false;
 
         siapkanUI();
         loadDashboardData();
         siapkanPembaruanOtomatis();
 
-        // Terapkan dark mode jika tersimpan di preferensi
-        terapkanModaGelapPadaStartup();
+        // Dark mode easter egg: tidak auto-apply, harus unlock dulu
+        // terapkanModaGelapPadaStartup(); // Disabled - dark mode belum siap
 
         // Cek dan tampilkan onboarding untuk user baru
         periksaDanTampilkanOnboarding();
@@ -255,11 +290,11 @@ public class KontrolerUtama implements Initializable {
         tombolLihatJadwal.setGraphicTextGap(8);
         tombolLihatJadwal.setOnAction(_ -> bukaLihatJadwal());
 
+        // Dark mode adalah easter egg - sembunyikan tombol di sidebar
+        // Fitur dark mode belum siap, akses via Settings setelah unlock easter egg
         if (tombolAlihTema != null) {
-            tombolAlihTema.setGraphic(PembuatIkon.ikonModeGelap(isDarkMode));
-            tombolAlihTema.setText(isDarkMode ? "Terang" : "Gelap");
-            tombolAlihTema.setGraphicTextGap(6);
-            tombolAlihTema.setOnAction(_ -> alihkanModaGelap());
+            tombolAlihTema.setVisible(false);
+            tombolAlihTema.setManaged(false);
         }
         
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
@@ -448,6 +483,9 @@ public class KontrolerUtama implements Initializable {
                 wadahTugasHariIni, wadahUjianMendatang
             );
             
+            // Update chart statistik
+            muatChartStatistik();
+            
             // Refresh widget
             if (manajerWidget != null) {
                 List<SesiBelajar> upcomingSessions = pembantuDashboard.ambilSesiMendatang(4);
@@ -459,6 +497,217 @@ public class KontrolerUtama implements Initializable {
         } catch (SQLException e) {
             UtilUI.tampilkanKesalahan("Gagal memuat data dashboard: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Memuat data untuk chart statistik belajar dan aktivitas mingguan.
+     */
+    private void muatChartStatistik() {
+        try {
+            // Gunakan data yang sudah ada dari PembuatJadwal
+            PembuatJadwal.KemajuanBelajar progress = pembuatJadwal.ambilKemajuanBelajar();
+            
+            // Gunakan sesi hari ini (lebih intuitif)
+            int sesiSelesai = progress.getSelesaiHariIni();
+            int totalSesi = progress.getTotalHariIni();
+            int sesiTertunda = totalSesi - sesiSelesai;
+            
+            // Update legend labels
+            if (labelStatSelesai != null) {
+                labelStatSelesai.setText(sesiSelesai + " Sesi");
+            }
+            if (labelStatTertunda != null) {
+                labelStatTertunda.setText(sesiTertunda + " Sesi");
+            }
+            
+            // Buat donut chart
+            if (donutChartContainer != null) {
+                buatDonutChart(sesiSelesai, sesiTertunda);
+            }
+            
+            // Buat bar chart aktivitas mingguan
+            if (chartAktivitasMingguan != null) {
+                muatAktivitasMingguan();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Membuat donut chart berlapis (Double Concentric Rings) dengan animasi.
+     * Ring Luar: % Selesai (dari Total)
+     * Ring Dalam: % Tertunda (dari Total)
+     * 
+     * Animasi dari nilai sebelumnya ke nilai baru (bukan selalu dari 0).
+     */
+    private void buatDonutChart(int selesai, int tertunda) {
+        int total = selesai + tertunda;
+        if (total == 0) total = 1; // Hindari division by zero
+        
+        double startAngle = 90; // Mulai dari jam 12
+        double radiusLuar = 45;
+        double radiusDalam = 32;
+        double strokeWidth = 8;
+        
+        // Hitung target angle
+        double targetAngleSelesai = (selesai > 0) ? -(selesai * 360.0) / total : 0;
+        double targetAngleTertunda = (tertunda > 0) ? -(tertunda * 360.0) / total : 0;
+        
+        // Jika chart belum diinisialisasi, buat dari awal
+        if (!donutChartInitialized) {
+            donutChartContainer.getChildren().clear();
+            
+            // --- RING LUAR (Selesai) ---
+            Circle bgLuar = new Circle(radiusLuar);
+            bgLuar.setFill(Color.TRANSPARENT);
+            bgLuar.setStroke(Color.web("#E0E0E0", 0.4));
+            bgLuar.setStrokeWidth(strokeWidth);
+            
+            groupLuar = new javafx.scene.Group(bgLuar);
+            
+            // Arc Selesai (Hijau) - selalu buat, tapi length bisa 0
+            arcSelesaiLuar = new Arc(0, 0, radiusLuar, radiusLuar, startAngle, 0);
+            arcSelesaiLuar.setType(ArcType.OPEN);
+            arcSelesaiLuar.setFill(Color.TRANSPARENT);
+            arcSelesaiLuar.setStroke(Color.web("#4CAF50")); // Hijau
+            arcSelesaiLuar.setStrokeWidth(strokeWidth);
+            arcSelesaiLuar.setStrokeLineCap(javafx.scene.shape.StrokeLineCap.ROUND);
+            groupLuar.getChildren().add(arcSelesaiLuar);
+            
+            // --- RING DALAM (Tertunda) ---
+            Circle bgDalam = new Circle(radiusDalam);
+            bgDalam.setFill(Color.TRANSPARENT);
+            bgDalam.setStroke(Color.web("#E0E0E0", 0.4));
+            bgDalam.setStrokeWidth(strokeWidth);
+            
+            groupDalam = new javafx.scene.Group(bgDalam);
+            
+            // Arc Tertunda (Oranye) - selalu buat, tapi length bisa 0
+            arcTertundaDalam = new Arc(0, 0, radiusDalam, radiusDalam, startAngle, 0);
+            arcTertundaDalam.setType(ArcType.OPEN);
+            arcTertundaDalam.setFill(Color.TRANSPARENT);
+            arcTertundaDalam.setStroke(Color.web("#FF9800")); // Oranye
+            arcTertundaDalam.setStrokeWidth(strokeWidth);
+            arcTertundaDalam.setStrokeLineCap(javafx.scene.shape.StrokeLineCap.ROUND);
+            groupDalam.getChildren().add(arcTertundaDalam);
+            
+            // Tambahkan ke container
+            donutChartContainer.getChildren().addAll(groupLuar, groupDalam);
+            
+            // Animasi awal dari 0 ke target
+            animasiArc(arcSelesaiLuar, targetAngleSelesai, 600, 0);
+            animasiArc(arcTertundaDalam, targetAngleTertunda, 600, 150);
+            
+            donutChartInitialized = true;
+        } else {
+            // Chart sudah ada, animasi dari nilai saat ini ke nilai baru
+            animasiArcDariNilaiSaatIni(arcSelesaiLuar, targetAngleSelesai, 400);
+            animasiArcDariNilaiSaatIni(arcTertundaDalam, targetAngleTertunda, 400);
+        }
+    }
+    
+    /**
+     * Animasi Arc dari 0 ke target length dengan easing.
+     * 
+     * @param arc Arc yang akan dianimasi
+     * @param targetLength Target panjang arc (dalam derajat, negatif = searah jarum jam)
+     * @param durasiMs Durasi animasi dalam milidetik
+     * @param delayMs Delay sebelum animasi dimulai
+     */
+    private void animasiArc(Arc arc, double targetLength, int durasiMs, int delayMs) {
+        javafx.animation.Timeline timeline = new javafx.animation.Timeline();
+        
+        // Keyframe akhir: Arc mencapai target length dengan easing
+        javafx.animation.KeyValue keyValue = new javafx.animation.KeyValue(
+            arc.lengthProperty(), 
+            targetLength, 
+            javafx.animation.Interpolator.SPLINE(0.25, 0.1, 0.25, 1.0) // Ease out cubic
+        );
+        
+        javafx.animation.KeyFrame keyFrame = new javafx.animation.KeyFrame(
+            Duration.millis(durasiMs), 
+            keyValue
+        );
+        
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.setDelay(Duration.millis(delayMs));
+        timeline.play();
+    }
+    
+    /**
+     * Animasi Arc dari nilai saat ini ke target length dengan easing.
+     * Digunakan saat chart di-update (bukan pertama kali dibuat).
+     * 
+     * @param arc Arc yang akan dianimasi
+     * @param targetLength Target panjang arc (dalam derajat, negatif = searah jarum jam)
+     * @param durasiMs Durasi animasi dalam milidetik
+     */
+    private void animasiArcDariNilaiSaatIni(Arc arc, double targetLength, int durasiMs) {
+        if (arc == null) return;
+        
+        double currentLength = arc.getLength();
+        
+        // Jika sudah sama, tidak perlu animasi
+        if (Math.abs(currentLength - targetLength) < 0.1) return;
+        
+        javafx.animation.Timeline timeline = new javafx.animation.Timeline();
+        
+        // Keyframe awal: nilai saat ini (tidak perlu di-set karena sudah ada)
+        // Keyframe akhir: target length dengan easing smooth
+        javafx.animation.KeyValue keyValue = new javafx.animation.KeyValue(
+            arc.lengthProperty(), 
+            targetLength, 
+            javafx.animation.Interpolator.SPLINE(0.4, 0.0, 0.2, 1.0) // Material Design ease-out
+        );
+        
+        javafx.animation.KeyFrame keyFrame = new javafx.animation.KeyFrame(
+            Duration.millis(durasiMs), 
+            keyValue
+        );
+        
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
+    
+    /**
+     * Memuat data aktivitas mingguan ke bar chart.
+     */
+    private void muatAktivitasMingguan() {
+        chartAktivitasMingguan.getData().clear();
+        chartAktivitasMingguan.setStyle("-fx-background-color: transparent;");
+        
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Sesi");
+        
+        String[] namaHari = {"Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"};
+        LocalDate today = LocalDate.now();
+        int dayOfWeek = today.getDayOfWeek().getValue(); // 1=Senin, 7=Minggu
+        LocalDate senin = today.minusDays(dayOfWeek - 1);
+        
+        int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+        
+        // Ambil data sebenarnya dari database
+        for (int i = 0; i < 7; i++) {
+            LocalDate tanggal = senin.plusDays(i);
+            int jumlahSesi = 0;
+            try {
+                jumlahSesi = layananSesiBelajar.hitungSesiSelesaiByTanggal(tanggal, userId);
+            } catch (SQLException e) {
+                // Jika error, tampilkan 0
+            }
+            series.getData().add(new XYChart.Data<>(namaHari[i], jumlahSesi));
+        }
+        
+        chartAktivitasMingguan.getData().add(series);
+        
+        // Style bar chart setelah data ditambahkan
+        javafx.application.Platform.runLater(() -> {
+            chartAktivitasMingguan.lookupAll(".chart-bar").forEach(node -> 
+                node.setStyle("-fx-bar-fill: #2196F3;")
+            );
+        });
     }
 
     private void showUpcomingTasksDetailDialog() {

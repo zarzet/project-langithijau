@@ -49,7 +49,8 @@ public class PembantuPengaturan {
      */
     public PembantuPengaturan(boolean isDarkMode, Runnable onDarkModeToggle, Runnable onBuatJadwal) {
         this.isDarkMode = isDarkMode;
-        this.darkModeUnlocked = PreferensiPengguna.getInstance().isDarkModeUnlocked();
+        // Easter egg: selalu mulai terkunci setiap sesi baru (tidak persist)
+        this.darkModeUnlocked = false;
         this.onDarkModeToggle = onDarkModeToggle;
         this.onBuatJadwal = onBuatJadwal;
     }
@@ -105,14 +106,32 @@ public class PembantuPengaturan {
         profileCard.setPadding(new Insets(16));
 
         if (ManajerOtentikasi.getInstance().isLoggedIn()) {
-            Userinfo user = ManajerOtentikasi.getInstance().getCurrentUser();
+            Userinfo googleUser = ManajerOtentikasi.getInstance().getCurrentUser();
+            java.util.Map<String, Object> localUser = ManajerOtentikasi.getInstance().getCurrentLocalUser();
+            
+            // Tentukan nama, email, dan provider
+            String nama = "";
+            String email = "";
+            String provider = "local";
+            String pictureUrl = null;
+            
+            if (googleUser != null) {
+                nama = googleUser.getName();
+                email = googleUser.getEmail();
+                provider = "google";
+                pictureUrl = googleUser.getPicture();
+            } else if (localUser != null) {
+                nama = (String) localUser.getOrDefault("nama", "User");
+                email = (String) localUser.getOrDefault("email", "");
+                provider = (String) localUser.getOrDefault("provider", "local");
+            }
 
             // Avatar dengan click counter untuk Easter egg
             StackPane avatarContainer = new StackPane();
             ImageView avatarView = new ImageView();
-            if (user.getPicture() != null) {
+            if (pictureUrl != null) {
                 try {
-                    avatarView.setImage(new Image(user.getPicture(), 56, 56, true, true));
+                    avatarView.setImage(new Image(pictureUrl, 56, 56, true, true));
                 } catch (Exception e) {
                     avatarView.setImage(null);
                 }
@@ -121,10 +140,21 @@ public class PembantuPengaturan {
             avatarView.setFitHeight(56);
             Circle clip = new Circle(28, 28, 28);
             avatarView.setClip(clip);
-            avatarContainer.getChildren().add(avatarView);
+            
+            // Jika tidak ada gambar, tampilkan avatar default dengan inisial
+            if (pictureUrl == null) {
+                String inisial = nama.isEmpty() ? "U" : nama.substring(0, 1).toUpperCase();
+                Label avatarLabel = new Label(inisial);
+                avatarLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+                Circle bgCircle = new Circle(28);
+                bgCircle.setFill(javafx.scene.paint.Color.web("#006495"));
+                avatarContainer.getChildren().addAll(bgCircle, avatarLabel);
+            } else {
+                avatarContainer.getChildren().add(avatarView);
+            }
             avatarContainer.setCursor(javafx.scene.Cursor.HAND);
 
-            // Easter egg: klik 10x untuk unlock dark mode
+            // Easter egg: klik 10x untuk unlock dark mode (hanya untuk sesi ini, tidak persist)
             avatarContainer.setOnMouseClicked(event -> {
                 hitungKlikProfil++;
 
@@ -133,10 +163,11 @@ public class PembantuPengaturan {
 
                 if (hitungKlikProfil >= 7 && hitungKlikProfil < 10) {
                     int sisa = 10 - hitungKlikProfil;
-                    UtilUI.tampilkanToast(window, "* " + sisa + " klik lagi...");
+                    UtilUI.tampilkanToast(window, "🔓 " + sisa + " klik lagi...");
                 } else if (hitungKlikProfil == 10 && !darkModeUnlocked) {
                     darkModeUnlocked = true;
-                    PreferensiPengguna.getInstance().setDarkModeUnlocked(true);
+                    // TIDAK menyimpan ke preferensi - reset setiap aplikasi dibuka
+                    // PreferensiPengguna.getInstance().setDarkModeUnlocked(true); // Disabled
 
                     if (appearanceSectionRef != null) {
                         appearanceSectionRef.setVisible(true);
@@ -147,7 +178,7 @@ public class PembantuPengaturan {
                         darkModeRowRef.setManaged(true);
                     }
 
-                    UtilUI.tampilkanToast(window, "Mode Gelap telah dibuka!");
+                    UtilUI.tampilkanToast(window, "🌙 Mode Gelap telah dibuka untuk sesi ini!");
                     hitungKlikProfil = 0;
                 }
             });
@@ -156,17 +187,18 @@ public class PembantuPengaturan {
             VBox infoBox = new VBox(2);
             HBox.setHgrow(infoBox, Priority.ALWAYS);
 
-            Label nameLabel = new Label(user.getName());
+            Label nameLabel = new Label(nama);
             nameLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
             infoBox.getChildren().add(nameLabel);
 
-            if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                Label emailLabel = new Label(user.getEmail());
+            if (email != null && !email.isEmpty()) {
+                Label emailLabel = new Label(email);
                 emailLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
                 infoBox.getChildren().add(emailLabel);
             }
 
-            Label providerLabel = new Label("Masuk dengan Google");
+            String providerText = "google".equals(provider) ? "Masuk dengan Google" : "Masuk dengan Akun Lokal";
+            Label providerLabel = new Label(providerText);
             providerLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
             infoBox.getChildren().add(providerLabel);
 
@@ -290,7 +322,7 @@ public class PembantuPengaturan {
         Label appName = new Label("Perencana Belajar Adaptif");
         appName.getStyleClass().add("settings-about-title");
 
-        Label version = new Label("Versi 1.0.0");
+        Label version = new Label("Versi 0.1.4");
         version.getStyleClass().add("settings-about-version");
 
         Label description = new Label("Aplikasi manajemen pembelajaran dengan sistem spaced repetition");

@@ -4,6 +4,7 @@ import com.studyplanner.basisdata.ManajerBasisData;
 import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.model.SesiBelajar;
 import com.studyplanner.utilitas.PembuatIkon;
+import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.UtilUI;
 import java.net.URL;
 import java.sql.SQLException;
@@ -165,7 +166,8 @@ public class KontrolerTampilanJadwal implements Initializable {
         selectedDateLabel.setText(tanggalTerpilih.format(formatter));
 
         try {
-            List<SesiBelajar> daftarSesi = layananSesiBelajar.ambilBerdasarkanTanggal(tanggalTerpilih);
+            int userId = ManajerOtentikasi.getInstance().ambilIdPengguna().orElse(-1);
+            List<SesiBelajar> daftarSesi = layananSesiBelajar.ambilBerdasarkanTanggalByUserId(tanggalTerpilih, userId);
             sessionCountLabel.setText(daftarSesi.size() + " sesi belajar");
 
             if (daftarSesi.isEmpty()) {

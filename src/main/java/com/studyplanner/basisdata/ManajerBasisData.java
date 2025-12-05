@@ -226,11 +226,11 @@ public class ManajerBasisData {
     public int ambilRuntutanBelajar() {
         String sql = """
                     WITH RECURSIVE tanggal AS (
-                        SELECT DATE('now') as cek_tanggal
+                        SELECT DATE('now', 'localtime') as cek_tanggal
                         UNION ALL
                         SELECT DATE(cek_tanggal, '-1 day')
                         FROM tanggal
-                        WHERE cek_tanggal > DATE('now', '-30 days')
+                        WHERE cek_tanggal > DATE('now', 'localtime', '-30 days')
                     )
                     SELECT COUNT(*) as runtutan
                     FROM (
@@ -241,17 +241,17 @@ public class ManajerBasisData {
                             WHERE DATE(s.tanggal_jadwal) = d.cek_tanggal
                             AND s.selesai = 1
                         )
-                        AND d.cek_tanggal <= DATE('now')
+                        AND d.cek_tanggal <= DATE('now', 'localtime')
                         ORDER BY d.cek_tanggal DESC
                         LIMIT (
                             SELECT COUNT(*)
                             FROM tanggal d2
-                            WHERE d2.cek_tanggal <= DATE('now')
+                            WHERE d2.cek_tanggal <= DATE('now', 'localtime')
                             AND NOT EXISTS (
                                 SELECT 1
                                 FROM tanggal d3
                                 WHERE d3.cek_tanggal > d2.cek_tanggal
-                                AND d3.cek_tanggal <= DATE('now')
+                                AND d3.cek_tanggal <= DATE('now', 'localtime')
                                 AND NOT EXISTS (
                                     SELECT 1 FROM sesi_belajar s
                                     WHERE DATE(s.tanggal_jadwal) = d3.cek_tanggal
@@ -279,14 +279,15 @@ public class ManajerBasisData {
         String sql = """
                     SELECT COALESCE(SUM(durasi_menit), 0) as total_menit
                     FROM sesi_belajar
-                    WHERE tanggal_jadwal = DATE('now')
+                    WHERE tanggal_jadwal = ?
                     AND selesai = 1
                 """;
         catatKueri(sql);
 
         try (Connection koneksi = bukaKoneksi();
-             PreparedStatement pstmt = koneksi.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("total_menit");
             }
@@ -300,14 +301,15 @@ public class ManajerBasisData {
         String sql = """
                     SELECT COALESCE(SUM(durasi_menit), 0) as total_menit
                     FROM sesi_belajar
-                    WHERE tanggal_jadwal = DATE('now', '-1 day')
+                    WHERE tanggal_jadwal = ?
                     AND selesai = 1
                 """;
         catatKueri(sql);
 
         try (Connection koneksi = bukaKoneksi();
-             PreparedStatement pstmt = koneksi.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setDate(1, Date.valueOf(LocalDate.now().minusDays(1)));
+            ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("total_menit");
             }
@@ -479,6 +481,32 @@ public class ManajerBasisData {
             }
         } catch (SQLException e) {
             throw new EksepsiAksesBasisData("Gagal mencari user berdasarkan Google ID", e);
+        }
+        return null;
+    }
+
+    public java.util.Map<String, Object> cariUserBerdasarkanId(int userId) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        catatKueri(sql);
+        try (Connection koneksi = bukaKoneksi();
+             PreparedStatement pstmt = koneksi.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                java.util.Map<String, Object> user = new java.util.HashMap<>();
+                user.put("id", rs.getInt("id"));
+                user.put("google_id", rs.getString("google_id"));
+                user.put("email", rs.getString("email"));
+                user.put("nama", rs.getString("nama"));
+                user.put("username", rs.getString("username"));
+                user.put("foto_profil", rs.getString("foto_profil"));
+                user.put("provider", rs.getString("provider"));
+                user.put("role", rs.getString("role"));
+                user.put("status", rs.getString("status"));
+                return user;
+            }
+        } catch (SQLException e) {
+            throw new EksepsiAksesBasisData("Gagal mencari user berdasarkan ID", e);
         }
         return null;
     }
