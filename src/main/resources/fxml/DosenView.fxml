@@ -3,59 +3,107 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
 
-<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+<StackPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.studyplanner.kontroler.KontrolerDosen"
-      spacing="24" styleClass="spa-content">
+      styleClass="spa-content">
 
-    <!-- Header Info -->
-    <HBox alignment="CENTER_RIGHT">
-        <Label fx:id="labelNamaDosen" styleClass="stat-label"/>
-    </HBox>
-
-    <!-- Statistik Cards -->
-    <HBox spacing="16" styleClass="stat-row">
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="Total Mahasiswa" styleClass="stat-card-title"/>
-            <Label fx:id="labelTotalMahasiswa" text="0" styleClass="stat-card-value"/>
-        </VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="Aktif Minggu Ini" styleClass="stat-card-title"/>
-            <Label fx:id="labelAktifMingguIni" text="0" styleClass="stat-card-value"/>
-        </VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="Rata-rata Progress" styleClass="stat-card-title"/>
-            <Label fx:id="labelRataProgress" text="0%" styleClass="stat-card-value"/>
-        </VBox>
-        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
-            <Label text="Perlu Perhatian" styleClass="stat-card-title"/>
-            <Label fx:id="labelPerluPerhatian" text="0" styleClass="stat-card-value-warning"/>
-        </VBox>
-    </HBox>
-
-    <!-- Content Area -->
-    <VBox spacing="16" VBox.vgrow="ALWAYS">
-        <HBox alignment="CENTER_LEFT" spacing="12">
-            <Label text="Daftar Mahasiswa Bimbingan" styleClass="panel-title"/>
-            <ComboBox fx:id="filterStatus" promptText="Semua Status" styleClass="filter-combo"/>
-            <TextField fx:id="searchField" promptText="Cari nama/NIM..." styleClass="search-field" prefWidth="200"/>
+    <VBox spacing="20">
+        <!-- Header Info -->
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <Label fx:id="labelNamaDosen" styleClass="page-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnRefresh" text="⟳ Refresh" styleClass="btn-secondary"/>
         </HBox>
 
-        <TableView fx:id="tabelMahasiswa" VBox.vgrow="ALWAYS" styleClass="data-table">
-            <columns>
-                <TableColumn fx:id="kolNama" text="Nama" prefWidth="180"/>
-                <TableColumn fx:id="kolNim" text="NIM" prefWidth="120"/>
-                <TableColumn fx:id="kolSemester" text="Semester" prefWidth="80"/>
-                <TableColumn fx:id="kolMataKuliah" text="Mata Kuliah" prefWidth="100"/>
-                <TableColumn fx:id="kolProgress" text="Progress" prefWidth="100"/>
-                <TableColumn fx:id="kolAktivitas" text="Aktivitas Terakhir" prefWidth="130"/>
-                <TableColumn fx:id="kolPerforma" text="Performa" prefWidth="100"/>
-                <TableColumn fx:id="kolStatusMhs" text="Status" prefWidth="100"/>
-                <TableColumn fx:id="kolAksi" text="Aksi" prefWidth="120"/>
-            </columns>
-        </TableView>
+        <!-- Tab Navigation -->
+        <HBox spacing="8" styleClass="tab-navigation">
+            <ToggleButton fx:id="tabMahasiswa" text="Mahasiswa Bimbingan" styleClass="tab-toggle" selected="true">
+                <toggleGroup><ToggleGroup fx:id="tabGroup"/></toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="tabRekomendasi" text="Rekomendasi" styleClass="tab-toggle">
+                <toggleGroup><fx:reference source="tabGroup"/></toggleGroup>
+            </ToggleButton>
+        </HBox>
+
+        <!-- Statistik Cards -->
+        <HBox spacing="16" styleClass="stat-row">
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="Total Mahasiswa" styleClass="stat-card-title"/>
+                <Label fx:id="labelTotalMahasiswa" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="Aktif Minggu Ini" styleClass="stat-card-title"/>
+                <Label fx:id="labelAktifMingguIni" text="0" styleClass="stat-card-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="Rata-rata Progress" styleClass="stat-card-title"/>
+                <Label fx:id="labelRataProgress" text="0%" styleClass="stat-card-value"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="Perlu Perhatian" styleClass="stat-card-title"/>
+                <Label fx:id="labelPerluPerhatian" text="0" styleClass="stat-card-value-warning"/>
+            </VBox>
+            <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+                <Label text="Total Rekomendasi" styleClass="stat-card-title"/>
+                <Label fx:id="labelTotalRekomendasi" text="0" styleClass="stat-card-value"/>
+            </VBox>
+        </HBox>
+
+        <!-- Panel Mahasiswa Bimbingan -->
+        <VBox fx:id="panelMahasiswa" spacing="16" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Daftar Mahasiswa Bimbingan" styleClass="panel-title"/>
+                <ComboBox fx:id="filterStatus" promptText="Semua Status" styleClass="filter-combo"/>
+                <TextField fx:id="searchField" promptText="Cari nama/NIM..." styleClass="search-field" prefWidth="200"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnRefresh" text="Refresh" styleClass="btn-secondary"/>
+            </HBox>
+
+            <TableView fx:id="tabelMahasiswa" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="kolNama" text="Nama" prefWidth="180"/>
+                    <TableColumn fx:id="kolNim" text="NIM" prefWidth="120"/>
+                    <TableColumn fx:id="kolSemester" text="Semester" prefWidth="80"/>
+                    <TableColumn fx:id="kolMataKuliah" text="Mata Kuliah" prefWidth="100"/>
+                    <TableColumn fx:id="kolProgress" text="Progress" prefWidth="100"/>
+                    <TableColumn fx:id="kolAktivitas" text="Aktivitas Terakhir" prefWidth="130"/>
+                    <TableColumn fx:id="kolPerforma" text="Performa" prefWidth="100"/>
+                    <TableColumn fx:id="kolStatusMhs" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="kolAksi" text="Aksi" prefWidth="180"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Panel Rekomendasi -->
+        <VBox fx:id="panelRekomendasi" spacing="16" VBox.vgrow="ALWAYS" visible="false" managed="false">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Riwayat Rekomendasi" styleClass="panel-title"/>
+                <ComboBox fx:id="filterStatusRekomendasi" promptText="Semua Status" styleClass="filter-combo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnTambahRekomendasi" text="Tambah Rekomendasi" styleClass="btn-primary"/>
+            </HBox>
+
+            <TableView fx:id="tabelRekomendasi" VBox.vgrow="ALWAYS" styleClass="data-table">
+                <columns>
+                    <TableColumn fx:id="kolRekMahasiswa" text="Mahasiswa" prefWidth="150"/>
+                    <TableColumn fx:id="kolRekTopik" text="Topik" prefWidth="200"/>
+                    <TableColumn fx:id="kolRekMataKuliah" text="Mata Kuliah" prefWidth="150"/>
+                    <TableColumn fx:id="kolRekPrioritas" text="Prioritas" prefWidth="80"/>
+                    <TableColumn fx:id="kolRekKesulitan" text="Kesulitan" prefWidth="80"/>
+                    <TableColumn fx:id="kolRekStatus" text="Status" prefWidth="100"/>
+                    <TableColumn fx:id="kolRekTanggal" text="Tanggal" prefWidth="120"/>
+                    <TableColumn fx:id="kolRekAksi" text="Aksi" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
     </VBox>
 
-</VBox>
+    <!-- Dialog Overlay untuk SPA-style -->
+    <StackPane fx:id="dialogOverlay" styleClass="spa-dialog-overlay" visible="false" managed="false">
+        <VBox fx:id="dialogContainer" styleClass="spa-dialog-card" maxWidth="600" maxHeight="700">
+            <!-- Content akan diisi secara dinamis -->
+        </VBox>
+    </StackPane>
+
+</StackPane>

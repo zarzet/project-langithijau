@@ -152,13 +152,6 @@ public class PembantuDashboard {
     }
 
     /**
-     * Buat kartu tugas (overload untuk backward compatibility).
-     */
-    private VBox buatKartuTugas(SesiBelajar session) {
-        return buatKartuTugas(session, false);
-    }
-
-    /**
      * Buat kartu tugas dengan indikasi terlambat.
      * 
      * @param session Data sesi belajar

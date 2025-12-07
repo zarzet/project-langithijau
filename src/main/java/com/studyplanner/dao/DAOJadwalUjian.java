@@ -124,14 +124,6 @@ public class DAOJadwalUjian implements DAOBase<JadwalUjian, Integer> {
     }
 
     /**
-     * Mengambil ujian mendatang (deprecated - gunakan versi dengan userId).
-     */
-    @Deprecated
-    public List<JadwalUjian> ambilUjianMendatang() throws SQLException {
-        return ambilUjianMendatang(-1); // Fallback
-    }
-
-    /**
      * Mengambil ujian dalam rentang tanggal tertentu.
      *
      * @param tanggalMulai Tanggal mulai

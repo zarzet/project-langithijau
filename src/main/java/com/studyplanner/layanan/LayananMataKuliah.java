@@ -84,18 +84,6 @@ public class LayananMataKuliah {
     }
 
     /**
-     * Mengambil semua mata kuliah (deprecated - gunakan ambilSemuaByUserId).
-     *
-     * @return List semua mata kuliah
-     * @throws SQLException jika terjadi kesalahan database
-     * @deprecated Gunakan {@link #ambilSemuaByUserId(int)} untuk multi-user support
-     */
-    @Deprecated
-    public List<MataKuliah> ambilSemua() throws SQLException {
-        return daoMataKuliah.ambilSemua();
-    }
-
-    /**
      * Mengambil semua mata kuliah untuk user tertentu.
      *
      * @param userId ID user
@@ -127,18 +115,6 @@ public class LayananMataKuliah {
      */
     public MataKuliah ambilBerdasarkanKode(int userId, String kode) throws SQLException {
         return daoMataKuliah.ambilBerdasarkanKode(userId, kode);
-    }
-
-    /**
-     * Menghitung total mata kuliah (semua user).
-     *
-     * @return Jumlah mata kuliah
-     * @throws SQLException jika terjadi kesalahan database
-     * @deprecated Gunakan {@link #hitungTotalByUserId(int)} untuk multi-user support
-     */
-    @Deprecated
-    public int hitungTotal() throws SQLException {
-        return daoMataKuliah.hitungTotal();
     }
 
     /**

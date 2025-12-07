@@ -234,13 +234,13 @@ class LayananMataKuliahTest {
     class HitungTotalTests {
         
         @Test
-        @DisplayName("hitungTotal() mengembalikan jumlah yang benar")
+        @DisplayName("hitungTotalByUserId() mengembalikan jumlah yang benar")
         void hitung_berhasil() throws SQLException {
             layananMataKuliah.daftarkan(buatMataKuliah("Course 1", "C1"));
             layananMataKuliah.daftarkan(buatMataKuliah("Course 2", "C2"));
             layananMataKuliah.daftarkan(buatMataKuliah("Course 3", "C3"));
             
-            int total = layananMataKuliah.hitungTotal();
+            int total = layananMataKuliah.hitungTotalByUserId(TEST_USER_ID);
             
             assertEquals(3, total);
         }

@@ -463,3 +463,169 @@
 .dark-mode.md3-dialog-pane .md3-dialog-btn-cancel:hover {
     -fx-background-color: rgba(141, 205, 255, 0.08);
 }
+
+/* ============================================
+   SPA-STYLE DIALOG (In-page Modal)
+   ============================================ */
+
+.spa-dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-alignment: center;
+}
+
+.dark-mode .spa-dialog-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.spa-dialog-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 24;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 24, 0, 0, 8);
+}
+
+.dark-mode .spa-dialog-card {
+    -fx-background-color: #1e2328;
+    -fx-effect: none;
+    -fx-border-color: #3a4048;
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+}
+
+.spa-dialog-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-on-surface;
+    -fx-padding: 0 0 16 0;
+}
+
+.dark-mode .spa-dialog-title {
+    -fx-text-fill: #e1e2e9;
+}
+
+.spa-dialog-content {
+    -fx-spacing: 16;
+}
+
+/* SPA Buttons */
+.spa-btn {
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-cursor: hand;
+}
+
+.spa-btn-primary {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+}
+
+.spa-btn-primary:hover {
+    -fx-background-color: #005580;
+}
+
+.spa-btn-secondary {
+    -fx-background-color: -color-primary-container;
+    -fx-text-fill: #0b1d29;
+}
+
+.spa-btn-secondary:hover {
+    -fx-background-color: #c0d8eb;
+}
+
+.dark-mode .spa-btn-primary {
+    -fx-background-color: #8dcdff;
+    -fx-text-fill: #00344e;
+}
+
+.dark-mode .spa-btn-secondary {
+    -fx-background-color: #384956;
+    -fx-text-fill: -color-primary-container;
+}
+
+/* SPA Form Elements */
+.spa-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: 500;
+    -fx-text-fill: -color-on-surface;
+}
+
+.dark-mode .spa-label {
+    -fx-text-fill: #e1e2e9;
+}
+
+.spa-input {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-on-surface;
+}
+
+.spa-input:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+}
+
+/* TextArea dengan class spa-input */
+.text-area.spa-input {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+}
+
+.text-area.spa-input .content {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-padding: 12 16;
+}
+
+.text-area.spa-input .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area.spa-input .scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area.spa-input:focused {
+    -fx-border-color: -color-primary;
+    -fx-border-width: 2;
+}
+
+.dark-mode .spa-input {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+    -fx-text-fill: #e1e2e9;
+}
+
+.dark-mode .text-area.spa-input .content {
+    -fx-background-color: #282d33;
+}
+
+.dark-mode .text-area.spa-input .scroll-pane,
+.dark-mode .text-area.spa-input .scroll-pane .viewport {
+    -fx-background-color: #282d33;
+}
+
+.spa-combo {
+    -fx-background-color: -color-surface-container;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-outline-variant;
+    -fx-border-width: 1;
+    -fx-padding: 8 12;
+}
+
+.dark-mode .spa-combo {
+    -fx-background-color: #282d33;
+    -fx-border-color: #3a4048;
+}

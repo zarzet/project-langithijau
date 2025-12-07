@@ -188,18 +188,34 @@ public class DAOMahasiswa {
 
     /**
      * Mengambil mahasiswa yang belum di-assign ke dosen.
+     * Termasuk user dengan role mahasiswa yang belum ada entry di tabel mahasiswa.
      *
      * @return List mahasiswa tanpa dosen
      * @throws SQLException jika terjadi kesalahan database
      */
     public List<Mahasiswa> ambilTanpaDosen() throws SQLException {
+        // Query gabungan:
+        // 1. Mahasiswa yang ada di tabel mahasiswa tapi dosen_id IS NULL
+        // 2. User dengan role mahasiswa yang belum ada entry di tabel mahasiswa
         String sql = """
-            SELECT m.*, u.nama, u.email, u.status, u.login_terakhir,
+            SELECT m.id, m.user_id, m.nim, m.semester, m.dosen_id,
+                   u.nama, u.email, u.status, u.login_terakhir,
                    NULL as nama_dosen
             FROM mahasiswa m
             JOIN users u ON m.user_id = u.id
             WHERE m.dosen_id IS NULL
-            ORDER BY u.nama ASC
+            
+            UNION ALL
+            
+            SELECT NULL as id, u.id as user_id, NULL as nim, 1 as semester, NULL as dosen_id,
+                   u.nama, u.email, u.status, u.login_terakhir,
+                   NULL as nama_dosen
+            FROM users u
+            WHERE u.role = 'mahasiswa'
+            AND u.status = 'active'
+            AND NOT EXISTS (SELECT 1 FROM mahasiswa m WHERE m.user_id = u.id)
+            
+            ORDER BY nama ASC
         """;
 
         List<Mahasiswa> daftarMahasiswa = new ArrayList<>();
@@ -209,11 +225,46 @@ public class DAOMahasiswa {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                daftarMahasiswa.add(mapRowKeMahasiswa(rs));
+                daftarMahasiswa.add(mapRowKeMahasiswaTanpaDosen(rs));
             }
         }
 
         return daftarMahasiswa;
+    }
+
+    /**
+     * Map ResultSet ke objek Mahasiswa untuk query tanpa dosen.
+     * Menangani kasus dimana mahasiswa belum ada di tabel mahasiswa.
+     */
+    private Mahasiswa mapRowKeMahasiswaTanpaDosen(ResultSet rs) throws SQLException {
+        Mahasiswa mhs = new Mahasiswa();
+        
+        // id bisa null jika user belum ada di tabel mahasiswa
+        int id = rs.getInt("id");
+        if (!rs.wasNull()) {
+            mhs.setId(id);
+        }
+        
+        mhs.setUserId(rs.getInt("user_id"));
+        mhs.setNim(rs.getString("nim"));
+        mhs.setSemester(rs.getInt("semester"));
+        
+        Integer dosenId = rs.getInt("dosen_id");
+        if (rs.wasNull()) {
+            dosenId = null;
+        }
+        mhs.setDosenId(dosenId);
+        
+        // Data dari users
+        mhs.setNama(rs.getString("nama"));
+        mhs.setEmail(rs.getString("email"));
+        
+        String statusStr = rs.getString("status");
+        if (statusStr != null) {
+            mhs.setStatus(StatusPengguna.dariKode(statusStr));
+        }
+        
+        return mhs;
     }
 
     /**

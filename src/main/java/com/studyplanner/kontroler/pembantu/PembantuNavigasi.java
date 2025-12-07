@@ -175,10 +175,27 @@ public class PembantuNavigasi {
      * @return VBox wrapper dengan header
      */
     public VBox buatWrapperDenganHeader(String judul, Node konten) {
+        return buatWrapperDenganHeader(judul, konten, true);
+    }
+
+    /**
+     * Buat wrapper dengan header, opsional tombol kembali.
+     *
+     * @param judul judul halaman
+     * @param konten konten halaman
+     * @param tampilkanTombolKembali true jika ingin menampilkan tombol kembali
+     * @return VBox wrapper dengan header
+     */
+    public VBox buatWrapperDenganHeader(String judul, Node konten, boolean tampilkanTombolKembali) {
         VBox wrapper = new VBox(16);
         wrapper.setPadding(new Insets(24));
 
-        HBox header = buatHeaderDenganTombolKembali(judul);
+        HBox header;
+        if (tampilkanTombolKembali) {
+            header = buatHeaderDenganTombolKembali(judul);
+        } else {
+            header = buatHeaderTanpaTombolKembali(judul);
+        }
 
         VBox.setVgrow(konten, Priority.ALWAYS);
         wrapper.getChildren().addAll(header, konten);
@@ -206,6 +223,24 @@ public class PembantuNavigasi {
         labelJudul.setStyle("-fx-font-size: 24px;");
 
         header.getChildren().addAll(tombolKembali, labelJudul);
+        return header;
+    }
+
+    /**
+     * Buat header tanpa tombol kembali (untuk panel utama seperti Admin/Dosen).
+     *
+     * @param judul judul halaman
+     * @return HBox header
+     */
+    public HBox buatHeaderTanpaTombolKembali(String judul) {
+        HBox header = new HBox(16);
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelJudul = new Label(judul);
+        labelJudul.getStyleClass().add("section-title");
+        labelJudul.setStyle("-fx-font-size: 24px;");
+
+        header.getChildren().add(labelJudul);
         return header;
     }
 }

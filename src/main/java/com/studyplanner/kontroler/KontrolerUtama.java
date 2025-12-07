@@ -23,6 +23,10 @@ import com.studyplanner.layanan.LayananTopik;
 import com.studyplanner.layanan.LayananJadwalUjian;
 import com.studyplanner.layanan.LayananSesiBelajar;
 import com.studyplanner.model.*;
+import com.studyplanner.dao.DAORekomendasi;
+import com.studyplanner.dao.DAOMahasiswa;
+import com.studyplanner.dao.DAOTopik;
+import com.studyplanner.dao.DAOMataKuliah;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -167,6 +171,16 @@ public class KontrolerUtama implements Initializable {
     
     @FXML
     private NumberAxis yAxisJumlah;
+    
+    // Section Rekomendasi dari Dosen (untuk Mahasiswa)
+    @FXML
+    private VBox sectionRekomendasi;
+    
+    @FXML
+    private VBox wadahRekomendasi;
+    
+    @FXML
+    private Label labelJumlahRekomendasi;
 
     private ManajerBasisData manajerBasisData;
     private Node kontenDashboardAsli; // Simpan konten dashboard untuk swap
@@ -174,6 +188,10 @@ public class KontrolerUtama implements Initializable {
     private LayananTopik layananTopik;
     private LayananJadwalUjian layananJadwalUjian;
     private LayananSesiBelajar layananSesiBelajar;
+    private DAORekomendasi daoRekomendasi;
+    private DAOMahasiswa daoMahasiswa;
+    private DAOTopik daoTopik;
+    private DAOMataKuliah daoMataKuliahDao;
     private boolean isDarkMode = false;
     private PembuatJadwal pembuatJadwal;
     private Timeline autoRefreshTimeline;
@@ -207,6 +225,10 @@ public class KontrolerUtama implements Initializable {
         layananTopik = new LayananTopik(manajerBasisData);
         layananJadwalUjian = new LayananJadwalUjian(manajerBasisData);
         layananSesiBelajar = new LayananSesiBelajar(manajerBasisData);
+        daoRekomendasi = new DAORekomendasi(manajerBasisData);
+        daoMahasiswa = new DAOMahasiswa(manajerBasisData);
+        daoTopik = new DAOTopik(manajerBasisData);
+        daoMataKuliahDao = new DAOMataKuliah(manajerBasisData);
 
         pembuatJadwal = new PembuatJadwal(manajerBasisData);
 
@@ -422,7 +444,8 @@ public class KontrolerUtama implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminView.fxml"));
             Parent konten = loader.load();
             
-            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Panel Administrator", konten);
+            // Panel Admin adalah tampilan utama - tanpa tombol kembali
+            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Panel Administrator", konten, false);
             pembantuNavigasi.navigasiKe(PembantuNavigasi.Halaman.PANEL_ADMIN, wrapper);
         } catch (IOException e) {
             UtilUI.tampilkanKesalahan("Gagal membuka Panel Admin: " + e.getMessage());
@@ -434,7 +457,8 @@ public class KontrolerUtama implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/DosenView.fxml"));
             Parent konten = loader.load();
             
-            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Dashboard Dosen", konten);
+            // Panel Dosen adalah tampilan utama - tanpa tombol kembali
+            VBox wrapper = pembantuNavigasi.buatWrapperDenganHeader("Dashboard Dosen", konten, false);
             pembantuNavigasi.navigasiKe(PembantuNavigasi.Halaman.PANEL_DOSEN, wrapper);
         } catch (IOException e) {
             UtilUI.tampilkanKesalahan("Gagal membuka Dashboard Dosen: " + e.getMessage());
@@ -459,14 +483,6 @@ public class KontrolerUtama implements Initializable {
         autoRefreshTimeline.play();
     }
 
-    // Delegasi ke PembantuTema
-    private void terapkanModaGelapPadaStartup() {
-        if (!isDarkMode) return;
-        javafx.application.Platform.runLater(() -> {
-            pembantuTema.terapkanModaGelap(labelSelamatDatang.getScene(), manajerWidget);
-        });
-    }
-
     private void alihkanModaGelap() {
         pembantuTema.alihkanModaGelap(tombolAlihTema, tombolKelolaMataKuliah.getScene(), manajerWidget);
         isDarkMode = pembantuTema.isDarkMode();
@@ -486,6 +502,9 @@ public class KontrolerUtama implements Initializable {
             // Update chart statistik
             muatChartStatistik();
             
+            // Muat rekomendasi dari dosen (untuk mahasiswa)
+            muatRekomendasiDariDosen();
+            
             // Refresh widget
             if (manajerWidget != null) {
                 List<SesiBelajar> upcomingSessions = pembantuDashboard.ambilSesiMendatang(4);
@@ -496,6 +515,248 @@ public class KontrolerUtama implements Initializable {
             }
         } catch (SQLException e) {
             UtilUI.tampilkanKesalahan("Gagal memuat data dashboard: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Memuat rekomendasi dari dosen untuk mahasiswa.
+     * Hanya ditampilkan jika user adalah mahasiswa dan memiliki rekomendasi.
+     */
+    private void muatRekomendasiDariDosen() {
+        // Skip jika bukan mahasiswa atau komponen tidak ada
+        ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+        if (auth.isAdmin() || auth.isDosen() || sectionRekomendasi == null) {
+            return;
+        }
+        
+        try {
+            int userId = auth.ambilIdPengguna().orElse(-1);
+            if (userId <= 0) {
+                System.out.println("[DEBUG] muatRekomendasiDariDosen - userId tidak valid: " + userId);
+                return;
+            }
+            Mahasiswa mahasiswa = daoMahasiswa.ambilBerdasarkanUserId(userId);
+            
+            if (mahasiswa == null) {
+                sectionRekomendasi.setVisible(false);
+                sectionRekomendasi.setManaged(false);
+                return;
+            }
+            
+            // Ambil rekomendasi dengan status PENDING (belum ditanggapi)
+            List<Rekomendasi> daftarRekomendasi = daoRekomendasi.ambilBerdasarkanMahasiswaId(mahasiswa.getId());
+            List<Rekomendasi> rekomendasiAktif = daftarRekomendasi.stream()
+                .filter(r -> r.getStatus() == Rekomendasi.StatusRekomendasi.PENDING)
+                .toList();
+            
+            if (rekomendasiAktif.isEmpty()) {
+                sectionRekomendasi.setVisible(false);
+                sectionRekomendasi.setManaged(false);
+                return;
+            }
+            
+            // Tampilkan section rekomendasi
+            sectionRekomendasi.setVisible(true);
+            sectionRekomendasi.setManaged(true);
+            
+            // Update badge jumlah
+            if (labelJumlahRekomendasi != null) {
+                labelJumlahRekomendasi.setText(rekomendasiAktif.size() + " baru");
+            }
+            
+            // Render kartu rekomendasi
+            wadahRekomendasi.getChildren().clear();
+            for (Rekomendasi rek : rekomendasiAktif) {
+                wadahRekomendasi.getChildren().add(buatKartuRekomendasi(rek, mahasiswa.getId()));
+            }
+            
+        } catch (SQLException e) {
+            sectionRekomendasi.setVisible(false);
+            sectionRekomendasi.setManaged(false);
+        }
+    }
+    
+    /**
+     * Membuat kartu UI untuk satu rekomendasi dari dosen.
+     */
+    private Node buatKartuRekomendasi(Rekomendasi rek, int mahasiswaId) {
+        HBox kartu = new HBox(12);
+        kartu.getStyleClass().add("rekomendasi-card");
+        kartu.setStyle("-fx-background-color: -color-surface-container; -fx-background-radius: 12; -fx-padding: 12 16;");
+        
+        // Icon
+        VBox iconBox = new VBox();
+        iconBox.setAlignment(javafx.geometry.Pos.CENTER);
+        Label iconLabel = new Label();
+        iconLabel.setGraphic(PembuatIkon.buat(org.kordamp.ikonli.material2.Material2OutlinedAL.LIGHTBULB, 24, "#FF9800"));
+        iconBox.getChildren().add(iconLabel);
+        
+        // Konten
+        VBox konten = new VBox(4);
+        HBox.setHgrow(konten, Priority.ALWAYS);
+        
+        Label labelTopik = new Label(rek.getNamaTopik());
+        labelTopik.setStyle("-fx-font-weight: 600; -fx-font-size: 14px;");
+        
+        String infoText = "";
+        if (rek.getNamaMataKuliah() != null) {
+            infoText = rek.getNamaMataKuliah();
+        }
+        if (rek.getNamaDosen() != null) {
+            infoText += (infoText.isEmpty() ? "" : " • ") + "dari " + rek.getNamaDosen();
+        }
+        Label labelInfo = new Label(infoText);
+        labelInfo.setStyle("-fx-font-size: 12px; -fx-opacity: 0.7;");
+        
+        // Deskripsi jika ada
+        if (rek.getDeskripsi() != null && !rek.getDeskripsi().isEmpty()) {
+            Label labelDesc = new Label(rek.getDeskripsi());
+            labelDesc.setStyle("-fx-font-size: 12px; -fx-wrap-text: true;");
+            labelDesc.setWrapText(true);
+            konten.getChildren().addAll(labelTopik, labelInfo, labelDesc);
+        } else {
+            konten.getChildren().addAll(labelTopik, labelInfo);
+        }
+        
+        // Tombol aksi
+        VBox aksiBox = new VBox(4);
+        aksiBox.setAlignment(javafx.geometry.Pos.CENTER);
+        
+        Button btnTerima = new Button("Terima");
+        btnTerima.getStyleClass().addAll("btn-small", "btn-primary");
+        btnTerima.setOnAction(e -> terimaRekomendasi(rek, mahasiswaId));
+        
+        Button btnTolak = new Button("Tolak");
+        btnTolak.getStyleClass().add("btn-small");
+        btnTolak.setOnAction(e -> tolakRekomendasi(rek));
+        
+        aksiBox.getChildren().addAll(btnTerima, btnTolak);
+        
+        kartu.getChildren().addAll(iconBox, konten, aksiBox);
+        return kartu;
+    }
+    
+    /**
+     * Menangani aksi terima rekomendasi dari dosen.
+     * Membuat topik baru berdasarkan rekomendasi.
+     */
+    private void terimaRekomendasi(Rekomendasi rek, int mahasiswaId) {
+        try {
+            ManajerOtentikasi auth = ManajerOtentikasi.getInstance();
+            
+            // Gunakan ambilIdPengguna() yang lebih reliable
+            int userId = auth.ambilIdPengguna().orElse(-1);
+            
+            System.out.println("[DEBUG] terimaRekomendasi - userId: " + userId);
+            System.out.println("[DEBUG] terimaRekomendasi - namaTopik: " + rek.getNamaTopik());
+            System.out.println("[DEBUG] terimaRekomendasi - idMataKuliahRek: " + rek.getIdMataKuliah());
+            
+            // Validasi userId
+            if (userId <= 0) {
+                System.out.println("[ERROR] userId tidak valid: " + userId);
+                UtilUI.tampilkanKesalahan("Error: Tidak dapat mengidentifikasi user. Silakan login ulang.");
+                return;
+            }
+            
+            // Cari atau buat mata kuliah untuk topik
+            int idMataKuliah;
+            if (rek.getIdMataKuliah() != null && rek.getIdMataKuliah() > 0) {
+                // Cek apakah mahasiswa punya mata kuliah dengan nama yang sama
+                MataKuliah mataKuliahDosen = daoMataKuliahDao.ambilBerdasarkanId(rek.getIdMataKuliah());
+                if (mataKuliahDosen != null) {
+                    // Cari mata kuliah dengan nama sama milik mahasiswa
+                    MataKuliah mkMahasiswa = daoMataKuliahDao.cariBerdasarkanNamaDanUser(
+                        mataKuliahDosen.getNama(), userId);
+                    
+                    if (mkMahasiswa != null) {
+                        idMataKuliah = mkMahasiswa.getId();
+                        System.out.println("[DEBUG] Menggunakan MK existing: " + idMataKuliah);
+                    } else {
+                        // Buat mata kuliah baru untuk mahasiswa
+                        MataKuliah mkBaru = new MataKuliah();
+                        mkBaru.setUserId(userId);
+                        mkBaru.setNama(mataKuliahDosen.getNama());
+                        mkBaru.setKode(mataKuliahDosen.getKode() != null ? mataKuliahDosen.getKode() : "REK-" + System.currentTimeMillis());
+                        mkBaru.setDeskripsi("Dari rekomendasi dosen");
+                        idMataKuliah = daoMataKuliahDao.simpan(mkBaru);
+                        System.out.println("[DEBUG] MK baru dibuat: " + idMataKuliah);
+                    }
+                } else {
+                    // Buat mata kuliah default "Rekomendasi Dosen"
+                    idMataKuliah = buatAtauDapatkanMataKuliahRekomendasi(userId);
+                    System.out.println("[DEBUG] MK default (dosen null): " + idMataKuliah);
+                }
+            } else {
+                // Buat mata kuliah default "Rekomendasi Dosen"
+                idMataKuliah = buatAtauDapatkanMataKuliahRekomendasi(userId);
+                System.out.println("[DEBUG] MK default (no idMK): " + idMataKuliah);
+            }
+            
+            // Buat topik baru
+            Topik topikBaru = new Topik();
+            topikBaru.setIdMataKuliah(idMataKuliah);
+            topikBaru.setNama(rek.getNamaTopik());
+            topikBaru.setDeskripsi(rek.getDeskripsi() != null ? rek.getDeskripsi() : "");
+            topikBaru.setPrioritas(rek.getPrioritasSaran() > 0 ? rek.getPrioritasSaran() : 3);
+            topikBaru.setTingkatKesulitan(rek.getKesulitanSaran() > 0 ? rek.getKesulitanSaran() : 3);
+            topikBaru.setTanggalBelajarPertama(LocalDate.now());
+            
+            int topikId = daoTopik.simpan(topikBaru);
+            System.out.println("[DEBUG] Topik berhasil disimpan dengan ID: " + topikId);
+            
+            // Update status rekomendasi
+            rek.setStatus(Rekomendasi.StatusRekomendasi.ACCEPTED);
+            daoRekomendasi.perbarui(rek);
+            System.out.println("[DEBUG] Status rekomendasi diupdate ke ACCEPTED");
+            
+            // Auto-generate jadwal untuk topik baru
+            pembuatJadwal.buatDanSimpanJadwal(7);
+            System.out.println("[DEBUG] Jadwal otomatis di-generate");
+            
+            UtilUI.tampilkanToast("Rekomendasi diterima! Topik \"" + rek.getNamaTopik() + "\" ditambahkan ke jadwal belajar.");
+            loadDashboardData();
+        } catch (SQLException e) {
+            System.out.println("[ERROR] Gagal terima rekomendasi: " + e.getMessage());
+            e.printStackTrace();
+            UtilUI.tampilkanKesalahan("Gagal menerima rekomendasi: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("[ERROR] Exception: " + e.getMessage());
+            e.printStackTrace();
+            UtilUI.tampilkanKesalahan("Error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Buat atau dapatkan mata kuliah "Rekomendasi Dosen" untuk user.
+     */
+    private int buatAtauDapatkanMataKuliahRekomendasi(int userId) throws SQLException {
+        String namaMK = "Rekomendasi Dosen";
+        MataKuliah existing = daoMataKuliahDao.cariBerdasarkanNamaDanUser(namaMK, userId);
+        
+        if (existing != null) {
+            return existing.getId();
+        }
+        
+        MataKuliah mkBaru = new MataKuliah();
+        mkBaru.setUserId(userId);
+        mkBaru.setNama(namaMK);
+        mkBaru.setKode("REK-DOSEN");
+        mkBaru.setDeskripsi("Topik yang direkomendasikan oleh dosen pembimbing");
+        return daoMataKuliahDao.simpan(mkBaru);
+    }
+    
+    /**
+     * Menangani aksi tolak rekomendasi dari dosen.
+     */
+    private void tolakRekomendasi(Rekomendasi rek) {
+        try {
+            rek.setStatus(Rekomendasi.StatusRekomendasi.DECLINED);
+            daoRekomendasi.perbarui(rek);
+            
+            UtilUI.tampilkanToast("Rekomendasi ditolak.");
+            loadDashboardData();
+        } catch (SQLException e) {
+            UtilUI.tampilkanKesalahan("Gagal menolak rekomendasi: " + e.getMessage());
         }
     }
     

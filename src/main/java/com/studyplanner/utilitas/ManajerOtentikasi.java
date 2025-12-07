@@ -231,16 +231,6 @@ public class ManajerOtentikasi {
     }
     
     /**
-     * Mendapatkan ID user yang sedang login.
-     * @deprecated Gunakan {@link #ambilIdPengguna()} yang mengembalikan Optional
-     * @return ID user atau -1 jika tidak ada user yang login
-     */
-    @Deprecated
-    public int getCurrentUserId() {
-        return ambilIdPengguna().orElse(-1);
-    }
-
-    /**
      * Set ID user untuk Google OAuth user setelah sync ke database.
      */
     public void setCurrentGoogleUserId(int userId) {

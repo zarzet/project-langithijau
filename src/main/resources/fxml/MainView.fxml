@@ -122,6 +122,18 @@
                     <Label fx:id="labelProgressHariIni" text="0%"/>
                 </HBox>
 
+                <!-- Rekomendasi dari Dosen (untuk Mahasiswa) -->
+                <VBox fx:id="sectionRekomendasi" spacing="12" styleClass="card" visible="false" managed="false">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="Rekomendasi dari Dosen" styleClass="section-title" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="labelJumlahRekomendasi" styleClass="badge-primary"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" maxHeight="200" style="-fx-background-color: transparent;">
+                        <VBox fx:id="wadahRekomendasi" spacing="10" style="-fx-padding: 4;"/>
+                    </ScrollPane>
+                </VBox>
+
                 <!-- Main Content Grid (Tugas Hari Ini + Ujian Mendatang) -->
                 <GridPane fx:id="mainContentGrid" hgap="16" vgap="16">
                     <columnConstraints>

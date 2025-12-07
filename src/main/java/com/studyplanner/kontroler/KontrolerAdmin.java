@@ -150,7 +150,7 @@ public class KontrolerAdmin implements Initializable {
     }
 
     private void setupTabelPengguna() {
-        tabelPengguna.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelPengguna.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         
         kolId.setCellValueFactory(data -> 
             new SimpleStringProperty(String.valueOf(data.getValue().get("id"))));
@@ -596,23 +596,43 @@ public class KontrolerAdmin implements Initializable {
             return;
         }
 
-        List<Integer> selectedIds = listMahasiswa.getItems().stream()
+        List<MahasiswaSelectable> selectedMahasiswa = listMahasiswa.getItems().stream()
             .filter(MahasiswaSelectable::isSelected)
-            .map(m -> m.getMahasiswa().getId())
             .toList();
 
-        if (selectedIds.isEmpty()) {
+        if (selectedMahasiswa.isEmpty()) {
             tampilkanError("Pilih minimal satu mahasiswa!");
             return;
         }
 
-        if (selectedIds.size() > dosenTerpilih.sisaKuota()) {
+        if (selectedMahasiswa.size() > dosenTerpilih.sisaKuota()) {
             tampilkanError("Kuota dosen tidak mencukupi! Sisa kuota: " + dosenTerpilih.sisaKuota());
             return;
         }
 
         try {
-            int berhasil = daoMahasiswa.bulkAssignKeDosen(selectedIds, dosenTerpilih.getId());
+            int berhasil = 0;
+            
+            for (MahasiswaSelectable ms : selectedMahasiswa) {
+                Mahasiswa mhs = ms.getMahasiswa();
+                
+                // Jika mahasiswa belum ada di tabel mahasiswa (id == 0), buat dulu
+                if (mhs.getId() == 0) {
+                    Mahasiswa mhsBaru = new Mahasiswa();
+                    mhsBaru.setUserId(mhs.getUserId());
+                    mhsBaru.setNim(mhs.getNim());
+                    mhsBaru.setSemester(mhs.getSemester() > 0 ? mhs.getSemester() : 1);
+                    mhsBaru.setDosenId(dosenTerpilih.getId());
+                    daoMahasiswa.simpan(mhsBaru);
+                    berhasil++;
+                } else {
+                    // Mahasiswa sudah ada, update dosen_id
+                    mhs.setDosenId(dosenTerpilih.getId());
+                    daoMahasiswa.perbarui(mhs);
+                    berhasil++;
+                }
+            }
+            
             tampilkanInfo(berhasil + " mahasiswa berhasil di-assign ke " + dosenTerpilih.getNama());
             muatDataAssignment();
             perbaruiStatistik();
@@ -662,7 +682,7 @@ public class KontrolerAdmin implements Initializable {
 
     private void setupPanelStatistik() {
         // Set resize policy agar kolom mengisi seluruh lebar
-        tabelDistribusi.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tabelDistribusi.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         
         kolDosenNama.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNama()));
         kolDosenNip.setCellValueFactory(data -> new SimpleStringProperty(

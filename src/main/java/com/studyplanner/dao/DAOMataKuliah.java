@@ -203,6 +203,32 @@ public class DAOMataKuliah implements DAOBase<MataKuliah, Integer> {
     }
 
     /**
+     * Mencari mata kuliah berdasarkan nama untuk user tertentu.
+     *
+     * @param nama Nama mata kuliah
+     * @param userId ID user
+     * @return MataKuliah atau null jika tidak ditemukan
+     * @throws SQLException jika terjadi kesalahan database
+     */
+    public MataKuliah cariBerdasarkanNamaDanUser(String nama, int userId) throws SQLException {
+        String sql = "SELECT * FROM mata_kuliah WHERE user_id = ? AND nama = ?";
+
+        try (Connection conn = manajerDB.bukaKoneksi();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            pstmt.setString(2, nama);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return mapRowKeMataKuliah(rs);
+            }
+
+            return null;
+        }
+    }
+
+    /**
      * Menghitung total mata kuliah untuk user tertentu.
      *
      * @param userId ID user
