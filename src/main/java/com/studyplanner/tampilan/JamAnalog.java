@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
  * Jam analog dengan animasi smooth 60 FPS.
  * Jarum detik bergerak fluid tanpa "melompat" setiap detik.
  */
+@SuppressWarnings("this-escape")
 public class JamAnalog extends Pane {
 
     private final Canvas canvas;

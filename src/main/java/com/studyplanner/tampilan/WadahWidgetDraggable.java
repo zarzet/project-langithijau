@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 /**
  * Container untuk widget dengan kemampuan drag & drop untuk reorder.
  */
+@SuppressWarnings("this-escape")
 public class WadahWidgetDraggable extends HBox {
 
     private final List<JenisWidget> widgetList;
@@ -76,29 +77,28 @@ public class WadahWidgetDraggable extends HBox {
     }
 
     private VBox buatTampilanKosong() {
-        VBox container = new VBox(16);
+        VBox container = new VBox(6);
         container.setAlignment(Pos.CENTER);
-        container.setPadding(new Insets(40, 80, 40, 80));
+        container.setPadding(new Insets(12, 30, 12, 30));
         container.getStyleClass().add("widget-empty-state");
 
         var ikon = PembuatIkon.ikonTambahWidget();
+        ikon.setStyle("-fx-font-size: 24px;");
 
         Label judul = new Label("Belum ada widget");
         judul.getStyleClass().add("widget-empty-title");
+        judul.setStyle("-fx-font-size: 13px;");
 
-        Label deskripsi = new Label("Klik untuk menambahkan widget ke dashboard Anda");
-        deskripsi.getStyleClass().add("widget-empty-desc");
-        deskripsi.setWrapText(true);
-
-        Button btnTambah = new Button("Tambah Widget");
+        Button btnTambah = new Button("Tambah");
         btnTambah.getStyleClass().add("btn-primary");
+        btnTambah.setStyle("-fx-padding: 6 16; -fx-font-size: 12px;");
         btnTambah.setOnAction(_ -> {
             if (onTambahWidgetClicked != null) {
                 onTambahWidgetClicked.accept(null);
             }
         });
 
-        container.getChildren().addAll(ikon, judul, deskripsi, btnTambah);
+        container.getChildren().addAll(ikon, judul, btnTambah);
 
         // Klik container juga bisa
         container.setOnMouseClicked(_ -> {

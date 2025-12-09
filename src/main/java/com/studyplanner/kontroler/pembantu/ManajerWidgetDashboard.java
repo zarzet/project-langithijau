@@ -8,7 +8,6 @@ import com.studyplanner.tampilan.WidgetRuntutanBelajar;
 import com.studyplanner.tampilan.WidgetTugasMendatang;
 import com.studyplanner.tampilan.WidgetUlasanBerikutnya;
 import com.studyplanner.tampilan.WidgetWaktuBelajarHariIni;
-import com.studyplanner.tampilan.WidgetCountdownUjian;
 import com.studyplanner.utilitas.ManajerOtentikasi;
 import com.studyplanner.utilitas.PreferensiPengguna;
 import javafx.geometry.Pos;
@@ -36,7 +35,6 @@ public class ManajerWidgetDashboard {
     private WidgetWaktuBelajarHariIni studyTimeWidget;
     private WidgetUlasanBerikutnya nextReviewWidget;
     private WidgetTugasMendatang upcomingTasksWidget;
-    private WidgetCountdownUjian countdownUjianWidget;
     private JamAnalog analogClock;
 
     public ManajerWidgetDashboard(
@@ -58,7 +56,7 @@ public class ManajerWidgetDashboard {
         
         String configStr = PreferensiPengguna.getInstance().getWidgetConfig(userId);
         if (configStr.isEmpty()) {
-            konfigurasiWidget = new KonfigurasiWidget();
+            konfigurasiWidget = KonfigurasiWidget.buatDefault();
         } else {
             konfigurasiWidget = KonfigurasiWidget.dariString(configStr);
         }
@@ -85,13 +83,13 @@ public class ManajerWidgetDashboard {
                 yield streakWidget;
             }
             case JAM_ANALOG -> {
-                analogClock = new JamAnalog(140);
+                analogClock = new JamAnalog(110);
                 VBox clockBox = new VBox();
                 clockBox.setAlignment(Pos.CENTER);
                 clockBox.getStyleClass().add("clock-container");
-                clockBox.setPrefSize(180, 180);
-                clockBox.setMinSize(180, 180);
-                clockBox.setMaxSize(180, 180);
+                clockBox.setPrefSize(150, 150);
+                clockBox.setMinSize(140, 140);
+                clockBox.setMaxSize(160, 160);
                 clockBox.getChildren().add(analogClock);
                 if (isDarkMode && analogClock != null) {
                     analogClock.aturModeGelap(true);
@@ -116,11 +114,6 @@ public class ManajerWidgetDashboard {
                 });
                 yield upcomingTasksWidget;
             }
-            case COUNTDOWN_UJIAN -> {
-                countdownUjianWidget = new WidgetCountdownUjian();
-                terapkanUkuranKompak(countdownUjianWidget);
-                yield countdownUjianWidget;
-            }
         };
     }
 
@@ -129,12 +122,12 @@ public class ManajerWidgetDashboard {
      */
     private void terapkanUkuranKompak(Node widget) {
         if (widget instanceof VBox vbox) {
-            vbox.setPrefWidth(200);
-            vbox.setMinWidth(180);
-            vbox.setMaxWidth(220);
-            vbox.setPrefHeight(180);
-            vbox.setMinHeight(160);
-            vbox.setMaxHeight(200);
+            vbox.setPrefWidth(160);
+            vbox.setMinWidth(140);
+            vbox.setMaxWidth(180);
+            vbox.setPrefHeight(150);
+            vbox.setMinHeight(130);
+            vbox.setMaxHeight(170);
         }
     }
 

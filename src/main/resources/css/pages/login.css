@@ -124,6 +124,11 @@
 
 .login-tab-pane-modern .tab-header-area {
     -fx-padding: 0;
+    -fx-alignment: CENTER;
+}
+
+.login-tab-pane-modern .tab-header-area .headers-region {
+    -fx-alignment: CENTER;
 }
 
 .login-tab-pane-modern .tab-header-background {

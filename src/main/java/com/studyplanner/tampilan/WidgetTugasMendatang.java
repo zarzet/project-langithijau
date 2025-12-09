@@ -12,6 +12,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+@SuppressWarnings("this-escape")
 public class WidgetTugasMendatang extends VBox {
 
     private final VBox wadahDaftar;

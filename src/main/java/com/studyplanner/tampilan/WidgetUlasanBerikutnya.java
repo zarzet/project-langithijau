@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+@SuppressWarnings("this-escape")
 public class WidgetUlasanBerikutnya extends VBox {
 
     private final Label labelTopik;
@@ -26,10 +27,10 @@ public class WidgetUlasanBerikutnya extends VBox {
         manajerBasisData = new ManajerBasisData();
         getStyleClass().add("next-review-widget");
         setAlignment(Pos.CENTER);
-        setSpacing(8);
-        setPrefSize(180, 180);
-        setMinSize(180, 180);
-        setMaxSize(180, 180);
+        setSpacing(6);
+        setPrefSize(150, 150);
+        setMinSize(140, 140);
+        setMaxSize(160, 160);
 
         Label labelJudul = new Label("Review Berikutnya");
         labelJudul.getStyleClass().add("widget-title");

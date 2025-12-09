@@ -11,6 +11,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
  * Komponen untuk menampilkan empty state dengan ikon dan aksi.
  * Digunakan ketika tidak ada data untuk ditampilkan.
  */
+@SuppressWarnings("this-escape")
 public class TampilanKosong extends VBox {
 
     private final Label labelJudul;

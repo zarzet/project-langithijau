@@ -13,6 +13,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+@SuppressWarnings("this-escape")
 public class WidgetWaktuBelajarHariIni extends VBox {
 
     private static final int TARGET_HARIAN_MENIT = 120;
@@ -35,9 +36,9 @@ public class WidgetWaktuBelajarHariIni extends VBox {
         getStyleClass().add("study-time-widget");
         setAlignment(Pos.CENTER);
         setSpacing(2);
-        setPrefSize(180, 180);
-        setMinSize(180, 180);
-        setMaxSize(180, 180);
+        setPrefSize(150, 150);
+        setMinSize(140, 140);
+        setMaxSize(160, 160);
 
         Label labelJudul = new Label("Waktu Belajar Hari Ini");
         labelJudul.getStyleClass().add("widget-title");

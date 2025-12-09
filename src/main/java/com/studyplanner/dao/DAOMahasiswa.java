@@ -204,9 +204,9 @@ public class DAOMahasiswa {
             FROM mahasiswa m
             JOIN users u ON m.user_id = u.id
             WHERE m.dosen_id IS NULL
-            
+
             UNION ALL
-            
+
             SELECT NULL as id, u.id as user_id, NULL as nim, 1 as semester, NULL as dosen_id,
                    u.nama, u.email, u.status, u.login_terakhir,
                    NULL as nama_dosen
@@ -214,7 +214,7 @@ public class DAOMahasiswa {
             WHERE u.role = 'mahasiswa'
             AND u.status = 'active'
             AND NOT EXISTS (SELECT 1 FROM mahasiswa m WHERE m.user_id = u.id)
-            
+
             ORDER BY nama ASC
         """;
 
@@ -279,17 +279,17 @@ public class DAOMahasiswa {
             SELECT m.*, u.nama, u.email, u.status, u.login_terakhir,
                    d_user.nama as nama_dosen,
                    (SELECT COUNT(*) FROM mata_kuliah mk WHERE mk.user_id = m.user_id) as jumlah_mata_kuliah,
-                   (SELECT COUNT(*) FROM topik t 
-                    JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id 
+                   (SELECT COUNT(*) FROM topik t
+                    JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id
                     WHERE mk.user_id = m.user_id) as jumlah_topik,
-                   (SELECT COUNT(*) FROM topik t 
-                    JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id 
+                   (SELECT COUNT(*) FROM topik t
+                    JOIN mata_kuliah mk ON t.id_mata_kuliah = mk.id
                     WHERE mk.user_id = m.user_id AND t.dikuasai = 1) as topik_dikuasai,
-                   (SELECT MAX(DATE(tanggal_jadwal)) FROM sesi_belajar sb 
-                    JOIN mata_kuliah mk ON sb.id_mata_kuliah = mk.id 
+                   (SELECT MAX(DATE(tanggal_jadwal)) FROM sesi_belajar sb
+                    JOIN mata_kuliah mk ON sb.id_mata_kuliah = mk.id
                     WHERE mk.user_id = m.user_id AND sb.selesai = 1) as aktivitas_terakhir,
-                   (SELECT AVG(rating_performa) FROM sesi_belajar sb 
-                    JOIN mata_kuliah mk ON sb.id_mata_kuliah = mk.id 
+                   (SELECT AVG(rating_performa) FROM sesi_belajar sb
+                    JOIN mata_kuliah mk ON sb.id_mata_kuliah = mk.id
                     WHERE mk.user_id = m.user_id AND sb.rating_performa IS NOT NULL) as rata_rata_performa
             FROM mahasiswa m
             JOIN users u ON m.user_id = u.id

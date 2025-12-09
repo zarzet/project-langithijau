@@ -9,6 +9,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+@SuppressWarnings("this-escape")
 public class WidgetPelacakPencapaian extends VBox {
 
     public static final int TARGET_FOKUS_MENIT = 120;

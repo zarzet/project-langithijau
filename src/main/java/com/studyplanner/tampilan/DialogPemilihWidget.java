@@ -147,7 +147,6 @@ public class DialogPemilihWidget {
             case WAKTU_BELAJAR -> PembuatIkon.ikonWaktuBelajar();
             case ULASAN_BERIKUTNYA -> PembuatIkon.ikonUlasan();
             case TUGAS_MENDATANG -> PembuatIkon.ikonTugasMendatang();
-            case COUNTDOWN_UJIAN -> PembuatIkon.ikonCountdownUjian();
         };
     }
 

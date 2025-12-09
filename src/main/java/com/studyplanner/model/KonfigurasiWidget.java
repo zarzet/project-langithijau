@@ -16,8 +16,7 @@ public class KonfigurasiWidget {
         JAM_ANALOG("Jam", "Tampilkan jam analog", "clock"),
         WAKTU_BELAJAR("Waktu Belajar Hari Ini", "Lihat total waktu belajar hari ini", "study_time"),
         ULASAN_BERIKUTNYA("Ulasan Berikutnya", "Topik yang perlu diulang", "next_review"),
-        TUGAS_MENDATANG("Tugas Mendatang", "Daftar tugas dalam beberapa hari ke depan", "upcoming_tasks"),
-        COUNTDOWN_UJIAN("Countdown Ujian", "Hitung mundur ke ujian terdekat", "exam_countdown");
+        TUGAS_MENDATANG("Tugas Mendatang", "Daftar tugas dalam beberapa hari ke depan", "upcoming_tasks");
 
         private final String namaDisplay;
         private final String deskripsi;
@@ -145,15 +144,12 @@ public class KonfigurasiWidget {
     }
 
     /**
-     * Buat konfigurasi default dengan semua widget aktif.
+     * Buat konfigurasi default dengan widget standar.
      */
     public static KonfigurasiWidget buatDefault() {
         KonfigurasiWidget config = new KonfigurasiWidget();
-        config.tambahWidget(JenisWidget.RUNTUTAN_BELAJAR);
         config.tambahWidget(JenisWidget.JAM_ANALOG);
-        config.tambahWidget(JenisWidget.WAKTU_BELAJAR);
         config.tambahWidget(JenisWidget.ULASAN_BERIKUTNYA);
-        config.tambahWidget(JenisWidget.TUGAS_MENDATANG);
         return config;
     }
 }

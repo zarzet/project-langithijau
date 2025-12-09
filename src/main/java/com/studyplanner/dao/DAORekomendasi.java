@@ -29,10 +29,10 @@ public class DAORekomendasi {
      */
     public int simpan(Rekomendasi rekomendasi) throws SQLException {
         String sql = """
-            INSERT INTO rekomendasi (dosen_id, mahasiswa_id, id_mata_kuliah, nama_topik, 
+            INSERT INTO rekomendasi (dosen_id, mahasiswa_id, id_mata_kuliah, nama_topik,
                 deskripsi, prioritas_saran, kesulitan_saran, url_sumber, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+            """;
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -75,7 +75,7 @@ public class DAORekomendasi {
      */
     public Rekomendasi ambilBerdasarkanId(int id) throws SQLException {
         String sql = """
-            SELECT r.*, 
+            SELECT r.*,
                    ud.nama as nama_dosen,
                    um.nama as nama_mahasiswa,
                    mk.nama as nama_mata_kuliah
@@ -86,7 +86,7 @@ public class DAORekomendasi {
             JOIN users um ON m.user_id = um.id
             LEFT JOIN mata_kuliah mk ON r.id_mata_kuliah = mk.id
             WHERE r.id = ?
-        """;
+            """;
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -111,7 +111,7 @@ public class DAORekomendasi {
      */
     public List<Rekomendasi> ambilBerdasarkanDosenId(int dosenId) throws SQLException {
         String sql = """
-            SELECT r.*, 
+            SELECT r.*,
                    ud.nama as nama_dosen,
                    um.nama as nama_mahasiswa,
                    mk.nama as nama_mata_kuliah
@@ -123,7 +123,7 @@ public class DAORekomendasi {
             LEFT JOIN mata_kuliah mk ON r.id_mata_kuliah = mk.id
             WHERE r.dosen_id = ?
             ORDER BY r.dibuat_pada DESC
-        """;
+            """;
 
         List<Rekomendasi> daftarRekomendasi = new ArrayList<>();
 
@@ -150,7 +150,7 @@ public class DAORekomendasi {
      */
     public List<Rekomendasi> ambilBerdasarkanMahasiswaId(int mahasiswaId) throws SQLException {
         String sql = """
-            SELECT r.*, 
+            SELECT r.*,
                    ud.nama as nama_dosen,
                    um.nama as nama_mahasiswa,
                    mk.nama as nama_mata_kuliah
@@ -162,7 +162,7 @@ public class DAORekomendasi {
             LEFT JOIN mata_kuliah mk ON r.id_mata_kuliah = mk.id
             WHERE r.mahasiswa_id = ?
             ORDER BY r.dibuat_pada DESC
-        """;
+            """;
 
         List<Rekomendasi> daftarRekomendasi = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public class DAORekomendasi {
      */
     public List<Rekomendasi> ambilPendingBerdasarkanMahasiswaId(int mahasiswaId) throws SQLException {
         String sql = """
-            SELECT r.*, 
+            SELECT r.*,
                    ud.nama as nama_dosen,
                    um.nama as nama_mahasiswa,
                    mk.nama as nama_mata_kuliah
@@ -201,7 +201,7 @@ public class DAORekomendasi {
             LEFT JOIN mata_kuliah mk ON r.id_mata_kuliah = mk.id
             WHERE r.mahasiswa_id = ? AND r.status = 'pending'
             ORDER BY r.dibuat_pada DESC
-        """;
+            """;
 
         List<Rekomendasi> daftarRekomendasi = new ArrayList<>();
 
@@ -229,7 +229,7 @@ public class DAORekomendasi {
      */
     public List<Rekomendasi> ambilBerdasarkanDosenDanStatus(int dosenId, StatusRekomendasi status) throws SQLException {
         String sql = """
-            SELECT r.*, 
+            SELECT r.*,
                    ud.nama as nama_dosen,
                    um.nama as nama_mahasiswa,
                    mk.nama as nama_mata_kuliah
@@ -241,7 +241,7 @@ public class DAORekomendasi {
             LEFT JOIN mata_kuliah mk ON r.id_mata_kuliah = mk.id
             WHERE r.dosen_id = ? AND r.status = ?
             ORDER BY r.dibuat_pada DESC
-        """;
+            """;
 
         List<Rekomendasi> daftarRekomendasi = new ArrayList<>();
 
@@ -290,11 +290,11 @@ public class DAORekomendasi {
      */
     public boolean perbarui(Rekomendasi rekomendasi) throws SQLException {
         String sql = """
-            UPDATE rekomendasi SET 
-                id_mata_kuliah = ?, nama_topik = ?, deskripsi = ?, 
+            UPDATE rekomendasi SET
+                id_mata_kuliah = ?, nama_topik = ?, deskripsi = ?,
                 prioritas_saran = ?, kesulitan_saran = ?, url_sumber = ?, status = ?
             WHERE id = ?
-        """;
+            """;
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -392,13 +392,13 @@ public class DAORekomendasi {
      */
     public int[] hitungStatistikBerdasarkanDosen(int dosenId) throws SQLException {
         String sql = """
-            SELECT 
+            SELECT
                 COUNT(*) as total,
                 SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
                 SUM(CASE WHEN status = 'accepted' THEN 1 ELSE 0 END) as accepted,
                 SUM(CASE WHEN status = 'declined' THEN 1 ELSE 0 END) as declined
             FROM rekomendasi WHERE dosen_id = ?
-        """;
+            """;
 
         try (Connection conn = manajerDB.bukaKoneksi();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

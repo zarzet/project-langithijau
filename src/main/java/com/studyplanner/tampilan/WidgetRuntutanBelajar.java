@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+@SuppressWarnings("this-escape")
 public class WidgetRuntutanBelajar extends VBox {
 
     private final Label labelAngkaRuntutan;
@@ -22,10 +23,10 @@ public class WidgetRuntutanBelajar extends VBox {
         manajerBasisData = new ManajerBasisData();
         getStyleClass().add("streak-widget");
         setAlignment(Pos.CENTER);
-        setSpacing(8);
-        setPrefSize(180, 180);
-        setMinSize(180, 180);
-        setMaxSize(180, 180);
+        setSpacing(6);
+        setPrefSize(150, 150);
+        setMinSize(140, 140);
+        setMaxSize(160, 160);
 
         labelAngkaRuntutan = new Label("0");
         labelAngkaRuntutan.getStyleClass().add("streak-number");

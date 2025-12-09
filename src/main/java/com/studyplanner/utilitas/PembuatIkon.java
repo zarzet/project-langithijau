@@ -433,13 +433,6 @@ public class PembuatIkon {
     }
 
     /**
-     * Ikon untuk widget countdown ujian
-     */
-    public static FontIcon ikonCountdownUjian() {
-        return buat(Material2OutlinedAL.ALARM, 24, "#ef4444");
-    }
-
-    /**
      * Ikon untuk tambah widget
      */
     public static FontIcon ikonTambahWidget() {
